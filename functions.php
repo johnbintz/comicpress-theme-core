@@ -97,13 +97,16 @@ function get_next_comic($category = null) { return get_adjacent_comic($category,
 
 /**
  * Get the adjacent comic from the current one.
+ * @param int $category The category to use.
+ * @param boolean $next True if the next chronological comic should be retrieved.
+ * @return array The WordPress post object for the comic post.
  */
 function get_adjacent_comic($category, $next = false) {
   global $non_comic_categories;
 
   $categories_to_exclude = $non_comic_categories;
   if (!is_null($category)) {
-    $categories_to_exclude = get_string_to_exclude_all_but_provided_categories();
+    $categories_to_exclude = get_string_to_exclude_all_but_provided_categories($category);
   }
 
   return get_adjacent_post(false, $categories_to_exclude, $next);
