@@ -846,6 +846,11 @@ ul.children {
 		}
 
 
+/* Pingbacks and Trackbacks */
+
+li.pingback div p, li.trackback div p {
+  margin-left:0;
+  }
 
 /* STORYLINES */
 
