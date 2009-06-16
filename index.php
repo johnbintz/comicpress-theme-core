@@ -53,8 +53,8 @@
 
 <?php } ?>
 	
-	<?php $temp = $wp_query; $wp_query= null; $wp_query = new WP_Query(); $wp_query->query('showposts='.$blog_postcount.'&cat='.$blogcat.'&paged='.$paged);
-	while ($wp_query->have_posts()) : $wp_query->the_post() ?>
+	<?php $temp = $wp_query; $wp_query= null; $wp_query = new WP_Query(); $wp_query->query('showposts='.$blog_postcount.'&cat=-'.$comiccat.'&paged='.$paged);
+ while ($wp_query->have_posts()) : $wp_query->the_post() ?>
 		<div class="post-head"></div>
 		<div class="post" id="post-<?php the_ID() ?>">
 			<h3>
