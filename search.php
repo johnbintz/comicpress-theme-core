@@ -4,8 +4,13 @@
 
 	<div class="post-page-head"></div>
 	<div class="post-page">			
-		<h2 class="pagetitle">Search Results for &lsquo;<?php the_search_query() ?>&rsquo;</h2>
-	</div>
+    <?php
+      $tmp_search = new WP_Query('s=' . wp_specialchars($_GET['s']) . '&show_posts=-1&posts_per_page=-1');
+      $count = $tmp_search->post_count;
+    ?>
+    <h2 class="pagetitle">Search for &lsquo;<?php the_search_query() ?>&rsquo;</h2>
+    Found <?php echo $count; ?> result<?php if ($count !== 1) { echo "s"; } ?>.
+  </div>
 	<div class="post-page-foot"></div>
 
 	<?php if (have_posts()) : ?>
