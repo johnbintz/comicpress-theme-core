@@ -14,6 +14,7 @@
 		</div>
 		<div class="post-page-foot"></div>
 	<?php endwhile; endif; ?>
+  <?php comments_template(); ?>
 </div>
 
 <?php include(TEMPLATEPATH . '/sidebar.php') ?>
