@@ -6,7 +6,7 @@
 		<img src="<?php the_comic() ?>" alt="<?php the_title() ?>" title="<?php the_hovertext() ?>" />
 	</div>
 	<div id="comic-foot"></div>
-<?php } endwhile ?>
+<?php } endwhile; ?>
 
 <div id="column">
 	
@@ -76,7 +76,7 @@
 		</div>
 		<div class="post-foot"></div>
 	
-	<?php endif ?>
+	<?php endif; ?>
 	
 </div>
 

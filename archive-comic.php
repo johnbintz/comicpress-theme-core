@@ -29,7 +29,7 @@ Template Name: Comic Archive
 		<div class="post-page">
 			<h2 class="pagetitle"><?php the_title() ?></h2>
 			<div class="entry">
-				<?php while (have_posts()) : the_post(); the_content(); endwhile ?>
+				<?php while (have_posts()) : the_post(); the_content(); endwhile; ?>
 			</div>
 
 
@@ -41,7 +41,7 @@ Template Name: Comic Archive
 				<?php $comicArchive = new WP_Query(); $comicArchive->query('showposts=10000&cat='.get_all_comic_categories_as_cat_string().'&year='.$year);
 				while ($comicArchive->have_posts()) : $comicArchive->the_post() ?>
 					<tr><td class="archive-date"><?php the_time('M j') ?></td><td class="archive-title"><a href="<?php echo get_permalink($post->ID) ?>" rel="bookmark" title="Permanent Link: <?php the_title() ?>"><?php the_title() ?></a></td></tr>
-				<?php endwhile ?>
+				<?php endwhile; ?>
 			</table>
 	<?php } } ?>
 

@@ -9,7 +9,7 @@
 			<img src="<?php the_comic() ?>" alt="<?php the_title() ?>" title="<?php the_hovertext() ?>" />
 		</div>
 		<div id="comic-foot"></div>
-	<?php endwhile ?>
+	<?php endwhile; ?>
 
 	<div id="column">
 
@@ -43,7 +43,7 @@
 				<br class="clear-margins" />
 			</div>
 			<div class="post-comic-foot"></div>
-		<?php endwhile ?>
+		<?php endwhile; ?>
 
 		<div id="blogheader"><!-- This area can be used for a heading above your main page blog posts --></div>
 
@@ -75,7 +75,7 @@
 			<div class="clear-margins"><br /></div>
 		</div>
 		<div class="post-foot"></div>
-	<?php endwhile ?>
+	<?php endwhile; ?>
 	<div class="pagenav">
 		<div class="pagenav-right"><?php previous_posts_link('Newer Entries &uarr;') ?></div>
 		<div class="pagenav-left"><?php next_posts_link('&darr; Previous Entries') ?></div>

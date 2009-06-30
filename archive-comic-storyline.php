@@ -67,7 +67,7 @@ Template Name: Comic Storyline Archive
 	<div class="post-page">
 		<h2 class="pagetitle"><?php the_title() ?></h2>
 		<div class="entry">
-			<?php while (have_posts()) : the_post(); the_content(); endwhile ?>
+			<?php while (have_posts()) : the_post(); the_content(); endwhile; ?>
 		</div>
 		<ul id="storyline" class="level-0">
 			<?php if (get_option('comicpress-enable-storyline-support') == 1) {

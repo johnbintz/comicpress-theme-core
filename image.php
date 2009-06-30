@@ -60,7 +60,7 @@
 		</div>
 		<div class="post-page-foot"></div>
 
-	<?php endif ?>
+	<?php endif; ?>
 
 </div>
 

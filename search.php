@@ -44,7 +44,7 @@
           
         <?php } ?>
       
-    <?php endwhile ?>
+    <?php endwhile; ?>
     
     <div class="pagenav">
       <div class="pagenav-right"><?php next_posts_link('Next Page &rsaquo;') ?></div>
@@ -63,7 +63,7 @@
     </div>
     <div class="post-page-foot"></div>
 
-  <?php endif ?>
+  <?php endif; ?>
 
 </div>
 

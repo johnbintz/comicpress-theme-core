@@ -41,7 +41,7 @@ Template Name: Comic Year Archive
 		<h2 class="pagetitle"><span class="archive-year"><?php echo $archive_year; ?></span> <?php the_title() ?></h2>
 
 		<div class="entry">
-			<?php while (have_posts()) : the_post(); the_content(); endwhile ?>
+			<?php while (have_posts()) : the_post(); the_content(); endwhile; ?>
 		</div>
 
 		<div class="archive-yearlist">| 
