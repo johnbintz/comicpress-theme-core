@@ -1,6 +1,6 @@
 <?php get_header() ?>
 
-<div id="column" class="archive">
+<div id="content" class="archive">
 
 	<?php if (have_posts()) : ?>
 
