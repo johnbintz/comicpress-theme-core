@@ -148,7 +148,7 @@ h3, h3 a, h3 a:hover {
 
 
 /* THE PAGE WRAPPER */
-/* Change this width to set the entire site's width - increase/reduce #column width by the same amount */
+/* Change this width to set the entire site's width - increase/reduce #content width by the same amount */
 
 #page {
 	width: 760px;
@@ -375,12 +375,22 @@ h3, h3 a, h3 a:hover {
 
 /* POSTS - PAGES */
 
-#column {
+#content {
 	width: 560px;
 	padding: 5px 0 20px 0;
 	float: left;
 	overflow: hidden;
 	}
+
+.narrowcolumn
+{
+  width: 560px;
+  }
+
+.widecolumn
+{
+  width: 760px;
+  }
 
 .post, .post-comic, .post-page {
 	padding: 0 20px;

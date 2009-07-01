@@ -1,6 +1,6 @@
 <?php get_header() ?>
 
-<div id="column">
+<div id="content" class="narrowcolumn">
 	<div class="post-page-head"></div>
 	<div class="post-page">
 		<h2 class="pagetitle">Page Not Found</h2>

@@ -1,6 +1,6 @@
 <?php get_header() ?>
 
-<div id="column">
+<div id="content" class="narrowcolumn">
 	<?php if (have_posts()) : while (have_posts()) : the_post() ?>
 		<div class="post-page-head"></div>
 		<div class="post-page" id="post-<?php the_ID() ?>">

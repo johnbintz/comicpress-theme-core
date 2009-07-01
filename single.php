@@ -8,7 +8,7 @@
 	<div id="comic-foot"></div>
 <?php } endwhile; ?>
 
-<div id="column">
+<div id="content" class="narrowcolumn">
 	
 	<?php if (have_posts()) : while (have_posts()) : the_post() ?>
 	

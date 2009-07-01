@@ -116,7 +116,7 @@ $month['12'] = array('month' => 'December', 'days' => '31');
 		
 ?>
 
-<div id="column">
+<div id="content" class="narrowcolumn">
 
 	<div class="post-page-head"></div>
 	<div class="post-page">

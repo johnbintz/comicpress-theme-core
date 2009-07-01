@@ -6,7 +6,7 @@ Template Name: Links
 
 <?php get_header() ?>
 
-<div id="column">
+<div id="content" class="narrowcolumn">
 
 	<div class="post-page-head">
 		<div class="post-page">

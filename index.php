@@ -11,7 +11,7 @@
 		<div id="comic-foot"></div>
 	<?php endwhile; ?>
 
-	<div id="column">
+	<div id="content" class="narrowcolumn">
 
 		<?php while ($comicFrontpage->have_posts()) : $comicFrontpage->the_post() ?>
 			<div class="post-comic-head"></div>
@@ -49,7 +49,7 @@
 
 <?php } else { ?>
 
-	<div id="column">
+	<div id="content" class="narrowcolumn">
 
 <?php } ?>
 	

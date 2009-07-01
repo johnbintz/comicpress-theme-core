@@ -23,7 +23,7 @@ Template Name: Comic Archive
 		}
 </style>
 
-<div id="column">
+<div id="content" class="narrowcolumn">
 
 		<div class="post-page-head"></div>
 		<div class="post-page">
