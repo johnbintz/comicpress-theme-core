@@ -16,7 +16,7 @@ class OptionsPageTest extends PHPUnit_Framework_TestCase {
     ob_start();
     $this->admin->render_admin();
     $source = ob_get_clean();
-    
+
     $this->assertTrue(($xml = _to_xml($source)) !== false);
     foreach (array(
       '//input[@name="cp[_nonce]" and @value="' . $nonce . '"]' => true

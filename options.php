@@ -4,12 +4,7 @@ class ComicPressOptionsAdmin {
   function render_admin() {
     $nonce = wp_create_nonce('comicpress');
 
-    echo '<div class="wrap">';
-      echo '<h2>ComicPress Config</h2>';
-      echo '<form method="post">';
-        echo '<input type="hidden" name="cp[_nonce]" value="' . $nonce . '" />';
-      echo '</form>';
-    echo '</div>';
+    include(dirname(__FILE__) . '/partials/options-admin.inc');	
   }
 
   function get_root_categories() {
