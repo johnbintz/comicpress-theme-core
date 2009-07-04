@@ -30,8 +30,15 @@ if (defined("CPM_DATE_FORMAT")) {
 $comic_filename_filters = array();
 $comic_filename_filters['default'] = "{date}*.*";
 
+require_once(dirname(__FILE__) . '/options.php');
+
 // load all of the comic & non-comic category information
-add_action('init', 'get_all_comic_categories');
+add_action('init', '__comicpress_init');
+
+function __comicpress_init() {
+  get_all_comic_categories();
+  add_action('admin_init', '__comicpress_add_options_admin');
+}
 
 function get_first_comic() {
   return get_terminal_post_in_category(get_all_comic_categories_as_cat_string());
