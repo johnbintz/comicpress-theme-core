@@ -19,6 +19,29 @@ class ComicPressOptionsAdmin {
     }
     return $root_categories;
   }
+
+  function create_category_options($categories, $selected_id) {
+    $output = array();
+    if (is_array($categories)) {
+      $final_categories = array();
+      foreach ($categories as $category) {
+        if (is_numeric($category)) {
+          $result = get_category($category);
+          if (!is_a($result, "WP_Error")) {
+            $final_categories[] = $result;
+          }
+        }
+        if (is_object($category)) {
+          $final_categories[] = $category;
+        }
+      }
+
+      foreach ($final_categories as $category) {
+        $output[] = '<option value="' . $category->term_id . '"' . ($category->term_id == $selected_id ? ' selected="selected"' : '') . '>' . $category->name . '</option>';
+      }
+    }
+    return implode("\n", $output);
+  }
 }
 
 $comicpress_options_admin = new ComicPressOptionsAdmin();
