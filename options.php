@@ -3,7 +3,9 @@
 class ComicPressOptionsAdmin {
   var $comicpress_options = array(
     'comic_category_id' => 1,
-    'thumbnail_dimensions' => '760x'
+    'comic_dimensions' => '760x',
+    'rss_dimensions' => '350x',
+    'thumbnail_dimensions' => '125x'
   );
 
   function render_admin() {
@@ -61,7 +63,7 @@ class ComicPressOptionsAdmin {
     ) as $id => $name) {
       $dim = array_shift($parts);
       if (!empty($dim) && !is_numeric($dim)) { $dim = ""; }
-      $output[] = '<label>' . $name . ': <input type="text" name="' . $root . '[' . $id . ']" value="' . $dim . '" /></label>';       
+      $output[] = '<label>' . $name . ': <input type="text" name="' . $root . '[' . $id . ']" value="' . $dim . '" size="4" />px</label><br />';       
     }
     return implode("\n", $output);
   }
