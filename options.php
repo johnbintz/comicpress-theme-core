@@ -1,8 +1,16 @@
 <?php
 
 class ComicPressOptionsAdmin {
+  var $comicpress_options = array(
+    'comic_category_id' => 1,
+    'thumbnail_dimensions' => '760x'
+  );
+
   function render_admin() {
     $nonce = wp_create_nonce('comicpress');
+    $root_categories = $this->get_root_categories();
+
+    $this->get_comicpress_options();
 
     include(dirname(__FILE__) . '/partials/options-admin.inc');	
   }
@@ -41,6 +49,34 @@ class ComicPressOptionsAdmin {
       }
     }
     return implode("\n", $output);
+  }
+  
+  function create_dimension_selector($root, $dimension) {
+    $output = array();
+    
+    $parts = explode("x", $dimension);
+    foreach (array(
+      'width' => __('Width', 'comicpress'),
+      'height' => __('Height', 'comicpress')
+    ) as $id => $name) {
+      $dim = array_shift($parts);
+      if (!empty($dim) && !is_numeric($dim)) { $dim = ""; }
+      $output[] = '<label>' . $name . ': <input type="text" name="' . $root . '[' . $id . ']" value="' . $dim . '" /></label>';       
+    }
+    return implode("\n", $output);
+  }
+  
+  function get_comicpress_options() {
+    $result = get_option('comicpress-options');
+    if (is_array($result)) {
+      $this->comicpress_options = $result;
+    }
+  }
+  
+  function update_comicpress_options() {
+    if (is_array($this->comicpress_options)) {
+      update_option('comicpress-options', $this->comicpress_options);
+    }
   }
 }
 

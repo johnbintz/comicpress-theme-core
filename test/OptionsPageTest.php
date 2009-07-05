@@ -20,7 +20,7 @@ class OptionsPageTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue(($xml = _to_xml($source)) !== false);
     foreach (array(
       '//input[@name="cp[_nonce]" and @value="' . $nonce . '"]' => true,
-      '//select[@name="cp[comiccat]"]' => true
+      '//select[@name="cp[comic_category_id]"]' => true
     ) as $xpath => $value) {
       $this->assertTrue(_xpath_test($xml, $xpath, $value), $xpath);
     }
@@ -67,8 +67,6 @@ class OptionsPageTest extends PHPUnit_Framework_TestCase {
       
       $this->assertTrue(($xml = _to_xml($source, true)) !== false);
       
-      var_dump($source);
-      
       foreach (array(
         '//option[@value="1" and @selected="selected"]' => "test-one",
         '//option[@value="2"]' => "test-two",        
@@ -76,6 +74,19 @@ class OptionsPageTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(_xpath_test($xml, $xpath, $value), $xpath);
       }
     }
+  }
+
+  function testCreateDimensionSelector() {
+    $source = $this->admin->create_dimension_selector("test", "760x340");
+    
+    $this->assertTrue(($xml = _to_xml($source, true)) !== false);
+    
+    foreach (array(
+      '//input[@name="test[width]" and @value="760"]' => true,
+      '//input[@name="test[height]" and @value="340"]' => true,
+    ) as $xpath => $value) {
+      $this->assertTrue(_xpath_test($xml, $xpath, $value), $xpath);      
+    }    
   }
 }
 

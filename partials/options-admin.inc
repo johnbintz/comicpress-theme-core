@@ -6,7 +6,8 @@
       <tr>
         <th scope="row">Master Comic Category</th>
         <td>
-          <select name="cp[comiccat]">
+          <select name="cp[comic_category_id]">
+            <?php echo $this->create_category_options($root_categories, $this->comicpress_options['comicpress_category_id']) ?>
           </select>
         </td>
       </tr>
