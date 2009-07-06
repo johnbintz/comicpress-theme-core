@@ -37,7 +37,7 @@ class ComicPressOptionsAdmin {
       foreach ($categories as $category) {
         if (is_numeric($category)) {
           $result = get_category($category);
-          if (!is_a($result, "WP_Error")) {
+          if (!(is_a($result, "WP_Error") || empty($result))) {
             $final_categories[] = $result;
           }
         }
@@ -80,6 +80,30 @@ class ComicPressOptionsAdmin {
       update_option('comicpress-options', $this->comicpress_options);
     }
   }
+
+  function handle_update() {
+    if (isset($_POST['cp'])) {
+      foreach ($this->comicpress_options as $option => $value) {
+        if (isset($_POST['cp'][$option])) {
+          switch ($option) {
+            case 'comic_category_id':
+              if (is_numeric($_POST['cp'][$option])) {
+                $result = get_category($_POST['cp'][$option]);
+                if (!(is_a($result, 'WP_Error') || empty($result))) {
+                  $this->comicpress_options[$option] = $_POST['cp'][$option]; 
+                } 
+              }
+              break;
+            case 'comic_dimensions':
+            case 'rss_dimensions':
+            case 'tumbnail_dimensions':
+              break;
+          }
+        }
+      }
+    }
+    $this->update_comicpress_options();
+  }
 }
 
 $comicpress_options_admin = new ComicPressOptionsAdmin();
@@ -87,6 +111,12 @@ $comicpress_options_admin = new ComicPressOptionsAdmin();
 function __comicpress_add_options_admin() {
   global $comicpress_options_admin;
   add_theme_page(__("ComicPress Options", 'comicpress'), __('ComicPress Options', 'comicpress'), 'edit_themes', basename(__FILE__), array($comicpress_options_admin, 'render_admin'));
+
+  if (isset($_POST['cp']['_nonce'])) {
+    if (wp_verify_nonce($_POST['cp']['_nonce'], 'comicpress')) {
+      $comicpress_options_admin->handle_update();
+    }
+  }
 }
 
 ?>

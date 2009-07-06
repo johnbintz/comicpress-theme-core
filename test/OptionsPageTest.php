@@ -7,6 +7,7 @@ require_once(dirname(__FILE__) . '/../options.php');
 class OptionsPageTest extends PHPUnit_Framework_TestCase {
   function setUp() {
     _reset_wp();
+    $_POST = array();
     $this->admin = new ComicPressOptionsAdmin();
   }
   
@@ -87,6 +88,56 @@ class OptionsPageTest extends PHPUnit_Framework_TestCase {
     ) as $xpath => $value) {
       $this->assertTrue(_xpath_test($xml, $xpath, $value), $xpath);      
     }    
+  }
+ 
+  function providerTestHandleUpdate() {
+    return array(
+      array(
+        array('comic_category_id' => 1),
+        array('comic_category_id' => 2),
+        array('comic_category_id' => 1)
+      ),
+      array(
+        array('comic_category_id' => 1),
+        array('cp' => array(
+          'comic_category_id' => 2),
+        ),
+        array('comic_category_id' => 2)      
+      ),
+      array(
+        array('comic_category_id' => 1),
+        array('cp' => array(
+          'comic_category_id' => "cat"),
+        ),
+        array('comic_category_id' => 1)      
+      ),
+      array(
+        array('comic_category_id' => 1),
+        array('cp' => array(
+          'comic_category_id' => 3),
+        ),
+        array('comic_category_id' => 1)      
+      ),
+    );
+  }
+
+  /**
+   * @dataProvider providerTestHandleUpdate
+   */
+  function testHandleUpdate($original, $change, $new) {
+    $merged = array_merge($this->admin->comicpress_options, $original);
+    update_option('comicpress-options', $merged);
+    
+    add_category(2, (object)array('name' => 'test'));
+    
+    $_POST = $change;
+
+    $this->admin->handle_update();
+    
+    $result = get_option('comicpress-options');
+    foreach ($new as $key => $value) {
+      $this->assertEquals($value, $result[$key]);
+    }
   }
 }
 
