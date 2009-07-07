@@ -14,7 +14,7 @@
       <?php foreach (array(
         'comic_dimensions' => __('Comic Image Dimensions', 'comicpress'),
         'rss_dimensions' => __('RSS Feed Image Dimensions', 'comicpress'),
-        'thumbnail_dimensions' => __('Thumbnail Image Dimensions', 'comicpress'),
+        'archive_dimensions' => __('Archive Image Dimensions', 'comicpress'),
       ) as $field => $name) { ?>
         <tr>
           <th scope="row"><?php echo $name ?></th>

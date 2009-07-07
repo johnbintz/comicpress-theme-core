@@ -6,7 +6,8 @@
 	while ($comicFrontpage->have_posts()) : $comicFrontpage->the_post() ?>
 		<div id="comic-head"></div>
 		<div id="comic">
-			<img src="<?php the_comic() ?>" alt="<?php the_title() ?>" title="<?php the_hovertext() ?>" />
+      <?php the_comic_img_tag(get_comic_url('comic'), 'comic', array('alt' => get_the_title(),
+                                                                     'title' => get_the_hovertext())) ?>
 		</div>
 		<div id="comic-foot"></div>
 	<?php endwhile; ?>

@@ -5,7 +5,7 @@ class ComicPressOptionsAdmin {
     'comic_category_id' => 1,
     'comic_dimensions' => '760x',
     'rss_dimensions' => '350x',
-    'thumbnail_dimensions' => '125x'
+    'archive_dimensions' => '125x'
   );
 
   function render_admin() {
@@ -97,7 +97,7 @@ class ComicPressOptionsAdmin {
               break;
             case 'comic_dimensions':
             case 'rss_dimensions':
-            case 'thumbnail_dimensions':
+            case 'archive_dimensions':
               if (is_array($_POST['cp'][$option])) {
                 $dim_parts = array();
                 $is_valid = true;
@@ -125,9 +125,15 @@ class ComicPressOptionsAdmin {
       $this->update_comicpress_options();
     }
   }
+  
+  function init() {
+    $this->get_comicpress_options();  
+  }
 }
 
 $comicpress_options_admin = new ComicPressOptionsAdmin();
+
+add_action('init', array(&$comicpress_options_admin, 'init'));
 
 function __comicpress_add_options_admin() {
   global $comicpress_options_admin;

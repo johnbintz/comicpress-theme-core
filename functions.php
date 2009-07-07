@@ -1,6 +1,6 @@
 <?php
 
-include(TEMPLATEPATH . '/comicpress-config.php');
+include(dirname(__FILE__) . '/comicpress-config.php');
 
 // If any errors occur while searching for a comic file, the error messages will be pushed into here.
 $comic_pathfinding_errors = array();
@@ -46,6 +46,29 @@ function get_first_comic() {
 
 function get_last_comic() {
   return get_terminal_post_in_category(get_all_comic_categories_as_cat_string(), false);
+}
+
+function the_comic_img_tag($url, $type, $additional_parameters = array()) {
+  global $comicpress_options_admin;
+
+  $dimensions = array();
+  if (isset($comicpress_options_admin->comicpress_options["${type}_dimensions"])) {
+    list($width, $height) = explode("x", $comicpress_options_admin->comicpress_options["${type}_dimensions"]);
+    $dimensions = compact('width', 'height');
+  }
+  
+  echo '<img src="' . $url . '" ';
+  foreach (array('width', 'height') as $field) {
+    if (!empty($dimensions[$field])) {
+      echo $field . '="' . $dimensions[$field] . '" ';
+    }
+  }
+  if (is_array($additional_parameters)) {
+    foreach ($additional_parameters as $parameter => $value) {
+      echo $parameter . '="' . $value . '" ';    
+    }
+  }
+  echo "/>";
 }
 
 /**
@@ -357,8 +380,12 @@ function comicpress_list_storyline_categories($args = "") {
 * Text is taken from a custom field named "hovertext"
 */
 function the_hovertext() {
-	$hovertext = get_post_meta( get_the_ID(), "hovertext", true );
-  echo (empty($hovertext)) ? get_the_title() : $hovertext;
+  echo get_the_hovertext();
+}
+
+function get_the_hovertext() {
+  $hovertext = get_post_meta(get_the_ID(), "hovertext", true );
+  return (empty($hovertext)) ? get_the_title() : $hovertext;
 }
 
 /**
