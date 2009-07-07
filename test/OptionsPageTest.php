@@ -114,9 +114,36 @@ class OptionsPageTest extends PHPUnit_Framework_TestCase {
       array(
         array('comic_category_id' => 1),
         array('cp' => array(
-          'comic_category_id' => 3),
-        ),
+          'comic_category_id' => 3
+        )),
         array('comic_category_id' => 1)      
+      ),
+      array(
+        array('comic_dimensions' => '150x150'),
+        array('cp' => array(
+          'comic_dimensions' => 'test'
+        )),
+        array('comic_dimensions' => '150x150')
+      ),
+      array(
+        array('comic_dimensions' => '150x150'),
+        array('cp' => array(
+          'comic_dimensions' => array(
+            'width' => '150',
+            'height' => ''
+          )
+        )),
+        array('comic_dimensions' => '150x')
+      ),
+      array(
+        array('comic_dimensions' => '150x150'),
+        array('cp' => array(
+          'comic_dimensions' => array(
+            'width' => '150.1',
+            'height' => ''
+          )
+        )),
+        array('comic_dimensions' => '150x150')
       ),
     );
   }

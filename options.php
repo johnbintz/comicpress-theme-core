@@ -83,6 +83,7 @@ class ComicPressOptionsAdmin {
 
   function handle_update() {
     if (isset($_POST['cp'])) {
+      $this->get_comicpress_options();
       foreach ($this->comicpress_options as $option => $value) {
         if (isset($_POST['cp'][$option])) {
           switch ($option) {
@@ -96,13 +97,33 @@ class ComicPressOptionsAdmin {
               break;
             case 'comic_dimensions':
             case 'rss_dimensions':
-            case 'tumbnail_dimensions':
+            case 'thumbnail_dimensions':
+              if (is_array($_POST['cp'][$option])) {
+                $dim_parts = array();
+                $is_valid = true;
+                foreach (array('width', 'height') as $field) {
+                  $requested_dim = trim($_POST['cp'][$option][$field]);
+                  if ($requested_dim == "") {
+                    $dim_parts[] = $requested_dim;
+                  } else {
+                    if ((int)$requested_dim == $requested_dim) {
+                      $dim_parts[] = $requested_dim;
+                    } else {
+                      $is_valid = false; break;
+                    }
+                  }
+                }
+                
+                if ($is_valid) {
+                  $this->comicpress_options[$option] = implode("x", $dim_parts);
+                }
+              }
               break;
           }
         }
       }
+      $this->update_comicpress_options();
     }
-    $this->update_comicpress_options();
   }
 }
 
