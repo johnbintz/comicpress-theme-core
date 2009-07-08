@@ -83,6 +83,9 @@ function get_last_comic() {
 }
 
 function the_comic_img_tag($url, $type, $additional_parameters = array()) {
+  global $comicpress;
+  
+  echo $comicpress->get_comic_img_tag($url, $type, $additional_parameters);
 }
 
 /**
