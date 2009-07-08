@@ -1,21 +1,21 @@
 <?php
 
 require_once('PHPUnit/Framework.php');
-require_once(dirname(__FILE__) . '/../../mockpress/mockpress.php');
-require_once(dirname(__FILE__) . '/../options.php');
+require_once(dirname(__FILE__) . '/../../../../mockpress/mockpress.php');
+require_once(dirname(__FILE__) . '/../Core.inc');
 
-class OptionsPageTest extends PHPUnit_Framework_TestCase {
+class CoreTest extends PHPUnit_Framework_TestCase {
   function setUp() {
     _reset_wp();
     $_POST = array();
-    $this->admin = new ComicPressOptionsAdmin();
+    $this->core = new ComicPressAddonCore();
   }
   
   function testShowOptionsPage() {
     $nonce = wp_create_nonce('comicpress');
   
     ob_start();
-    $this->admin->render_admin();
+    $this->core->render_admin();
     $source = ob_get_clean();
 
     $this->assertTrue(($xml = _to_xml($source)) !== false);
@@ -49,7 +49,7 @@ class OptionsPageTest extends PHPUnit_Framework_TestCase {
     }
     
     $result_ids = array();
-    foreach ($this->admin->get_root_categories() as $category) {
+    foreach ($this->core->get_root_categories() as $category) {
       $result_ids[] = $category->term_id;
     }
     
@@ -64,7 +64,7 @@ class OptionsPageTest extends PHPUnit_Framework_TestCase {
       array(1,2),
       array(get_category(1), get_category(2))
     ) as $category_test) {
-      $source = $this->admin->create_category_options($category_test, 1);
+      $source = $this->core->create_category_options($category_test, 1);
       
       $this->assertTrue(($xml = _to_xml($source, true)) !== false);
       
@@ -78,7 +78,7 @@ class OptionsPageTest extends PHPUnit_Framework_TestCase {
   }
 
   function testCreateDimensionSelector() {
-    $source = $this->admin->create_dimension_selector("test", "760x340");
+    $source = $this->core->create_dimension_selector("test", "760x340");
     
     $this->assertTrue(($xml = _to_xml($source, true)) !== false);
     
@@ -152,18 +152,23 @@ class OptionsPageTest extends PHPUnit_Framework_TestCase {
    * @dataProvider providerTestHandleUpdate
    */
   function testHandleUpdate($original, $change, $new) {
-    $merged = array_merge($this->admin->comicpress_options, $original);
-    update_option('comicpress-options', $merged);
+    $this->core->comicpress = $this->getMock('ComicPress', array('save'));
+    $this->core->comicpress->comicpress_options = array(
+      'comic_category_id' => 1,
+      'comic_dimensions' => '760x',
+      'rss_dimensions' => '350x',
+      'archive_dimensions' => '125x'
+    );
+    $this->core->comicpress->comicpress_options = array_merge($this->core->comicpress->comicpress_options, $original);
     
     add_category(2, (object)array('name' => 'test'));
     
     $_POST = $change;
 
-    $this->admin->handle_update();
+    $this->core->handle_update();
     
-    $result = get_option('comicpress-options');
     foreach ($new as $key => $value) {
-      $this->assertEquals($value, $result[$key]);
+      $this->assertEquals($value, $this->core->comicpress->comicpress_options[$key]);
     }
   }
 }

@@ -36,8 +36,40 @@ require_once(dirname(__FILE__) . '/options.php');
 add_action('init', '__comicpress_init');
 
 function __comicpress_init() {
+  foreach (glob(dirname(__FILE__) . '/classes/*.inc') as $file) {
+    if (is_file($file)) { require_once($file); }
+  }
+
+  $comicpress = new ComicPress();
+  $comicpress->init();
+
+  if (is_dir($addons_dir = (dirname(__FILE__) . '/addons'))) {
+    $entries = glob($addons_dir . '/*');
+    if (is_array($entries)) {
+      foreach ($entries as $entry) {
+        if (is_dir($entry)) {
+          $classname = basename($entry);
+          if (file_exists($entry . "/${classname}.inc")) {
+            require_once($entry . "/${classname}.inc");
+            $classname = "ComicPressAddon${classname}";
+            if (class_exists($classname)) {
+              $addon = new $classname();
+              $addon->init(&$comicpress);
+              if (is_array($_POST['cp'])) {
+                if (isset($_POST['cp']['_nonce'])) {
+                  if (wp_verify_nonce($_POST['cp']['_nonce'], 'comicpress')) {
+                    $addon->handle_update();
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   get_all_comic_categories();
-  add_action('admin_init', '__comicpress_add_options_admin');
 }
 
 function get_first_comic() {

@@ -7,7 +7,7 @@
         <th scope="row"><?php _e('Master Comic Category', 'comicpress') ?></th>
         <td>
           <select name="cp[comic_category_id]">
-            <?php echo $this->create_category_options($root_categories, $this->comicpress_options['comicpress_category_id']) ?>
+            <?php echo $this->create_category_options($root_categories, $this->comicpress->comicpress_options['comic_category_id']) ?>
           </select>
         </td>
       </tr>
@@ -19,7 +19,7 @@
         <tr>
           <th scope="row"><?php echo $name ?></th>
           <td>
-            <?php echo $this->create_dimension_selector('cp[' . $field . ']', $this->comicpress_options[$field]) ?>
+            <?php echo $this->create_dimension_selector('cp[' . $field . ']', $this->comicpress->comicpress_options[$field]) ?>
           </td>
         </tr>
       <?php } ?>
