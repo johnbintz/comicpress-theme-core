@@ -2,9 +2,14 @@
 
 require_once('PHPUnit/Framework.php');
 require_once(dirname(__FILE__) . '/../../mockpress/mockpress.php');
-require_once(dirname(__FILE__) . '/../functions.php');
+require_once(dirname(__FILE__) . '/../classes/ComicPress.inc');
 
-class FunctionsTest extends PHPUnit_Framework_TestCase {
+class ComicPressTest extends PHPUnit_Framework_TestCase {
+  function setUp() {
+    _reset_wp();
+    $this->cp = new ComicPress();
+  }
+
   function providerTestGenerateComicTag() {
     return array(
       array(
@@ -20,13 +25,9 @@ class FunctionsTest extends PHPUnit_Framework_TestCase {
    * @dataProvider providerTestGenerateComicTag
    */
   function testGenerateComicImgTag($dimensions) {
-    global $comicpress_options_admin;
+    $this->cp->comicpress_options['comic_dimensions'] = $dimensions;
     
-    $comicpress_options_admin->comicpress_options['comic_dimensions'] = $dimensions;
-    
-    ob_start();
-    the_comic_img_tag("test.gif", "comic");
-    $source = ob_get_clean();
+    $source = $this->cp->get_comic_img_tag("test.gif", "comic");
 
     if (count($parts = explode("x", $dimensions)) == 2) {
       list($width, $height) = $parts;

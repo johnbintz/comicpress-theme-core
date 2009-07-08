@@ -36,6 +36,8 @@ require_once(dirname(__FILE__) . '/options.php');
 add_action('init', '__comicpress_init');
 
 function __comicpress_init() {
+  global $comicpress;
+  
   foreach (glob(dirname(__FILE__) . '/classes/*.inc') as $file) {
     if (is_file($file)) { require_once($file); }
   }
@@ -81,26 +83,6 @@ function get_last_comic() {
 }
 
 function the_comic_img_tag($url, $type, $additional_parameters = array()) {
-  global $comicpress_options_admin;
-
-  $dimensions = array();
-  if (isset($comicpress_options_admin->comicpress_options["${type}_dimensions"])) {
-    list($width, $height) = explode("x", $comicpress_options_admin->comicpress_options["${type}_dimensions"]);
-    $dimensions = compact('width', 'height');
-  }
-  
-  echo '<img src="' . $url . '" ';
-  foreach (array('width', 'height') as $field) {
-    if (!empty($dimensions[$field])) {
-      echo $field . '="' . $dimensions[$field] . '" ';
-    }
-  }
-  if (is_array($additional_parameters)) {
-    foreach ($additional_parameters as $parameter => $value) {
-      echo $parameter . '="' . $value . '" ';    
-    }
-  }
-  echo "/>";
 }
 
 /**
