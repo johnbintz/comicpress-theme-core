@@ -185,6 +185,18 @@ class ComicPress {
     return false;
   }
   
+  function get_first_comic() {
+    return $this->get_terminal_post_in_category($this->get_all_comic_categories_as_cat_string);
+  }
+  
+  function get_last_comic() {
+    return $this->get_terminal_post_in_category($this->get_all_comic_categories_as_cat_string, false);  
+  }
+  
+  function get_adjacent_comic($category, $next = false) {
+  
+  }
+  
   function _new_wp_query() {
     return new WP_Query();
   }

@@ -77,14 +77,6 @@ function __comicpress_init() {
   get_all_comic_categories();
 }
 
-function get_first_comic() {
-  return get_terminal_post_in_category(get_all_comic_categories_as_cat_string());
-}
-
-function get_last_comic() {
-  return get_terminal_post_in_category(get_all_comic_categories_as_cat_string(), false);
-}
-
 function the_comic_img_tag($url, $type, $additional_parameters = array()) {
   global $comicpress;
   
@@ -96,7 +88,9 @@ function the_comic_img_tag($url, $type, $additional_parameters = array()) {
 * @return string The hyperlink to the first comic post, or false.
 */
 function get_first_comic_permalink() {
-  $terminal = get_first_comic();
+  global $comicpress;
+  
+  $terminal = $comicpress->get_first_comic();
   return !empty($terminal) ? get_permalink($terminal->ID) : false;
 }
 
@@ -105,7 +99,9 @@ function get_first_comic_permalink() {
 * @return string The hyperlink to the first comic post, or false.
 */
 function get_last_comic_permalink() {
-  $terminal = get_last_comic();
+  global $comicpress;
+  
+  $terminal = $comicpress->get_last_comic();
   return !empty($terminal) ? get_permalink($terminal->ID) : false;
 }
 
