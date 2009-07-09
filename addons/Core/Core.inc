@@ -1,6 +1,6 @@
 <?php
 
-class ComicPressAddonCore {
+class ComicPressAddonCore extends ComicPressAddon {
   function init($comicpress) {
     add_action('admin_init', array(&$this, 'add_theme_page'));
 
@@ -109,6 +109,8 @@ class ComicPressAddonCore {
       }
     }
     $this->comicpress->save();
+    
+    $this->info("ComicPress configuration updated.");
   }
 }
 

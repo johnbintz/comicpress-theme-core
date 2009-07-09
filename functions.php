@@ -57,10 +57,13 @@ function __comicpress_init() {
             if (class_exists($classname)) {
               $addon = new $classname();
               $addon->init(&$comicpress);
-              if (is_array($_POST['cp'])) {
-                if (isset($_POST['cp']['_nonce'])) {
-                  if (wp_verify_nonce($_POST['cp']['_nonce'], 'comicpress')) {
-                    $addon->handle_update();
+              if (is_admin()) {
+                add_action('admin_notices', array(&$addon, 'display_messages'));
+                if (is_array($_POST['cp'])) {
+                  if (isset($_POST['cp']['_nonce'])) {
+                    if (wp_verify_nonce($_POST['cp']['_nonce'], 'comicpress')) {
+                      $addon->handle_update();
+                    }
                   }
                 }
               }
