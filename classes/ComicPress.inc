@@ -171,6 +171,23 @@ class ComicPress {
     }
     return false;
   }
+
+  /**
+   * Find the terminal post in a specific category.
+   */
+  function get_terminal_post_in_category($category_id, $first = true) {
+    $sort_order = $first ? "asc" : "desc";
+    $terminal_comic_query =$this->_new_wp_query();
+    $terminal_comic_query->query("showposts=1&order=${sort_order}&cat=${category_id}");
+    if ($terminal_comic_query->have_posts()) {
+      return reset($terminal_comic_query->posts);
+    }
+    return false;
+  }
+  
+  function _new_wp_query() {
+    return new WP_Query();
+  }
 }
 
 ?>

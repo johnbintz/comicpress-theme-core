@@ -163,24 +163,6 @@ function get_adjacent_comic($category, $next = false) {
 }
 
 /**
- * Find the terminal post in a specific category.
- */
-function get_terminal_post_in_category($categoryID, $first = true) {
-  global $post;
-
-  $temp = $wp_query; $wp_query = null;
-  $sortOrder = $first ? "asc" : "desc";
-  $terminalComicQuery = new WP_Query(); $terminalComicQuery->query("showposts=1&order=${sortOrder}&cat=${categoryID}");
-  $terninalPost = false;
-  if ($terminalComicQuery->have_posts()) {
-    $terminalPost = reset($terminalComicQuery->posts);
-  }
-
-  $wp_query = null; $wp_query = $temp;
-  return $terminalPost;
-}
-
-/**
 * Find a comic file in the filesystem.
 * @param string $folder The folder name to search.
 * @param string $override_post A WP Post object to use in place of global $post.
