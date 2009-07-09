@@ -93,6 +93,28 @@ class ComicPressTest extends PHPUnit_Framework_TestCase {
     
     $this->assertEquals($expected_tree, $this->cp->sort_comic_categories());
   }
+  
+  function testGetAllComicCategoriesAsCatString() {
+    $this->cp->category_tree = array("0/1", "0/2", "0/3");
+    $this->assertEquals("1,2,3", $this->cp->get_all_comic_categories_as_cat_string());
+  }
+  
+  function providerTestInComicCategory() {
+    return array(
+      array(array(1), false),
+      array(array(2), true)
+    );
+  }
+  
+  /**
+   * @dataProvider providerTestInComicCategory
+   */
+  function testInComicCategory($post_categories, $is_in_category) {
+    $this->cp->category_tree = array('0/2');
+    wp_set_post_categories(1, $post_categories);
+    
+    $this->assertEquals($is_in_category, $this->cp->in_comic_category(1));
+  }
 }
 
 ?>

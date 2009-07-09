@@ -230,36 +230,7 @@ function get_comic_url($folder = 'comic', $override_post = null, $filter = 'defa
  return false;
 }
 
-/**
- * Turn the tree of comics categories into a string to be fed into wp_query functions.
- */
-function get_all_comic_categories_as_cat_string() {
-  global $all_comic_categories_as_string, $category_tree;
-  if (empty($all_comic_categories_as_string)) {
-    $categories = array();
-    foreach ($category_tree as $node) {
-      $parts = explode("/", $node);
-      $categories[] = end($parts);
-    }
-    $all_comic_categories_as_string = implode(",", $categories);
-  }
-  return $all_comic_categories_as_string;
-}
 
-
-/**
- * Return true if the current post is in the comics category or a child category.
- */
-function in_comic_category() {
-  global $post, $category_tree;
-
-  $comic_categories = array();
-  foreach ($category_tree as $node) {
-    $comic_categories[] = end(explode("/", $node));
-  }
-
-  return (count(array_intersect($comic_categories, wp_get_post_categories($post->ID))) > 0);
-}
 
 // ComicPress Template Functions
 

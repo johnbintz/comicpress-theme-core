@@ -142,6 +142,35 @@ class ComicPress {
     }
     return $this->categories_by_id;
   }
+  
+  /**
+   * Turn the tree of comics categories into a string to be fed into wp_query functions.
+   */
+  function get_all_comic_categories_as_cat_string() {
+    if (empty($this->all_comic_categories_as_string)) {
+      $categories = array();
+      foreach ($this->category_tree as $node) {
+        $categories[] = end(explode("/", $node));
+      }
+      $this->all_comic_categories_as_string = implode(",", $categories);
+    }
+    return $this->all_comic_categories_as_string;
+  }
+
+  /**
+   * Return true if the current post is in the comics category or a child category.
+   */
+  function in_comic_category($post_id) {
+    $categories = wp_get_post_categories($post_id);
+    if (is_array($categories)) {
+      foreach ($this->category_tree as $node) {
+        if (in_array(end(explode("/", $node)), $categories)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 }
 
 ?>
