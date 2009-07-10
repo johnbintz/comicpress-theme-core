@@ -74,7 +74,7 @@ function __comicpress_init() {
     }
   }
 
-  get_all_comic_categories();
+  //get_all_comic_categories();
 }
 
 function the_comic_img_tag($url, $type, $additional_parameters = array()) {
@@ -106,16 +106,6 @@ function get_last_comic_permalink() {
 }
 
 /**
- * Given a category ID or an array of category IDs, create an exclusion string that will
- * filter out every category but the provided ones.
- */
-function get_string_to_exclude_all_but_provided_categories($category) {
-  $category_ids = array_keys(get_all_category_objects_by_id());
-  if (!is_array($category)) { $category = array($category); }
-  return implode(",", array_diff($category_ids, $category));
-}
-
-/**
  * Get the link to the previous comic from the current one.
  */
 function previous_comic_link($format, $link) {
@@ -132,30 +122,12 @@ function next_comic_link($format, $link) {
 }
 
 /**
- * Get the previous comic from the current one.
- */
-function get_previous_comic($category = null) { return get_adjacent_comic($category); }
-
-/**
- * Get the next comic from the current one.
- */
-function get_next_comic($category = null) { return get_adjacent_comic($category, true); }
-
-/**
  * Get the adjacent comic from the current one.
  * @param int $category The category to use.
  * @param boolean $next True if the next chronological comic should be retrieved.
  * @return array The WordPress post object for the comic post.
  */
 function get_adjacent_comic($category, $next = false) {
-  global $non_comic_categories;
-
-  $categories_to_exclude = $non_comic_categories;
-  if (!is_null($category)) {
-    $categories_to_exclude = get_string_to_exclude_all_but_provided_categories($category);
-  }
-
-  return get_adjacent_post(false, $categories_to_exclude, $next);
 }
 
 /**
@@ -207,8 +179,6 @@ function get_comic_url($folder = 'comic', $override_post = null, $filter = 'defa
 
  return false;
 }
-
-
 
 // ComicPress Template Functions
 

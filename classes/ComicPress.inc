@@ -9,6 +9,8 @@ class ComicPress {
     'category_order' => false
   );
   
+  var $comic_post_attachments_cache = array();
+  
   var $category_tree = array();
 
   function load() {
@@ -30,29 +32,6 @@ class ComicPress {
     $this->flatten_categories();
     $this->separate_categories();
     $this->sort_comic_categories();
-  }
-  
-  function get_comic_img_tag($url, $type, $additional_parameters = array()) {
-    $dimensions = array();
-    if (isset($this->comicpress_options["${type}_dimensions"])) {
-      list($width, $height) = explode("x", $this->comicpress_options["${type}_dimensions"]);
-      $dimensions = compact('width', 'height');
-    }
-    
-    $output = '<img src="' . $url . '" ';
-    foreach (array('width', 'height') as $field) {
-      if (!empty($dimensions[$field])) {
-        $output .= $field . '="' . $dimensions[$field] . '" ';
-      }
-    }
-    if (is_array($additional_parameters)) {
-      foreach ($additional_parameters as $parameter => $value) {
-        $output .= $parameter . '="' . $value . '" ';    
-      }
-    }
-    $output .= "/>";
-    
-    return $output;
   }
   
   /**
@@ -194,12 +173,37 @@ class ComicPress {
   }
   
   function get_adjacent_comic($category, $next = false) {
-  
+    $categories_to_exclude = $this->non_comic_categories;
+    if (!is_null($category)) {
+      $categories_to_exclude = $this->get_string_to_exclude_all_but_provided_categories($category);
+    }
+
+    return get_adjacent_post(false, $categories_to_exclude, $next);
   }
   
+  /**
+   * Given a category ID or an array of category IDs, create an exclusion string that will
+   * filter out every category but the provided ones.
+   */
+  function get_string_to_exclude_all_but_provided_categories($category) {
+    $category_ids = array_keys($this->get_all_category_objects_by_id());
+    if (!is_array($category)) { $category = array($category); }
+    return implode(",", array_diff($category_ids, $category));
+  }
+
   function _new_wp_query() {
     return new WP_Query();
   }
+  
+  /**
+   * Get the previous comic from the current one.
+   */
+  function get_previous_comic($category = null) { return get_adjacent_comic($category); }
+
+  /**
+   * Get the next comic from the current one.
+   */
+  function get_next_comic($category = null) { return get_adjacent_comic($category, true); }
 }
 
 ?>

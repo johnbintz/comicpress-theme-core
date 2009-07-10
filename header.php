@@ -35,20 +35,6 @@
 
 <div id="menubar">
 
-	<div id="menunav">
-		<?php if (is_home()) {
-			$comicFrontpage = new WP_Query(); $comicFrontpage->query('showposts=1&cat='.get_all_comic_categories_as_cat_string());
-			while ($comicFrontpage->have_posts()) : $comicFrontpage->the_post();
-				global $wp_query; $wp_query->is_single = true;
-				previous_comic_link('%link', '&lsaquo;');
-				$wp_query->is_single = false;
-			endwhile; 
-		} elseif (is_single() & in_comic_category()) {
-			previous_comic_link('%link', '&lsaquo;');
-			next_comic_link('%link', '&rsaquo;');
-		} ?>
-	</div>
-
 	<ul id="menu">
 		<li><a href="<?php bloginfo('url') ?>">Home</a></li>
 		<?php wp_list_pages('sort_column=menu_order&depth=4&title_li=') ?>

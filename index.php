@@ -1,16 +1,21 @@
-<?php get_header(); global $blog_postcount, $blogcat; $first_comic = get_first_comic_permalink() ?>
+<?php get_header(); global $comicpress, $blog_postcount, $blogcat; $first_comic = get_first_comic_permalink() ?>
 
 <?php if (!(is_paged())) { ?>
 
-	<?php $wp_query->in_the_loop = true; $comicFrontpage = new WP_Query(); $comicFrontpage->query('showposts=1&cat='.get_all_comic_categories_as_cat_string());
-	while ($comicFrontpage->have_posts()) : $comicFrontpage->the_post() ?>
+	<?php $wp_query->in_the_loop = true; $comicFrontpage = new WP_Query(); $comicFrontpage->query('showposts=1&cat='.$comicpress->get_all_comic_categories_as_cat_string());
+	while ($comicFrontpage->have_posts()) {
+    $comicFrontpage->the_post();
+    
+    $comic_post = new ComicPressComicPost(&$post, &$comicpress);
+    
+    ?>
+    
 		<div id="comic-head"></div>
 		<div id="comic">
-      <?php the_comic_img_tag(get_comic_url('comic'), 'comic', array('alt' => get_the_title(),
-                                                                     'title' => get_the_hovertext())) ?>
+      <?php $comic_post->display_comics() ?>
 		</div>
 		<div id="comic-foot"></div>
-	<?php endwhile; ?>
+	<?php } ?>
 
 	<div id="content" class="narrowcolumn">
 

@@ -2,13 +2,17 @@
 
 class ComicPressAddonCore extends ComicPressAddon {
   function init($comicpress) {
-    add_action('admin_init', array(&$this, 'add_theme_page'));
+    add_action('admin_init', array(&$this, 'setup_admin_interface'));
 
     $this->comicpress = $comicpress;
   }
   
-  function add_theme_page() {
+  function setup_admin_interface() {
     add_theme_page(__("ComicPress Core", 'comicpress'), __('ComicPress Core', 'comicpress'), 'edit_themes', basename(__FILE__), array(&$this, 'render_admin'));
+    
+    if (isset($_REQUEST['post'])) {
+      add_meta_box("comic-image-ordering", __("Comic Image Ordering", 'comicpress'), array(&$this, 'render_comic_image_ordering'), "post", "normal", "low");
+    }
   }
 
   function render_admin() {
@@ -16,6 +20,10 @@ class ComicPressAddonCore extends ComicPressAddon {
     $root_categories = $this->get_root_categories();
 
     include(dirname(__FILE__) . '/partials/options-admin.inc'); 
+  }
+
+  function render_comic_image_ordering() {
+    echo "made it";
   }
 
   function get_root_categories() {
