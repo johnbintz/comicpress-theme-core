@@ -1,5 +1,7 @@
 <?php
 
+wp_cache_flush();
+
 include(dirname(__FILE__) . '/comicpress-config.php');
 
 // If any errors occur while searching for a comic file, the error messages will be pushed into here.

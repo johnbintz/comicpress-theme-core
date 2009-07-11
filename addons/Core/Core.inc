@@ -1,11 +1,10 @@
 <?php
 
-require_once('FirePHPCore/fb.php');
-
 class ComicPressAddonCore extends ComicPressAddon {
   function init($comicpress) {
     add_action('admin_init', array(&$this, 'setup_admin_interface'));
     add_filter('attachment_fields_to_edit', array(&$this, 'setup_comic_metadata_buttons'), 10, 2);
+    add_action('show_comic', array(&$this, 'show_comic'), 1, 1);
 
     $this->comicpress = $comicpress;
   }
@@ -16,6 +15,14 @@ class ComicPressAddonCore extends ComicPressAddon {
     if (isset($_REQUEST['post'])) {
       add_meta_box("comic-image-ordering", __("Comic Image Ordering", 'comicpress'), array(&$this, 'render_comic_image_ordering'), "post", "normal", "low");
     }
+  }
+  
+  function show_comic($override_post) {
+    global $post;
+    $post_to_use = (is_null($override_post)) ? $this->comicpress->get_last_comic() : $post;
+    
+    $comic_post = new ComicPressComicPost($post_to_use, &$this);
+    $comic_post->display_comics();
   }
   
   function setup_comic_metadata_buttons($form_fields, $post) {
@@ -158,6 +165,9 @@ class ComicPressAddonCore extends ComicPressAddon {
                   $this->comicpress->comicpress_options[$option] = implode("x", $dim_parts);
                 }
               }
+              break;
+            case 'blogpost_count':
+              $this->comicpress->comicpress_options[$option] = (int)$_POST['cp'][$option];
               break;
           }
         }

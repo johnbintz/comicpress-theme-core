@@ -24,6 +24,12 @@
         </tr>
       <?php } ?>
       <tr>
+        <th scope="row"><?php _e("Number of blog posts on home page") ?></th>
+        <td>
+          <input type="text" name="cp[blogpost_count]" value="<?php echo $this->comicpress->comicpress_options['blogpost_count'] ?>" size="3" />
+        </td>
+      </tr>
+      <tr>
         <td>&nbsp;</td>
         <td><input type="submit" value="Submit Changes" /></td>
       </tr>
