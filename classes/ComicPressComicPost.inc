@@ -2,7 +2,7 @@
 
 class ComicPressComicPost {
   var $post;
-  var $attachments;
+  var $attachments = null;
   var $comicpress;
 
   function ComicPressComicPost($post = null, $comicpress = null) {
@@ -11,7 +11,7 @@ class ComicPressComicPost {
   }
 
   function get_comic_image_attachments() {
-    if (!isset($this->attachments)) {
+    if (is_null($this->attachments)) {
       $this->attachments = get_children(array(
          'post_parent' => $this->post->ID,
          'post_type' => 'attachment',
@@ -22,9 +22,11 @@ class ComicPressComicPost {
   }
   
   function display_comics() {
-    foreach ($this->get_comic_image_attachments() as $attachment) {
-      echo $this->get_comic_img_tag(wp_get_attachment_url($attachment->ID), "comic", array('title' => $attachment->post_title));
-    }
+  	if (is_array($this->get_comic_image_attachments())) {
+      foreach ($this->get_comic_image_attachments() as $attachment) {
+        echo $this->get_comic_img_tag(wp_get_attachment_url($attachment->ID), "comic", array('title' => $attachment->post_title));
+      }
+  	}
   }
   
   function get_comic_img_tag($url, $type, $additional_parameters = array()) {

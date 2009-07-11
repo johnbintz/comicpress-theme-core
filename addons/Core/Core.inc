@@ -1,8 +1,11 @@
 <?php
 
+require_once('FirePHPCore/fb.php');
+
 class ComicPressAddonCore extends ComicPressAddon {
   function init($comicpress) {
     add_action('admin_init', array(&$this, 'setup_admin_interface'));
+    add_filter('attachment_fields_to_edit', array(&$this, 'setup_comic_metadata_buttons'), 10, 2);
 
     $this->comicpress = $comicpress;
   }
@@ -13,6 +16,40 @@ class ComicPressAddonCore extends ComicPressAddon {
     if (isset($_REQUEST['post'])) {
       add_meta_box("comic-image-ordering", __("Comic Image Ordering", 'comicpress'), array(&$this, 'render_comic_image_ordering'), "post", "normal", "low");
     }
+  }
+  
+  function setup_comic_metadata_buttons($form_fields, $post) {
+    $comic_image_types = array(
+      'none' => __('Not a comic', 'comicpress'),
+      'comic' => __('Comic', 'comicpress'),
+      'rss' => __('RSS', 'comicpress'),
+      'archive' => __('Archive', 'comicpress'),
+    );
+    
+    $current_type = get_post_meta($post->ID, 'comic_image_type', true);
+    
+    $field_html_lines = array();
+    $field_html_lines[] = '<input type="hidden" name="cp[_nonce]" value="' . wp_create_nonce('comicpress')  . '" />';
+    foreach ($comic_image_types as $field => $label) {
+      $field_html_lines[] = '<label>'
+                          . ' <input type="radio" name="attachments['
+                          . $post->ID
+                          . '][comic_image_type]" value="'
+                          . $field
+                          . '"'
+                          . (($field == $current_type) ? ' checked="checked"' :  '')
+                          . ' /> '
+                          . $label
+                          . '</label>';
+    }
+    
+    $form_fields['comic_image_type'] = array(
+      'label' => __("Comic Image Type", 'comicpress'),
+      'input' => 'html',
+      'html' => '<center>' . implode("\n", $field_html_lines) . '</center>'
+    );
+    
+    return $form_fields;
   }
 
   function render_admin() {
@@ -78,47 +115,57 @@ class ComicPressAddonCore extends ComicPressAddon {
   }
   
   function handle_update() {
-    foreach ($this->comicpress->comicpress_options as $option => $value) {
-      if (isset($_POST['cp'][$option])) {
-        switch ($option) {
-          case 'comic_category_id':
-            if (is_numeric($_POST['cp'][$option])) {
-              $result = get_category($_POST['cp'][$option]);
-              if (!(is_a($result, 'WP_Error') || empty($result))) {
-                $this->comicpress->comicpress_options[$option] = $_POST['cp'][$option]; 
-              } 
-            }
-            break;
-          case 'comic_dimensions':
-          case 'rss_dimensions':
-          case 'archive_dimensions':
-            if (is_array($_POST['cp'][$option])) {
-              $dim_parts = array();
-              $is_valid = true;
-              foreach (array('width', 'height') as $field) {
-                $requested_dim = trim($_POST['cp'][$option][$field]);
-                if ($requested_dim == "") {
-                  $dim_parts[] = $requested_dim;
-                } else {
-                  if ((int)$requested_dim == $requested_dim) {
-                    $dim_parts[] = $requested_dim;
-                  } else {
-                    $is_valid = false; break;
-                  }
-                }
-              }
-              
-              if ($is_valid) {
-                $this->comicpress->comicpress_options[$option] = implode("x", $dim_parts);
-              }
-            }
-            break;
+    if (isset($_POST['attachments'])) {
+      //coming from media editor
+      foreach ($_POST['attachments'] as $post_id => $settings) {
+        if (isset($settings['comic_image_type'])) {
+          update_post_meta($post_id, 'comic_image_type', $settings['comic_image_type']); 
         }
       }
+    } else {
+      //coming from us
+      foreach ($this->comicpress->comicpress_options as $option => $value) {
+        if (isset($_POST['cp'][$option])) {
+          switch ($option) {
+            case 'comic_category_id':
+              if (is_numeric($_POST['cp'][$option])) {
+                $result = get_category($_POST['cp'][$option]);
+                if (!(is_a($result, 'WP_Error') || empty($result))) {
+                  $this->comicpress->comicpress_options[$option] = $_POST['cp'][$option]; 
+                } 
+              }
+              break;
+            case 'comic_dimensions':
+            case 'rss_dimensions':
+            case 'archive_dimensions':
+              if (is_array($_POST['cp'][$option])) {
+                $dim_parts = array();
+                $is_valid = true;
+                foreach (array('width', 'height') as $field) {
+                  $requested_dim = trim($_POST['cp'][$option][$field]);
+                  if ($requested_dim == "") {
+                    $dim_parts[] = $requested_dim;
+                  } else {
+                    if ((int)$requested_dim == $requested_dim) {
+                      $dim_parts[] = $requested_dim;
+                    } else {
+                      $is_valid = false; break;
+                    }
+                  }
+                }
+                
+                if ($is_valid) {
+                  $this->comicpress->comicpress_options[$option] = implode("x", $dim_parts);
+                }
+              }
+              break;
+          }
+        }
+      }
+      $this->comicpress->save();
+      
+      $this->info("ComicPress configuration updated.");
     }
-    $this->comicpress->save();
-    
-    $this->info("ComicPress configuration updated.");
   }
 }
 
