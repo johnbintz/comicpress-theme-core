@@ -15,34 +15,7 @@
 	
 <div id="content" class="narrowcolumn">
 
-<?php if (!is_paged()) { ?>
-	<div class="post-comic-head"></div>
-	<div class="post-comic">
-    <?php include(dirname(__FILE__) . '/partials/nav.inc') ?>
-		<div class="comicdate">
-			<?php the_date('F jS, Y') ?>
-		</div>
-		<div class="clear"></div>
-		<?php if (get_option('comicpress-enable-storyline-support') == 1) { ?>
-			<ul class="storyline-cats"><li class="storyline-root"><?php the_category(' &raquo; </li><li>', multiple) ?></li></ul>
-		<?php } ?>
-		<h2>
-			<a href="<?php get_permalink($last_comic_post->ID) ?>" rel="bookmark" title="<?php printf(__('Permanent Link to %s', 'comicpress'), get_the_title()) ?>"><?php the_title() ?></a>
-		</h2>
-		<div class="entry">
-			<?php the_content('&darr; Read the rest of this entry...') ?>
-		</div>
-		<?php the_transcript('styled') ?>
-		<div class="tags">
-			<?php the_tags('&#9492; Tags: ', ', ', ''); edit_post_link('Edit Post', ' [ ', ' ] ') ?> 
-		</div>
-		<div class="comment-link">
-			<?php if ('open' == $post->comment_status) { comments_popup_link('&ldquo;Comment&rdquo;', '&ldquo;1 Comment&rdquo;', '&ldquo;% Comments&rdquo;'); } ?>
-		</div>
-		<br class="clear-margins" />
-	</div>
-	<div class="post-comic-foot"></div>
-<?php } ?>
+<?php if (!is_paged()) { include(dirname(__FILE__) . '/partials/index-comic-post.inc'); } ?>
 
 <div id="blogheader"><!-- This area can be used for a heading above your main page blog posts --></div>
 
@@ -56,30 +29,12 @@
 	  '&paged=' . 
 	  $paged
 	);
-	
+
   while ($wp_query->have_posts()) {
-    $wp_query->the_post() ?>
-		<div class="post-head"></div>
-		<div class="post" id="post-<?php the_ID() ?>">
-			<h3>
-				<a href="<?php the_permalink() ?>" rel="bookmark" title="<?php printf(__('Permanent Link to %s', 'comicpress'), get_the_title()) ?>"><?php the_title() ?></a>
-			</h3>
-			<div class="postdate">
-				<?php the_time('F jS, Y') ?>
-			</div>
-			<div class="entry">
-				<?php the_content(__('&darr; Read the rest of this entry...', 'comicpress')) ?>
-			</div> 
-			<div class="tags">
-				<?php the_tags(__('&#9492; Tags: ', 'comicpress'), ', ', ''); edit_post_link(__('Edit Post', 'comicpress'), ' [ ', ' ] ') ?>
-			</div>
-			<div class="comment-link">
-				<?php if ('open' == $post->comment_status) { comments_popup_link(__('&ldquo;Comment&rdquo;', 'comicpress'), __('&ldquo;1 Comment&rdquo;', 'comicpress'), __('&ldquo;% Comments&rdquo;', 'comicpress')); } ?>
-			</div>
-			<div class="clear-margins"><br /></div>
-		</div>
-		<div class="post-foot"></div>
-	<?php } ?>
+    $wp_query->the_post();
+    include(dirname(__FILE__) . '/partials/index-blog-post.inc');
+	}
+?>
 	
 	<div class="pagenav">
 		<div class="pagenav-right"><?php previous_posts_link(__('Newer Entries &uarr;', 'comicpress')) ?></div>
