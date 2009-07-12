@@ -42,7 +42,7 @@
 			<ul class="storyline-cats"><li class="storyline-root"><?php the_category(' &raquo; </li><li>', multiple) ?></li></ul>
 		<?php } ?>
 		<h2>
-			<a href="<?php get_permalink($last_comic_post->ID) ?>" rel="bookmark" title="Permanent Link to <?php the_title() ?>"><?php the_title() ?></a>
+			<a href="<?php get_permalink($last_comic_post->ID) ?>" rel="bookmark" title="<?php printf(__('Permanent Link to %s', 'comicpress'), get_the_title()) ?>"><?php the_title() ?></a>
 		</h2>
 		<div class="entry">
 			<?php the_content('&darr; Read the rest of this entry...') ?>
@@ -77,19 +77,19 @@
 		<div class="post-head"></div>
 		<div class="post" id="post-<?php the_ID() ?>">
 			<h3>
-				<a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title() ?>"><?php the_title() ?></a>
+				<a href="<?php the_permalink() ?>" rel="bookmark" title="<?php printf(__('Permanent Link to %s', 'comicpress'), get_the_title()) ?>"><?php the_title() ?></a>
 			</h3>
 			<div class="postdate">
 				<?php the_time('F jS, Y') ?>
 			</div>
 			<div class="entry">
-				<?php the_content('&darr; Read the rest of this entry...') ?>
+				<?php the_content(__('&darr; Read the rest of this entry...', 'comicpress')) ?>
 			</div> 
 			<div class="tags">
-				<?php the_tags('&#9492; Tags: ', ', ', ''); edit_post_link('Edit Post', ' [ ', ' ] ') ?>
+				<?php the_tags(__('&#9492; Tags: ', 'comicpress'), ', ', ''); edit_post_link(__('Edit Post', 'comicpress'), ' [ ', ' ] ') ?>
 			</div>
 			<div class="comment-link">
-				<?php if ('open' == $post->comment_status) { comments_popup_link('&ldquo;Comment&rdquo;', '&ldquo;1 Comment&rdquo;', '&ldquo;% Comments&rdquo;'); } ?>
+				<?php if ('open' == $post->comment_status) { comments_popup_link(__('&ldquo;Comment&rdquo;', 'comicpress'), __('&ldquo;1 Comment&rdquo;', 'comicpress'), __('&ldquo;% Comments&rdquo;', 'comicpress')); } ?>
 			</div>
 			<div class="clear-margins"><br /></div>
 		</div>
@@ -97,8 +97,8 @@
 	<?php } ?>
 	
 	<div class="pagenav">
-		<div class="pagenav-right"><?php previous_posts_link('Newer Entries &uarr;') ?></div>
-		<div class="pagenav-left"><?php next_posts_link('&darr; Previous Entries') ?></div>
+		<div class="pagenav-right"><?php previous_posts_link(__('Newer Entries &uarr;', 'comicpress')) ?></div>
+		<div class="pagenav-left"><?php next_posts_link(__('&darr; Previous Entries', 'comicpress')) ?></div>
 		<div class="clear"></div>
 	</div>	
 </div>
