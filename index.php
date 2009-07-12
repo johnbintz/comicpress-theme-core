@@ -15,7 +15,9 @@
 <?php if (!is_paged()) {
   $nav_comics = $comicpress->get_nav_comics();
 
-  $post = $nav_comics['last']; ?>
+  $post = $nav_comics['last'];
+  
+  ?>
 	<div class="post-comic-head"></div>
 	<div class="post-comic">
 		<div class="nav">
@@ -40,7 +42,7 @@
 			<ul class="storyline-cats"><li class="storyline-root"><?php the_category(' &raquo; </li><li>', multiple) ?></li></ul>
 		<?php } ?>
 		<h2>
-			<a href="<?php get_permalink($last_comic_post->ID) ?>" rel="bookmark" title="Permanent Link to <?php echo $last_comic_post->post_title ?>"><?php echo $last_comic_post->post_title ?></a>
+			<a href="<?php get_permalink($last_comic_post->ID) ?>" rel="bookmark" title="Permanent Link to <?php the_title() ?>"><?php the_title() ?></a>
 		</h2>
 		<div class="entry">
 			<?php the_content('&darr; Read the rest of this entry...') ?>
