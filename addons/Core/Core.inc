@@ -56,6 +56,14 @@ class ComicPressAddonCore extends ComicPressAddon {
       'html' => '<center>' . implode("\n", $field_html_lines) . '</center>'
     );
     
+    $form_fields['auto_attach'] = array(
+      'label' => __("Auto-attach?", 'comicpress'),
+      'input' => 'html',
+      'html' => '<input type="checkbox" name="attachments[' . $post->ID . '][auto_attach]" value="yes" checked="checked" /> <em>'
+              . __('Attach to this post w/o needing to insert into post', 'comicpress')
+              . '</em>'
+    );
+    
     return $form_fields;
   }
 
@@ -127,6 +135,13 @@ class ComicPressAddonCore extends ComicPressAddon {
       foreach ($_POST['attachments'] as $post_id => $settings) {
         if (isset($settings['comic_image_type'])) {
           update_post_meta($post_id, 'comic_image_type', $settings['comic_image_type']); 
+        }
+        if (isset($settings['auto_attach'])) {
+          if (isset($settings['post_parent'])) {
+            $media_post = get_post($post_id);
+            $media_post->post_parent = $settings['post_parent'];
+            wp_update_post($media_post);
+          }
         }
       }
     } else {
