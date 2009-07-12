@@ -174,14 +174,17 @@ class ComicPress {
   }
   
   function get_nav_comics() {
+    global $post;
+    
     $comic_posts = array();
     foreach (array('first', 'last', 'previous', 'next') as $which) {
       $comic_posts[$which] = $this->{"get_${which}_comic"}(); 
     }
     
-    $comic_posts['show_first']    = ($comic_posts['first']->ID !== $comic_posts['last']->ID);
-    $comic_posts['show_previous'] = (!empty($comic_posts['previous']) && ($comic_posts['first']->ID !== $comic_posts['previous']->ID));
-    $comic_posts['show_next']     = (!empty($comic_posts['next']) && ($comic_posts['last']->ID !== $comic_posts['next']->ID));
+    $comic_posts['show_first']    = ($comic_posts['first']->ID != $comic_posts['last']->ID);
+    $comic_posts['show_previous'] = (!empty($comic_posts['previous']) && ($comic_posts['first']->ID != $comic_posts['previous']->ID));
+    $comic_posts['show_next']     = (!empty($comic_posts['next']) && ($comic_posts['last']->ID != $comic_posts['next']->ID));
+    $comic_posts['show_last']     = (trim($post->ID) != trim($comic_posts['last']->ID));
     
     return $comic_posts;
   }

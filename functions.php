@@ -75,61 +75,12 @@ function __comicpress_init() {
       }
     }
   }
-
-  //get_all_comic_categories();
 }
 
-function the_comic_img_tag($url, $type, $additional_parameters = array()) {
-  global $comicpress;
+function in_comic_category() {
+  global $post, $comicpress;
   
-  echo $comicpress->get_comic_img_tag($url, $type, $additional_parameters);
-}
-
-/**
-* Get the hyperlink to the first comic post in the database.
-* @return string The hyperlink to the first comic post, or false.
-*/
-function get_first_comic_permalink() {
-  global $comicpress;
-  
-  $terminal = $comicpress->get_first_comic();
-  return !empty($terminal) ? get_permalink($terminal->ID) : false;
-}
-
-/**
-* Get the hyperlink to the last comic post in the database.
-* @return string The hyperlink to the first comic post, or false.
-*/
-function get_last_comic_permalink() {
-  global $comicpress;
-  
-  $terminal = $comicpress->get_last_comic();
-  return !empty($terminal) ? get_permalink($terminal->ID) : false;
-}
-
-/**
- * Get the link to the previous comic from the current one.
- */
-function previous_comic_link($format, $link) {
-  global $non_comic_categories;
-  previous_post_link($format, $link, false, $non_comic_categories);
-}
-
-/**
- * Get the link to the next comic from the current one.
- */
-function next_comic_link($format, $link) {
-  global $non_comic_categories;
-  next_post_link($format, $link, false, $non_comic_categories);
-}
-
-/**
- * Get the adjacent comic from the current one.
- * @param int $category The category to use.
- * @param boolean $next True if the next chronological comic should be retrieved.
- * @return array The WordPress post object for the comic post.
- */
-function get_adjacent_comic($category, $next = false) {
+  return $comicpress->in_comic_category($post->ID);
 }
 
 /**

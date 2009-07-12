@@ -2,6 +2,9 @@
   global $comicpress;
 
   get_header();
+
+  $nav_comics = $comicpress->get_nav_comics();
+  $post = $nav_comics['last'];  
 ?>
 
 <?php if (!is_paged()) { ?>
@@ -12,28 +15,10 @@
 	
 <div id="content" class="narrowcolumn">
 
-<?php if (!is_paged()) {
-  $nav_comics = $comicpress->get_nav_comics();
-
-  $post = $nav_comics['last'];
-  
-  ?>
+<?php if (!is_paged()) { ?>
 	<div class="post-comic-head"></div>
 	<div class="post-comic">
-		<div class="nav">
-		  <?php if ($nav_comics['show_first']) { ?>
-  			<div class="nav-first">
-  			  <a href="<?php echo get_permalink($nav_comics['first']->ID) ?>" 
-  			     title="<?php _e('Go to the first comic', 'comicpress') ?>">&lsaquo;&lsaquo; First</a>
-  			</div>
-  	  <?php } ?>
-			<?php if ($nav_comics['show_previous']) { ?>
-  			<div class="nav-previous">
-  			  <a href="<?php echo get_permalink($nav_comics['previous']->ID) ?>"
-  			  title="<?php _e('Go to the previous comic', 'comicpress') ?>">&lsaquo; Previous</a>
-  			</div>
-  	  <?php } ?>
-		</div>
+    <?php include(dirname(__FILE__) . '/partials/nav.inc') ?>
 		<div class="comicdate">
 			<?php the_date('F jS, Y') ?>
 		</div>
