@@ -9,7 +9,25 @@ class ComicPressAddonCore extends ComicPressAddon {
     add_action('show_rss', array(&$this, 'show_rss'), 1, 1);
     add_filter('the_content', array(&$this, 'insert_comic_feed'));
 
+    if (isset($_GET['randomcomic'])) {
+      add_action('template_redirect', array(&$this, 'go_to_random_comic'));
+    }
+
     $this->comicpress = $comicpress;
+  }
+
+  //Generate a random comic page - to use simply create a URL link to "/?randomcomic"
+  function go_to_random_comic() {
+    $random_comic_query = new WP_Query();
+    $random_comic_query->query('showposts=1&orderby=rand&cat=' . $this->comicpress->get_all_comic_categories_as_cat_string());
+    while ($random_comic_query->have_posts()) {
+      $random_comic_query->the_post();
+      $random_comic_id = get_the_ID();
+      break;
+    }
+    if (!empty($random_comic_id)) {
+      wp_redirect(get_permalink( $random_comic_id ));
+    }
   }
 
   function comic_feed() { ?>

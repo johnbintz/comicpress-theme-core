@@ -136,20 +136,6 @@ function the_transcript($displaymode = 'raw') {
       break;
   }
 }
-
-//Generate a random comic page - to use simply create a URL link to "/?randomcomic"
-function random_comic() {
-	$randomComicQuery = new WP_Query(); $randomComicQuery->query('showposts=1&orderby=rand&cat='.get_all_comic_categories_as_cat_string());
-	while ($randomComicQuery->have_posts()) : $randomComicQuery->the_post();
-		$random_comic_id = get_the_ID();
-	endwhile;
-	wp_redirect( get_permalink( $random_comic_id ) );
-	exit;
-}
-
-if ( isset( $_GET['randomcomic'] ) )
-	add_action( 'template_redirect', 'random_comic' );
-	
 	
 // Register Sidebar and Define Widgets
 	
