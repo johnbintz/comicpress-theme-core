@@ -64,7 +64,9 @@ function __comicpress_init() {
                 if (is_array($_POST['cp'])) {
                   if (isset($_POST['cp']['_nonce'])) {
                     if (wp_verify_nonce($_POST['cp']['_nonce'], 'comicpress')) {
-                      $addon->handle_update();
+                      if (method_exists($addon, 'handle_update')) {
+                        $addon->handle_update();
+                      }
                     }
                   }
                 }
@@ -176,20 +178,6 @@ function the_transcript($displaymode = 'raw') {
       break;
   }
 }
-
-//Insert the comic image into the RSS feed
-function comic_feed() { ?>
-	<p><a href="<?php the_permalink() ?>"><img src="<?php the_comic_rss() ?>" border="0" alt="<?php the_title() ?>" title="<?php the_hovertext() ?>" /></a></p><?php
-}
-
-function insert_comic_feed($content) {
-	if (is_feed() && in_comic_category()) {
-		return comic_feed() . $content;
-	} else {
-		return $content;
-	}
-}
-add_filter('the_content','insert_comic_feed');
 
 //Generate a random comic page - to use simply create a URL link to "/?randomcomic"
 function random_comic() {

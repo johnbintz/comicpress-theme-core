@@ -5,10 +5,26 @@ class ComicPressAddonCore extends ComicPressAddon {
     add_action('admin_init', array(&$this, 'setup_admin_interface'));
     add_filter('attachment_fields_to_edit', array(&$this, 'setup_comic_metadata_buttons'), 10, 2);
     add_action('show_comic', array(&$this, 'show_comic'), 1, 1);
+    add_action('show_archive', array(&$this, 'show_archive'), 1, 1);
+    add_action('show_rss', array(&$this, 'show_rss'), 1, 1);
+    add_filter('the_content', array(&$this, 'insert_comic_feed'));
 
     $this->comicpress = $comicpress;
   }
-  
+
+  function comic_feed() { ?>
+    <p><a href="<?php the_permalink() ?>"><?php do_action('show_rss') ?></a></p><?php
+  }
+
+  function insert_comic_feed($content) {
+    if (is_feed() && in_comic_category()) {
+      return $this->comic_feed() . $content;
+    } else {
+      return $content;
+    }
+  }
+
+
   function setup_admin_interface() {
     add_theme_page(__("ComicPress Core", 'comicpress'), __('ComicPress Core', 'comicpress'), 'edit_themes', basename(__FILE__), array(&$this, 'render_admin'));
     
@@ -17,14 +33,26 @@ class ComicPressAddonCore extends ComicPressAddon {
     }
   }
   
-  function show_comic($override_post) {
+  function show_media($override_post, $method) {
     global $post;
     $post_to_use = (is_null($override_post)) ? $this->comicpress->get_last_comic() : $post;
     
-    $comic_post = new ComicPressComicPost($post_to_use, &$this);
-    $comic_post->display_comics();
+    $comic_post = new ComicPressComicPost($post_to_use, &$this->comicpress);
+    $comic_post->{$method}();
   }
   
+  function show_comic($override_post = null) {
+    $this->show_media($override_post, "display_comics");
+  }
+  
+  function show_archive($override_post = null) {
+    $this->show_media($override_post, "display_archive");
+  }
+  
+  function show_rss($override_post = null) {
+    $this->show_media($override_post, "display_rss");
+  }
+
   function setup_comic_metadata_buttons($form_fields, $post) {
     $comic_image_types = array(
       'none' => __('Not a comic', 'comicpress'),

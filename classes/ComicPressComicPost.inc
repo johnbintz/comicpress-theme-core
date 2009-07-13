@@ -21,16 +21,41 @@ class ComicPressComicPost {
     return $this->attachments;
   }
   
-  function display_comics() {
-  	if (is_array($this->get_comic_image_attachments())) {
+  function display_attached_images($type = "comic", $limit = null, $size_type = null) {
+    if (is_null($size_type)) { $size_type = $type; }
+    $found = false;
+    if (is_array($this->get_comic_image_attachments())) {
       foreach ($this->get_comic_image_attachments() as $attachment) {
-        echo $this->get_comic_img_tag(wp_get_attachment_url($attachment->ID), "comic", array('title' => $attachment->post_title));
+        if (get_post_meta($attachment->ID, "comic_image_type", true) == $type) {
+          echo $this->get_comic_img_tag(wp_get_attachment_url($attachment->ID, ''), $size_type, array('title' => $attachment->post_title));
+          $found = true;
+          
+          if (!is_null($limit)) {
+            if (--$limit == 0) { break; }
+          }
+        }
       }
-  	}
+    }
+    return $found;
   }
   
+  function display_comics() { $this->display_attached_images(); }
+  
+  function display_archive() {
+    if (!$this->display_attached_images('archive', 1)) {
+      $this->display_attached_images('comic', 1, 'archive');
+    }
+  }
+
+  function display_rss() {
+    if (!$this->display_attached_images('rss')) {
+      $this->display_attached_images('comic', null, 'rss');
+    }
+  }
+
   function get_comic_img_tag($url, $type, $additional_parameters = array()) {
     $dimensions = array();
+    
     if (isset($this->comicpress->comicpress_options["${type}_dimensions"])) {
       list($width, $height) = explode("x", $this->comicpress->comicpress_options["${type}_dimensions"]);
       $dimensions = compact('width', 'height');
