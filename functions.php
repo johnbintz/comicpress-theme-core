@@ -100,19 +100,6 @@ function comicpress_list_storyline_categories($args = "") {
 }
 
 /**
-* Display text when image (comic) is hovered
-* Text is taken from a custom field named "hovertext"
-*/
-function the_hovertext() {
-  echo get_the_hovertext();
-}
-
-function get_the_hovertext() {
-  $hovertext = get_post_meta(get_the_ID(), "hovertext", true );
-  return (empty($hovertext)) ? get_the_title() : $hovertext;
-}
-
-/**
 * Display the comic transcript
 * Transcript must be entered into a custom field named "transcript"
 * @param string $displaymode, "raw" (straight from the field), "br" (includes html line breaks), "styled" (fully css styled with JavaScript expander)
