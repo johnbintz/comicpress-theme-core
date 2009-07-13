@@ -16,6 +16,7 @@ function __comicpress_init() {
 
   $comicpress = new ComicPress();
   $comicpress->init();
+  $addons = array();
 
   if (is_dir($addons_dir = (dirname(__FILE__) . '/addons'))) {
     $entries = glob($addons_dir . '/*');
@@ -27,19 +28,19 @@ function __comicpress_init() {
             require_once($entry . "/${classname}.inc");
             $classname = "ComicPressAddon${classname}";
             if (class_exists($classname)) {
-              $addon = new $classname();
-              $addon->init(&$comicpress);
+              $addons[] = new $classname();
+              end($addons)->init(&$comicpress);
               if (is_admin()) {
-                add_action('admin_notices', array(&$addon, 'display_messages'));
                 if (is_array($_POST['cp'])) {
                   if (isset($_POST['cp']['_nonce'])) {
                     if (wp_verify_nonce($_POST['cp']['_nonce'], 'comicpress')) {
-                      if (method_exists($addon, 'handle_update')) {
-                        $addon->handle_update();
+                      if (method_exists(end($addons), 'handle_update')) {
+                        end($addons)->handle_update();
                       }
                     }
                   }
                 }
+                add_action('admin_notices', array(end($addons), 'display_messages'));
               }
             }
           }
