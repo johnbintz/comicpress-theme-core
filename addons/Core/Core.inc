@@ -53,6 +53,8 @@ class ComicPressAddonCore extends ComicPressAddon {
   }
 
   function setup_comic_metadata_buttons($form_fields, $post) {
+    global $pagenow;
+  
     $comic_image_types = array(
       'none' => __('Not a comic', 'comicpress'),
       'comic' => __('Comic', 'comicpress'),
@@ -82,14 +84,16 @@ class ComicPressAddonCore extends ComicPressAddon {
       'input' => 'html',
       'html' => '<center>' . implode("\n", $field_html_lines) . '</center>'
     );
-    
-    $form_fields['auto_attach'] = array(
-      'label' => __("Auto-attach?", 'comicpress'),
-      'input' => 'html',
-      'html' => '<input type="checkbox" name="attachments[' . $post->ID . '][auto_attach]" value="yes" checked="checked" /> <em>'
-              . __('Attach to this post w/o needing to insert into post', 'comicpress')
-              . '</em>'
-    );
+
+    if ($pagenow !== "media.php") {
+      $form_fields['auto_attach'] = array(
+        'label' => __("Auto-attach?", 'comicpress'),
+        'input' => 'html',
+        'html' => '<input type="checkbox" name="attachments[' . $post->ID . '][auto_attach]" value="yes" checked="checked" /> <em>'
+                . __('Attach to this post w/o needing to insert into post', 'comicpress')
+                . '</em>'
+      );
+    }
     
     return $form_fields;
   }
