@@ -84,70 +84,6 @@ function in_comic_category() {
 }
 
 /**
-* Find a comic file in the filesystem.
-* @param string $folder The folder name to search.
-* @param string $override_post A WP Post object to use in place of global $post.
-* @param string $filter The $comic_filename_filters to use.
-* @return string The relative path to the comic file, or false if not found.
-*/
-function get_comic_path($folder = 'comic', $override_post = null, $filter = 'default') {
- global $post, $comic_filename_filters, $comic_folder, $archive_comic_folder, $rss_comic_folder, $comic_pathfinding_errors;
-
- if (isset($comic_filename_filters[$filter])) {
-  $filter_to_use = $comic_filename_filters[$filter];
- } else {
-  $filter_to_use = '{date}*.*';
- }
-
- switch ($folder) {
-  case "rss": $folder_to_use = $rss_comic_folder; break;
-  case "archive": $folder_to_use = $archive_comic_folder; break;
-  case "comic": default: $folder_to_use = $comic_folder; break;
- }
-
- $post_to_use = (is_object($override_post)) ? $override_post : $post;
- $post_date = mysql2date(CP_DATE_FORMAT, $post_to_use->post_date);
-
- $filter_with_date = str_replace('{date}', $post_date, $filter_to_use);
-
- if (count($results = glob("${folder_to_use}/${filter_with_date}")) > 0) {
-  return reset($results);
- }
-
- $comic_pathfinding_errors[] = sprintf(__("Unable to find the file in the <strong>%s</strong> folder that matched the pattern <strong>%s</strong>. Check your WordPress and ComicPress settings.", 'comicpress'), $folder, $filter_with_date);
- return false;
-}
-
-/**
-* Find a comic file in the filesystem and return an absolute URL to that file.
-* @param string $folder The folder name to search.
-* @param string $override_post A WP Post object to use in place of global $post.
-* @param string $filter The $comic_filename_filters to use.
-* @return string The absolute URL to the comic file, or false if not found.
-*/
-function get_comic_url($folder = 'comic', $override_post = null, $filter = 'default') {
- if (($result = get_comic_path($folder, $override_post, $filter)) !== false) {
-  return get_option('home') . '/' . $result;
- }
-
- return false;
-}
-
-// ComicPress Template Functions
-
-function the_comic($filter = 'default') { echo get_comic_url('comic', null, $filter); }
-	//The following is deprecated...
-	function comic_display($filter = 'default') { echo get_comic_url('comic', null, $filter); }
-
-function the_comic_archive($filter = 'default') { echo get_comic_url('archive', null, $filter); }
-	//The following is deprecated...
-	function comic_archive($filter = 'default') { echo get_comic_url('archive', null, $filter); }
-
-function the_comic_rss($filter = 'default') { echo get_comic_url('rss', null, $filter); }
-	//The following is deprecated...
-	function comic_rss($filter = 'default') { echo get_comic_url('rss', null, $filter); }
-
-/**
  * Display the list of Storyline categories.
  */
 function comicpress_list_storyline_categories($args = "") {
@@ -274,27 +210,24 @@ if ( isset( $_GET['randomcomic'] ) )
 if ( function_exists('register_sidebar') )
     register_sidebar();
 
+/*
 function widget_comicpress_calendar() { ?>
 	<li>
 		<?php get_calendar(); ?>
 	</li>
 	<?php } if ( function_exists('register_sidebar_widget') )
 	register_sidebar_widget(__('Calendar'), 'widget_comicpress_calendar');
+*/
 
+/*
 function widget_comicpress_search() { ?>
 	<li>
 		<?php include (TEMPLATEPATH . '/searchform.php'); ?>
 	</li>
 	<?php } if ( function_exists('register_sidebar_widget') )
 	register_sidebar_widget(__('Search'), 'widget_comicpress_search');
+*/
 
-function widget_comicpress_search_transcript() { ?>
-	<li>
-		<?php include (TEMPLATEPATH . '/searchform-transcript.php'); ?>
-	</li>
-	<?php } if ( function_exists('register_sidebar_widget') )
-	register_sidebar_widget(__('Search Transcripts'), 'widget_comicpress_search_transcript');
-	
  function widget_comicpress_latest_comics() { ?>
 	<li>
 		<h2>Latest Comics</h2>
@@ -430,58 +363,5 @@ function widget_comicpress_comic_bookmark() { ?>
 	register_sidebar_widget(__('Comic Bookmark'), 'widget_comicpress_comic_bookmark');
 
 
-/*
-Plugin Name: Search Custom Fields
-Plugin URI: http://guff.szub.net/search-custom-fields/
-Description: Search post custom field values. Also provides for an alternative theme 'search' template: search-custom.php.
-Author: Kaf Oseo
-Version: R1.beta1
-Author URI: http://szub.net
 
-	Copyright (c) 2006 Kaf Oseo (http://szub.net)
-	Search Custom Fields is released under the GNU General Public License
-	(GPL) http://www.gnu.org/licenses/gpl.txt
-
-	This is a WordPress 2 plugin (http://wordpress.org).
-*/
-
-function szub_search_custom_join($join) {
-	global $wpdb;
-	if( is_search() && szub_is_search_key() ) {
-		$join = " LEFT JOIN $wpdb->postmeta ON $wpdb->posts.ID = $wpdb->postmeta.post_id ";
-	}
-	return $join;
-}
-add_filter('posts_join', 'szub_search_custom_join');
-
-function szub_search_custom_where($where) {
-	global $wp_query, $wp_version, $wpdb;
-	if( !empty($wp_query->query_vars['s']) && szub_is_search_key() ) {
-		$search = $wp_query->query_vars['s'];
-		$key = $_GET['key'];
-		$status = ($wp_version >= 2.1) ? 'post_type = \'post\' AND post_status = \'publish\'' : 'post_status = \'publish\'';
-		$where = " AND $wpdb->postmeta.meta_key = '$key' AND $wpdb->postmeta.meta_value LIKE '%$search%' AND $status ";
-	}
-	return $where;
-}
-add_filter('posts_where', 'szub_search_custom_where');
-
-function szub_search_custom_template($template) {
-	if( is_search() && szub_is_search_key() && file_exists(TEMPLATEPATH . '/search-transcript.php') )
-		$template = TEMPLATEPATH . '/search-transcript.php';
-
-	if( !$template )
-		$template = get_query_template('search');
-	return $template;
-}
-add_filter('search_template', 'szub_search_custom_template');
-
-function szub_is_search_key($key='') {
-	if( isset($_GET['key']) ) {
-		if( !empty($_GET['key']) || (!empty($key) && ($key = $_GET['key'])) )
-			return true;
-	}
-	return false;
-}
- 
 ?>
