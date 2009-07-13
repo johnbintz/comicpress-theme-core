@@ -77,7 +77,7 @@ class ComicPressAddonCore extends ComicPressAddon {
       'none' => __('Not a comic', 'comicpress'),
       'comic' => __('Comic', 'comicpress'),
       'rss' => __('RSS', 'comicpress'),
-      'archive' => __('Archive', 'comicpress'),
+      'archive' => __('Archive', 'comicpress')
     );
     
     $current_type = get_post_meta($post->ID, 'comic_image_type', true);

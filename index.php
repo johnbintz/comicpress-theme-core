@@ -14,33 +14,28 @@
 <?php } ?>
 	
 <div id="content" class="narrowcolumn">
+  <?php if (!is_paged()) { include(dirname(__FILE__) . '/partials/index-comic-post.inc'); } ?>
 
-<?php if (!is_paged()) { include(dirname(__FILE__) . '/partials/index-comic-post.inc'); } ?>
+  <div id="blogheader"><!-- This area can be used for a heading above your main page blog posts --></div>
 
-<div id="blogheader"><!-- This area can be used for a heading above your main page blog posts --></div>
+  <?php 
+    $wp_query = new WP_Query();
+    $wp_query->query(
+      'showposts=' . 
+      (int)$comicpress->comicpress_options['blogpost_count'] .
+      '&cat=-' . 
+      $comicpress->comicpress_options['comic_category_id'] .
+      '&paged=' . 
+      $paged
+    );
 
-<?php 
-	$wp_query = new WP_Query();
-	$wp_query->query(
-	  'showposts=' . 
-	  (int)$comicpress->comicpress_options['blogpost_count'] .
-	  '&cat=-' . 
-	  $comicpress->comicpress_options['comic_category_id'] .
-	  '&paged=' . 
-	  $paged
-	);
+    while ($wp_query->have_posts()) {
+      $wp_query->the_post();
+      include(dirname(__FILE__) . '/partials/index-blog-post.inc');
+    }
 
-  while ($wp_query->have_posts()) {
-    $wp_query->the_post();
     include(dirname(__FILE__) . '/partials/index-blog-post.inc');
-	}
-?>
-	
-	<div class="pagenav">
-		<div class="pagenav-right"><?php previous_posts_link(__('Newer Entries &uarr;', 'comicpress')) ?></div>
-		<div class="pagenav-left"><?php next_posts_link(__('&darr; Previous Entries', 'comicpress')) ?></div>
-		<div class="clear"></div>
-	</div>	
+  ?>
 </div>
 
 <?php include(dirname(__FILE__) . '/sidebar.php') ?>

@@ -9,6 +9,7 @@ class ComicPress {
     'category_order' => false,
     'blogpost_count' => 10
   );
+  var $additional_stylesheets = array();
   
   var $comic_post_attachments_cache = array();
   
@@ -33,6 +34,14 @@ class ComicPress {
     $this->flatten_categories();
     $this->separate_categories();
     $this->sort_comic_categories();
+    
+    add_action('wp_head', array(&$this, 'wp_head'));
+  }
+
+  function wp_head() {
+    foreach ($this->additional_stylesheets as $uri) { ?>
+      <link rel="stylesheet" href="<?php echo get_template_directory_uri() . $uri ?>" type="text/css" />
+    <?php }
   }
 
   /**

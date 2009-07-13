@@ -28,14 +28,9 @@
         
         comments_template();
       }
-    } else { ?>
-      <div class="post-head"></div>
-      <div class="post">
-        <p>Sorry, no posts matched your criteria.</p>
-        <br class="clear-margins" />
-      </div>
-      <div class="post-foot"></div>
-    <?php }
+    } else {
+      include(dirname(__FILE_) . '/partials/single-no-matches.inc');
+    }
   ?>
 </div>
 

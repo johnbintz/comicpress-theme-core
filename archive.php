@@ -6,7 +6,7 @@
     
     // why can't wordpress allow for post date asc sorting out of the box...
     
-    $posts = query_posts($query_string.'&order=asc');
+    $posts = query_posts($query_string . '&order=asc');
 		while (have_posts()) {
       the_post();
       
@@ -15,13 +15,9 @@
       } else {
         include(dirname(__FILE__) . '/partials/archive-blog-post.inc');
       }
-    } ?>
+    }
 
-		<div class="pagenav">
-			<div class="pagenav-right"><?php next_posts_link('Next Page &rsaquo;') ?></div>
-			<div class="pagenav-left"><?php previous_posts_link('&lsaquo; Previous Page') ?></div>
-			<div class="clear"></div>
-		</div>
+    include(dirname(__FILE__) . '/partials/archive-page-nav.inc');
 
 	<?php } else { ?>
 

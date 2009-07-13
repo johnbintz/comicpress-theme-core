@@ -1,0 +1,16 @@
+.archive-date {
+  padding: 0 5px 0 0;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.archive-title {
+  padding: 2px 5px;
+  line-height: 11px;
+  border-left: 1px solid #000;
+}
+
+.month-table {
+  border-collapse: collapse;
+  margin: 0 0 20px 0;
+}

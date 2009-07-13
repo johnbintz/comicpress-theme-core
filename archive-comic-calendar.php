@@ -4,11 +4,11 @@ Template Name: Comic Calendar Archive
 */
 
 global $comicpress;
+
+$comicpress->additional_stylesheets[] = '/style/archive-comic-calendar.css';
 ?>
 
 <?php get_header() ?>
-
-<link rel="stylesheet" href="<?php echo get_template_directory_uri() . '/style/archive-comic-calendar.css' ?>" type="text/css" />
 
 <?php
 
