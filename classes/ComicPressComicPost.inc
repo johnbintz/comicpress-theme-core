@@ -28,6 +28,7 @@ class ComicPressComicPost {
       foreach ($this->get_comic_image_attachments() as $attachment) {
         if (get_post_meta($attachment->ID, "comic_image_type", true) == $type) {
           echo $this->get_comic_img_tag(wp_get_attachment_url($attachment->ID, ''), $size_type, array('title' => $attachment->post_title));
+          echo "<br />";
           $found = true;
           
           if (!is_null($limit)) {

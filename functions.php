@@ -1,44 +1,14 @@
 <?php
 
-wp_cache_flush();
-
-include(dirname(__FILE__) . '/comicpress-config.php');
-
-// If any errors occur while searching for a comic file, the error messages will be pushed into here.
-$comic_pathfinding_errors = array();
-
-// If ComicPress Manager is installed, use the date format defined there. If not, default to
-// Y-m-d.. It's best to use CPM's date definition for improved operability between theme and plugin.
-
-if (defined("CPM_DATE_FORMAT")) {
- define("CP_DATE_FORMAT", CPM_DATE_FORMAT);
-} else {
- define("CP_DATE_FORMAT", "Y-m-d");
-}
-
-// If you want to run multiple comics on a single day, define your additional filters here.
-// Example: you want to run an additional comic with the filename 2008-01-01-a-my-new-years-comic.jpg.
-// Define an additional filter in the list below:
-//
-// $comic_filename_filters['secondary'] = "{date}-a*.*";
-//
-// Then show the second comic on your page by calling the_comic with your filter name (PHP tags munged
-// to maintain valid file syntax):
-//
-// < ?php the_comic('secondary'); ? >
-//
-// Note that it's quite possible to slurp up the wrong file if your expressions are too broad.
-
-$comic_filename_filters = array();
-$comic_filename_filters['default'] = "{date}*.*";
-
-require_once(dirname(__FILE__) . '/options.php');
-
 // load all of the comic & non-comic category information
 add_action('init', '__comicpress_init');
 
 function __comicpress_init() {
   global $comicpress;
+  
+  if (current_user_can('edit_files')) {
+    wp_cache_flush();
+  }
   
   foreach (glob(dirname(__FILE__) . '/classes/*.inc') as $file) {
     if (is_file($file)) { require_once($file); }
@@ -198,24 +168,6 @@ if ( isset( $_GET['randomcomic'] ) )
 if ( function_exists('register_sidebar') )
     register_sidebar();
 
-/*
-function widget_comicpress_calendar() { ?>
-	<li>
-		<?php get_calendar(); ?>
-	</li>
-	<?php } if ( function_exists('register_sidebar_widget') )
-	register_sidebar_widget(__('Calendar'), 'widget_comicpress_calendar');
-*/
-
-/*
-function widget_comicpress_search() { ?>
-	<li>
-		<?php include (TEMPLATEPATH . '/searchform.php'); ?>
-	</li>
-	<?php } if ( function_exists('register_sidebar_widget') )
-	register_sidebar_widget(__('Search'), 'widget_comicpress_search');
-*/
-
  function widget_comicpress_latest_comics() { ?>
 	<li>
 		<h2>Latest Comics</h2>
@@ -245,111 +197,6 @@ function widget_comicpress_archive_dropdown() { ?>
 	</li>
 	<?php } if ( function_exists('register_sidebar_widget') )
 	register_sidebar_widget(__('Archive Dropdown'), 'widget_comicpress_archive_dropdown');
-      
-function widget_comicpress_comic_bookmark() { ?>
-	<div class="comic-bookmark">
-		<script language="javascript" type="text/javascript">
-			<!--
-
-				/* Bookmark Config Settings */
-
-				var cl = 31;
-				var imgTag = '<?php bloginfo('template_directory'); ?>/1.gif';		//add tag image.
-				var imgClearOff = '<?php bloginfo('template_directory'); ?>/3a.gif';	//no comic tagged, clear not possible
-				var imgGotoOff = '<?php bloginfo('template_directory'); ?>/2a.gif';	//no comic tagged, goto not possible
-				var imgClearOn = '<?php bloginfo('template_directory'); ?>/3.gif';	//clear a tag, shows when comic previously tagged
-				var imgGotoOn = '<?php bloginfo('template_directory'); ?>/2.gif';	//shows when a comic is tagged  
-				var imgInfo = '<?php bloginfo('template_directory'); ?>/4.gif';  	//img that displays the help
-				var comicDir = '/'; 		//alter this if you run multiple comics in different directories on your site.
-
-				/* Now write out the applicable links */
-
-				createCookie('t', 1);
-				var c = readCookie('t');
-				if(c && document.getElementById) {
-					var l = readCookie('bm');
-					var gt = imgGotoOff;
-					var ct = imgClearOff;
-					if(l) {
-						gt = imgGotoOn;
-						ct = imgClearOn;
-					}
-					document.write('<div id="bmh" style="width: 173px; margin: 15px 0 0 0; padding: 5px; position: absolute; color: #eee; font-size: 11px; background-color:#222; border: 1px solid #ccc; visibility: hidden;"><b>COMIC BOOKMARK</b><br />Click "Tag Page" to bookmark a comic page. When you return to the site, click "Goto Tag" to continue where you left off.</div>');
-					<?php if (is_home()) { ?>
-						document.write('<a href="#" onClick="bmhome();return false;"><img src="'+imgTag+'" alt="Tag This Page" border="0"></a>');
-						document.write('<a href="#" onClick="gto();return false;"><img src="'+gt+'" alt="Goto Tag" border="0" id="gtc"></a>');
-						document.write('<a href="#" onClick="bmc();return false;"><img src="'+ct+'" alt="Clear Tag" border="0" id="rmc"></a>');
-						document.write('<a href="#" onMouseOver="document.getElementById(\'bmh\').style.visibility=\'visible\';" onMouseOut="document.getElementById(\'bmh\').style.visibility=\'hidden\';" onClick="return false;"><img src="'+imgInfo+'" alt="" border="0"></a>');
-					<?php } elseif (is_single() & in_comic_category()) { ?>
-						document.write('<a href="#" onClick="bm();return false;"><img src="'+imgTag+'" alt="Tag This Page" border="0"></a>');
-						document.write('<a href="#" onClick="gto();return false;"><img src="'+gt+'" alt="Goto Tag" border="0" id="gtc"></a>');
-						document.write('<a href="#" onClick="bmc();return false;"><img src="'+ct+'" alt="Clear Tag" border="0" id="rmc"></a>');
-						document.write('<a href="#" onMouseOver="document.getElementById(\'bmh\').style.visibility=\'visible\';" onMouseOut="document.getElementById(\'bmh\').style.visibility=\'hidden\';" onClick="return false;"><img src="'+imgInfo+'" alt="" border="0"></a>');
-					<?php } ?>
-				}
-
-				/* Below are our functions for this little script */
-
-				<?php	$comicFrontpage = new WP_Query(); $comicFrontpage->query('showposts=1&cat='.get_all_comic_categories_as_cat_string());
-				while ($comicFrontpage->have_posts()) : $comicFrontpage->the_post(); ?>
-					function bmhome() {
-						if(document.getElementById) {
-							document.getElementById('gtc').src = imgGotoOn;
-							document.getElementById('rmc').src = imgClearOn;
-						}
-						createCookie("bm", "<?php the_permalink(); ?>", cl);	      
-					}
-				<?php endwhile; ?>
-
-				function bm() {
-					if(document.getElementById) {
-						document.getElementById('gtc').src = imgGotoOn;
-						document.getElementById('rmc').src = imgClearOn;
-					}
-					createCookie("bm", window.location, cl);
-				}
-
-				function bmc() {
-					if(document.getElementById) {
-						document.getElementById('gtc').src = imgGotoOff;
-						document.getElementById('rmc').src = imgClearOff;
-					}
-					createCookie("bm","",-1);
-				}
-		      
-				function gto() {
-					var g = readCookie('bm');
-					if(g) {
-						window.location = g;
-					}	
-				}
-
-				/* The follow functions have been borrowed from Peter-Paul Koch. Please find them here: http://www.quirksmode.org */
-
-				function createCookie(name,value,days) {
-					if (days) {
-						var date = new Date();
-						date.setTime(date.getTime()+(days*24*60*60*1000));
-						var expires = "; expires="+date.toGMTString();
-					} else var expires = "";
-					document.cookie = name+"="+value+expires+"; path="+comicDir;
-				}
-				function readCookie(name) {
-					var nameEQ = name + "=";
-					var ca = document.cookie.split(';');
-					for(var i=0;i < ca.length;i++) {
-						var c = ca[i];
-						while (c.charAt(0)==' ') c = c.substring(1,c.length);
-						if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-					}
-					return null;
-				}
-			//-->
-		</script>
-	</div>
-	<?php } if ( function_exists('register_sidebar_widget') )
-	register_sidebar_widget(__('Comic Bookmark'), 'widget_comicpress_comic_bookmark');
-
 
 
 ?>

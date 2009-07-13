@@ -24,7 +24,6 @@ class ComicPressAddonCore extends ComicPressAddon {
     }
   }
 
-
   function setup_admin_interface() {
     add_theme_page(__("ComicPress Core", 'comicpress'), __('ComicPress Core', 'comicpress'), 'edit_themes', basename(__FILE__), array(&$this, 'render_admin'));
     
