@@ -1,0 +1,52 @@
+.cpcal-month {
+  width: 157px;
+  height: 138px;
+  padding: 5px 0 5px 5px;
+  margin: 0 8px 8px 0;
+  float: left;
+  border: 1px solid #000;
+  }
+.cpcal-monthtitle {
+  width: 154px;
+  height: 16px;
+  padding: 0 0 5px 0;
+  text-align: center;
+  font-family: 'Georgia', serif;
+  font-variant: small-caps;
+  font-size: 16px;
+  line-height: 16px;
+  letter-spacing: -1px;
+  }
+.cpcal-dayletter {
+  width: 20px;
+  height: 15px;
+  margin: 0 2px 2px 0;
+  display: block;
+  float: left;
+  text-align: center;
+  font-size: 10px;
+  line-height: 13px;
+  }
+.cpcal-day {
+  width: 18px;
+  height: 13px;
+  margin: 0 2px 2px 0;
+  display: block;
+  float: left;
+  text-align: center;
+  font-size: 10px;
+  line-height: 13px;
+  border: 1px solid #000;
+  }
+  .cpcal-day a {
+    width: 18px;
+    height: 13px;
+    line-height: 13px;
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    }
+    .cpcal-day a:hover {
+      color: #fff;
+      background: #000;
+      }

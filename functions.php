@@ -172,5 +172,4 @@ function widget_comicpress_archive_dropdown() { ?>
 	<?php } if ( function_exists('register_sidebar_widget') )
 	register_sidebar_widget(__('Archive Dropdown'), 'widget_comicpress_archive_dropdown');
 
-
 ?>
