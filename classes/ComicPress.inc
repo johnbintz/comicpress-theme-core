@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * The core functions of ComicPress.
+ */
 class ComicPress {
   var $comicpress_options = array(
     'comic_category_id' => 1,
