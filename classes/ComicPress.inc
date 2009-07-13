@@ -9,12 +9,14 @@ class ComicPress {
     'category_order' => false,
     'blogpost_count' => 10
   );
+  
   var $additional_stylesheets = array();
-  
   var $comic_post_attachments_cache = array();
-  
   var $category_tree = array();
 
+  /**
+   * Load ComicPress options.
+   */
   function load() {
     $result = get_option('comicpress-options');
     if (is_array($result)) {
@@ -22,12 +24,18 @@ class ComicPress {
     }
   }
   
+  /**
+   * Save ComicPress options.
+   */
   function save() {
     if (is_array($this->comicpress_options)) {
       update_option('comicpress-options', $this->comicpress_options);
     }
   }
 
+  /**
+   * Initialize the class.
+   */
   function init() {
     $this->load();
     $this->get_all_category_objects_by_id();
@@ -174,14 +182,23 @@ class ComicPress {
     return false;
   }
   
+  /**
+   * Get the first comic in a category.
+   */
   function get_first_comic() {
     return $this->get_terminal_post_in_category($this->get_all_comic_categories_as_cat_string());
   }
   
+  /**
+   * Get the last comic in a category.
+   */
   function get_last_comic() {
     return $this->get_terminal_post_in_category($this->get_all_comic_categories_as_cat_string(), false);  
   }
   
+  /**
+   * Get the comics necessary to build the navigation.
+   */
   function get_nav_comics() {
     global $post;
     
@@ -198,6 +215,9 @@ class ComicPress {
     return $comic_posts;
   }
   
+  /**
+   * Get the comic post adjacent to the current comic.
+   */
   function get_adjacent_comic($category, $next = false, $override_post = null) {
     global $wp_query, $post;
     $temp = $wp_query->is_single;
@@ -229,20 +249,30 @@ class ComicPress {
    * filter out every category but the provided ones.
    */
   function get_string_to_exclude_all_but_provided_categories($category) {
-    return implode(",", array_diff($category_ids, $category));
+    return implode(",", $this->exclude_all_but_provided_categories($category));
   }
   
+  /**
+   * Exclude every category but the given one.
+   */
   function exclude_all_but_provided_categories($category) {
     $category_ids = array_keys($this->get_all_category_objects_by_id());
-    if (!is_array($category)) { $category = array($category); }    
+    if (!is_array($category)) { $category = array($category); }
+    return array_diff($category_ids, $category);
   }
 
+  /**
+   * Gets the leaves of a ComicPress node tree (branches look like "0/4/5").
+   */
   function get_leaves_of_tree($tree) {
     $leaves = array();
     foreach ($tree as $branch) { $leaves[] = end(explode("/", $branch)); }
     return $leaves;
   }
 
+  /**
+   * Get a new WP_Query object.
+   */
   function _new_wp_query() {
     return new WP_Query();
   }
