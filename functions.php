@@ -31,9 +31,9 @@ function __comicpress_init() {
               $addons[] = new $classname();
               end($addons)->init(&$comicpress);
               if (is_admin()) {
-                if (is_array($_POST['cp'])) {
-                  if (isset($_POST['cp']['_nonce'])) {
-                    if (wp_verify_nonce($_POST['cp']['_nonce'], 'comicpress')) {
+                if (is_array($_REQUEST['cp'])) {
+                  if (isset($_REQUEST['cp']['_nonce'])) {
+                    if (wp_verify_nonce($_REQUEST['cp']['_nonce'], 'comicpress')) {
                       if (method_exists(end($addons), 'handle_update')) {
                         end($addons)->handle_update();
                       }

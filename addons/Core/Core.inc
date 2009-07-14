@@ -205,6 +205,69 @@ class ComicPressAddonCore extends ComicPressAddon {
     return $nodes_with_statuses;
   }
   
+  function move_storyline_category_order($category, $direction) {
+    for ($i = 0, $il = count($this->comicpress->category_tree); $i < $il; ++$i) {
+      $node = $this->comicpress->category_tree[$i];
+      $parts = explode("/", $node);
+      $parts_count = count($parts);
+      
+      if (end($parts) == $category) {
+        $current_node_index = $i;
+        $target_index = null;
+        do {
+          $current_node_index += $direction;
+          
+          if (isset($this->comicpress->category_tree[$current_node_index])) {
+            $current_parts_count = count(explode("/", $this->comicpress->category_tree[$current_node_index]));
+            if ($current_parts_count == $parts_count) { $target_index = $current_node_index; break; }
+            if ($current_parts_count < $parts_count) { break; }
+          }
+        } while (isset($this->comicpress->category_tree[$current_node_index]));
+        
+        if (!is_null($target_index)) {
+          $end_i_index = $i;
+          do {
+            $end_i_index++;
+            if (isset($this->comicpress->category_tree[$end_i_index])) {
+              if (strpos($this->comicpress->category_tree[$end_i_index], $node) !== 0) {
+                break;
+              }
+            }
+          } while (isset($this->comicpress->category_tree[$end_i_index]));
+        
+          $new_order = $this->comicpress->category_tree;
+          $target_index_node = $new_order[$target_index];
+
+          $move = array_splice($new_order, $i, $end_i_index - $i);
+
+          $target = array_search($target_index_node, $new_order);
+          
+          $prefix = array_splice($new_order, 0, $target);
+          
+          if ($direction == -1) {
+            $new_order = array_merge($prefix, $move, $new_order);
+          } else {
+            $leftover = array();
+            if (count($new_order) > 1) {
+              $start_parts_count = count(explode("/", $new_order[0]));
+              for ($j = 1, $jl = count($new_order); $j < $jl; ++$j) {
+                if (count(explode("/", $new_order[$i])) < $start_parts_count) {
+                  $leftover = array_splice($new_order, $j); break;
+                }
+              }
+            }
+            
+            $new_order = array_merge($prefix, $new_order, $move, $leftover);
+          }
+
+          $this->comicpress->comicpress_options['category_order'] = $new_order;
+          
+          break;
+        }
+      }
+    }
+  }
+  
   function handle_update() {
     if (isset($_POST['attachments'])) {
       //coming from media editor
@@ -263,9 +326,16 @@ class ComicPressAddonCore extends ComicPressAddon {
           }
         }
       }
+
+      if (isset($_GET['cp']['move_direction']) && isset($_GET['cp']['category'])) {
+        $this->move_storyline_category_order($_GET['cp']['category'], $_GET['cp']['move_direction']);
+      }
+
       $this->comicpress->save();
       
       $this->info("ComicPress configuration updated.");
+      
+      $this->comicpress->init();
     }
   }
 }

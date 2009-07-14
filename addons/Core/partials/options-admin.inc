@@ -34,8 +34,7 @@
         <th scope="row" valign="top"><?php _e("Set storyline category order", 'comicpress') ?></th>
         <td>
           <?php 
-            for ($i = 0, $il = count($this->comicpress->category_tree); $i < $il; ++$i) {
-              $node = $this->comicpress->category_tree[$i];
+            foreach ($this->get_storyline_move_statuses() as $node => $statuses) {
               $parts = explode("/", $node);
               $category = get_category(end($parts));
               if (!empty($category)) {
@@ -47,16 +46,13 @@
                       "-1" => __("Up", 'comicpress'),
                       "1" => __("Down", 'comicpress')
                     ) as $direction => $label) {
-                      $target = ($i - $direction);
-                      if (isset($this->comicpress->category_tree[$target])) {
-                        $target_parts = explode("/", $this->comicpress->category_tree[$target]);
-                        if (count($target_parts) == count($parts)) {
-                          $query = add_query_arg('cp[_nonce]', $nonce);
-                          $query = add_query_arg('cp[category]', $category->term_id, $query);
-                          $query = add_query_arg('cp[move_direction', $direction, $query);
-                          ?>
+                      $status = array_shift($statuses);
+                      if ($status) {
+                        $query = add_query_arg('cp[_nonce]', $nonce);
+                        $query = add_query_arg('cp[category]', $category->term_id, $query);
+                        $query = add_query_arg('cp[move_direction]', $direction, $query); ?>
                           | <a href="<?php echo $query ?>"><?php echo $label ?></a>
-                        <?php }
+                        <?php 
                       }
                     }
                   ?>
