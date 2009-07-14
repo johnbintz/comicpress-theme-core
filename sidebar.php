@@ -1,4 +1,4 @@
-<div id="sidebar">
+<div id="sidebar" class="sidebar-single">
 
 	<ul>
 
