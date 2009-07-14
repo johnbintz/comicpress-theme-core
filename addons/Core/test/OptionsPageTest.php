@@ -2,6 +2,7 @@
 
 require_once('PHPUnit/Framework.php');
 require_once(dirname(__FILE__) . '/../../../../mockpress/mockpress.php');
+require_once(dirname(__FILE__) . '/../../../classes/ComicPressAddon.inc');
 require_once(dirname(__FILE__) . '/../Core.inc');
 
 class CoreTest extends PHPUnit_Framework_TestCase {
@@ -170,6 +171,38 @@ class CoreTest extends PHPUnit_Framework_TestCase {
     foreach ($new as $key => $value) {
       $this->assertEquals($value, $this->core->comicpress->comicpress_options[$key]);
     }
+  }
+  
+  function testGetStorylineMoveStatuses() {
+    $this->core->comicpress = (object)array(
+      'category_tree' => array(
+        '0/1',
+        '0/1/2',
+        '0/1/2/3',
+        '0/1/2/4',
+        '0/1/2/5',
+        '0/1/6',
+        '0/1/6/7',
+        '0/1/6/8',
+        '0/1/9',
+        '0/1/9/10',
+        '0/1/11'
+      )
+    );
+    
+    $this->assertEquals(array(
+      '0/1' => array(false, false),
+      '0/1/2' => array(false, true),
+      '0/1/2/3' => array(false, true),
+      '0/1/2/4' => array(true, true),
+      '0/1/2/5' => array(true, false),
+      '0/1/6' => array(true, true),
+      '0/1/6/7' => array(false, true),
+      '0/1/6/8' => array(true, false),
+      '0/1/9' => array(true, true),
+      '0/1/9/10' => array(false, false),
+      '0/1/11' => array(true, false)
+    ), $this->core->get_storyline_move_statuses());
   }
 }
 

@@ -48,7 +48,6 @@ class ComicPressComicPostTest extends PHPUnit_Framework_TestCase {
   }
   
   function testNormalizeAttachmentSorting() {
-    update_post_meta(1, 'comic_order', '2,1')
   }
 }
 

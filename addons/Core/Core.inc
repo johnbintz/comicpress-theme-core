@@ -178,6 +178,33 @@ class ComicPressAddonCore extends ComicPressAddon {
     return implode("\n", $output);
   }
   
+  function get_storyline_move_statuses() {
+    $nodes_with_statuses = array();
+    for ($i = 0, $il = count($this->comicpress->category_tree); $i < $il; ++$i) {
+      $node = $this->comicpress->category_tree[$i];
+      $nodes_with_statuses[$node] = array();
+      $parts_count = count(explode("/", $node));
+      foreach (array(
+        '0' => -1,
+        '1' => 1
+      ) as $position => $direction) {
+        $current_node_index = $i;
+        $status = false;
+        do {
+          $current_node_index += $direction;
+          if (isset($this->comicpress->category_tree[$current_node_index])) {
+            $current_node = $this->comicpress->category_tree[$current_node_index];
+            $current_parts_count = count(explode("/", $current_node));
+            if ($current_parts_count == $parts_count) { $status = true; break; }
+            if ($current_parts_count < $parts_count) { break; }
+          }
+        } while (isset($this->comicpress->category_tree[$current_node_index]));
+        $nodes_with_statuses[$node][$position] = $status;
+      }
+    }
+    return $nodes_with_statuses;
+  }
+  
   function handle_update() {
     if (isset($_POST['attachments'])) {
       //coming from media editor

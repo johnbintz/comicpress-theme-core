@@ -9,6 +9,7 @@ class ComicPress {
     'comic_dimensions' => '760x',
     'rss_dimensions' => '350x',
     'archive_dimensions' => '125x',
+    'mini_dimensions' => '100x',
     'category_order' => false,
     'blogpost_count' => 10
   );
