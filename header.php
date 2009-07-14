@@ -21,8 +21,9 @@
 	<link rel="alternate" type="application/rss+xml" title="<?php bloginfo('name') ?> RSS Feed" href="<?php bloginfo('rss2_url') ?>" />
 	<link rel="alternate" type="application/atom+xml" title="<?php bloginfo('name') ?> Atom Feed" href="<?php bloginfo('atom_url') ?>" />
 	<link rel="pingback" href="<?php bloginfo('pingback_url') ?>" />
+	<script type="text/javascript" src="<?php bloginfo('stylesheet_directory'); ?>/js/scroll.js"></script>
 	<?php wp_head() ?>
-	<!--[if lt IE 7]><script type="text/javascript" src="<?php bloginfo('template_directory') ?>/ie6submenus.js"></script><![endif]-->
+	<!--[if lt IE 7]><script type="text/javascript" src="<?php bloginfo('template_directory') ?>/js/ie6submenus.js"></script><![endif]-->
 </head>
 
 <body>
