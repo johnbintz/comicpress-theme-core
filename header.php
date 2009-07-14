@@ -52,7 +52,7 @@
 	</div>
 
 	<ul id="menu">
-		<li><a href="<?php bloginfo('url') ?>">Home</a></li>
+		<li <?php if (is_home()) { ?> class="current_page_item"<?php } ?>><a href="<?php bloginfo('url'); ?>">Home</a></li>
 		<?php wp_list_pages('sort_column=menu_order&depth=4&title_li=') ?>
 		<li><a href="<?php bloginfo('rss2_url') ?>">Subscribe</a></li>
 	</ul>
