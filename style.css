@@ -1,10 +1,10 @@
-	/*
+/*
 Theme Name: ComicPress
 Theme URI: http://comicpress.org
 Description: Publish a comic with WordPress. Standard Edition. <a href="http://comicpress.org">Visit the ComicPress Website.</a>
-Author: Tyler Martin
+Author: Tyler Martin, John Bintz, Philip M. Hofer (Frumph)
 Author URI: http://mindfaucet.com/
-Version: 2.7.1
+Version: 2.7.2
 .
 The CSS, XHTML and design is released under GPL v3:
 http://www.opensource.org/licenses/gpl-3.0.html
@@ -275,7 +275,10 @@ h3, h3 a, h3 a:hover {
 	    background: #222; /*Submenu background color */
 		text-transform: none;
 	    }
-
+	    
+	#menu .current_page_item a {
+		color: #fff000;
+	}
 
 
 /* THE COMIC */
@@ -382,13 +385,12 @@ h3, h3 a, h3 a:hover {
 	overflow: hidden;
 	}
 
-.narrowcolumn
-{
-  width: 560px;
+.narrowcolumn {
+  width: 558px;
+  /* width: 356px; -- 3c gn etc 3 column */
   }
 
-.widecolumn
-{
+.widecolumn {
   width: 760px;
   }
 
@@ -572,11 +574,25 @@ ul.children {
 /* SIDEBAR */
 
 #sidebar {
-	width: 200px;
 	padding: 5px 0;
 	float: left;
 	font-size: 11px;
 	overflow: hidden;
+	}
+
+/* Left Sidebar Themes */
+.sidebar-left {
+	width: 200px;
+	}
+
+/* Right Sidebar Themes */
+.sidebar-right {
+	width: 200px;
+	}
+	
+/* Single Sidebar themes */
+.sidebar-single {
+	width: 200px;
 	}
 
 #sidebar h2, #sidebar h2 a {	
