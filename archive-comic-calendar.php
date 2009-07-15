@@ -39,12 +39,11 @@ for ($i = 0; $i < 7; ++$i) {
 <div id="content" class="narrowcolumn">
 	<div class="post-page-head"></div>
 	<div class="post-page">
-
-		<h2 class="pagetitle"><span class="archive-year"><?php echo $archive_year ?></span> <?php the_title() ?></h2>
+    <?php while (have_posts()) { the_post(); ?> 
+      <h2 class="pagetitle"><span class="archive-year"><?php echo $archive_year ?></span> <?php the_title() ?></h2>
 		
-		<div class="entry">
-			<?php while (have_posts()) { the_post(); the_content(); } ?>
-		</div>
+      <div class="entry"><?php the_content() ?></div>
+    <?php } ?>
 
 		<div class="archive-yearlist">| 
 			<?php 
