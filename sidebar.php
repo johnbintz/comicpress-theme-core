@@ -2,10 +2,8 @@
 
 	<ul>
 
-		<?php if ( !function_exists('dynamic_sidebar') || !dynamic_sidebar() ) : ?>    
+		<?php if ( !function_exists('dynamic_sidebar') || !dynamic_sidebar() ) { ?>
 
-			<?php widget_comicpress_comic_bookmark() ?>
-		
 			<li>
 				<?php get_calendar(); ?>
 			</li>
@@ -16,8 +14,6 @@
 					<?php wp_list_pages('title_li=' ); ?>
 				</ul>
 			</li>
-
-			<?php widget_comicpress_latest_comics(); ?>
 
 			<li>
 				<h2>Monthly Archives</h2>
@@ -34,7 +30,7 @@
 				<?php include (get_template_directory() . '/searchform.php'); ?>
 			</li>
 
-		<?php endif; ?>
+		<?php } ?>
 
 	</ul>
 

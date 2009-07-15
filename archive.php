@@ -6,7 +6,7 @@
     
     // why can't wordpress allow for post date asc sorting out of the box...
     
-    $posts = query_posts($query_string . '&order=asc');
+    query_posts($query_string . '&order=asc');
 		while (have_posts()) {
       the_post();
       
