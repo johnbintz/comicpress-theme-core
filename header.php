@@ -26,7 +26,7 @@
 	<!--[if lt IE 7]><script type="text/javascript" src="<?php bloginfo('template_directory') ?>/js/ie6submenus.js"></script><![endif]-->
 </head>
 
-<body>
+<body <?php if (function_exists('body_class')) { body_class(); } ?>>
 
 <div id="page"><!-- Defines entire site width - Ends in Footer -->
 
