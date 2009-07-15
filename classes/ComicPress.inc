@@ -15,6 +15,8 @@ class ComicPress {
   );
   
   var $additional_stylesheets = array();
+  var $additional_javascripts = array();
+  
   var $comic_post_attachments_cache = array();
   var $category_tree = array();
 
@@ -53,6 +55,9 @@ class ComicPress {
   function wp_head() {
     foreach ($this->additional_stylesheets as $uri) { ?>
       <link rel="stylesheet" href="<?php echo get_template_directory_uri() . $uri ?>" type="text/css" />
+    <?php }
+    foreach ($this->additional_javascripts as $uri) { ?>
+      <script type="text/javascript" src="<?php echo get_template_directory_uri() . $uri ?>"></script>
     <?php }
   }
 
@@ -161,8 +166,12 @@ class ComicPress {
   /**
    * Return true if the current post is in the comics category or a child category.
    */
-  function in_comic_category($post_id) {
-    $categories = wp_get_post_categories($post_id);
+  function in_comic_category($post_id = null) {
+    global $post;
+    
+    $post_id_to_use = !is_null($post_id) ? $post_id : $post->ID;
+    
+    $categories = wp_get_post_categories($post_id_to_use);
     if (is_array($categories)) {
       foreach ($this->category_tree as $node) {
         if (in_array(end(explode("/", $node)), $categories)) {
