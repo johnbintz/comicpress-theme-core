@@ -76,11 +76,14 @@
 		</div>
 		<div class="post-foot"></div>
 	<?php endwhile; ?>
-	<div class="pagenav">
-		<div class="pagenav-right"><?php previous_posts_link('Newer Entries &uarr;') ?></div>
-		<div class="pagenav-left"><?php next_posts_link('&darr; Previous Entries') ?></div>
-		<div class="clear"></div>
-	</div>	
+
+  <?php if(function_exists('wp_page_numbers')) { wp_page_numbers(); } else { ?>
+    <div class="pagenav">
+      <div class="pagenav-right"><?php previous_posts_link('Newer Entries &uarr;') ?></div>
+      <div class="pagenav-left"><?php next_posts_link('&darr; Previous Entries') ?></div>
+      <div class="clear"></div>
+    </div>	
+  <?php } ?>
 	<?php $wp_query = null; $wp_query = $temp ?>
 
 </div>
