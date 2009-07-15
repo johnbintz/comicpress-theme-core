@@ -21,19 +21,19 @@
     if (have_posts()) {
       while (have_posts()) { the_post();
         if (in_comic_category()) {
-          include(dirname(__FILE__) . '/partials/single-comic-post.inc');
+          include(get_template_directory() . '/partials/single-comic-post.inc');
         } else {
-          include(dirname(__FILE_) . '/partials/single-blog-post.inc');
+          include(get_template_directory() . '/partials/single-blog-post.inc');
         }
         
         comments_template();
       }
     } else {
-      include(dirname(__FILE_) . '/partials/single-no-matches.inc');
+      include(get_template_directory() . '/partials/single-no-matches.inc');
     }
   ?>
 </div>
 
-<?php include(TEMPLATEPATH . '/sidebar.php') ?>
+<?php include(get_template_directory() . '/sidebar.php') ?>
 
 <?php get_footer() ?>

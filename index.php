@@ -14,7 +14,7 @@
 <?php } ?>
 	
 <div id="content" class="narrowcolumn">
-  <?php if (!is_paged()) { include(dirname(__FILE__) . '/partials/index-comic-post.inc'); } ?>
+  <?php if (!is_paged()) { include(get_template_directory() . '/partials/index-comic-post.inc'); } ?>
 
   <div id="blogheader"><!-- This area can be used for a heading above your main page blog posts --></div>
 
@@ -31,13 +31,13 @@
 
     while ($wp_query->have_posts()) {
       $wp_query->the_post();
-      include(dirname(__FILE__) . '/partials/index-blog-post.inc');
+      include(get_template_directory() . '/partials/index-blog-post.inc');
     }
 
-    include(dirname(__FILE__) . '/partials/index-blog-post.inc');
+    include(get_template_directory() . '/partials/index-blog-post.inc');
   ?>
 </div>
 
-<?php include(dirname(__FILE__) . '/sidebar.php') ?>
+<?php include(get_template_directory() . '/sidebar.php') ?>
 
 <?php get_footer() ?>

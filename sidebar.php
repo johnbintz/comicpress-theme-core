@@ -31,7 +31,7 @@
 			<?php wp_list_bookmarks(); ?>
 
 			<li>
-				<?php include (TEMPLATEPATH . '/searchform.php'); ?>
+				<?php include (get_template_directory() . '/searchform.php'); ?>
 			</li>
 
 		<?php endif; ?>

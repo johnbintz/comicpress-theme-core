@@ -93,6 +93,6 @@ for ($i = 0; $i < 7; ++$i) {
 
 </div>
 
-<?php include(dirname(__FILE__) . '/sidebar.php') ?>
+<?php include(get_template_directory() . '/sidebar.php') ?>
 
 <?php get_footer() ?>

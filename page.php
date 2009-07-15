@@ -17,6 +17,6 @@
   <?php comments_template(); ?>
 </div>
 
-<?php include(TEMPLATEPATH . '/sidebar.php') ?>
+<?php include(get_template_directory() . '/sidebar.php') ?>
 
 <?php get_footer() ?>
