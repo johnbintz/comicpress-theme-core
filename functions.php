@@ -32,6 +32,15 @@ $comic_filename_filters['default'] = "{date}*.*";
 
 // load all of the comic & non-comic category information
 add_action('init', 'get_all_comic_categories');
+add_action('init', 'comicpress_handle_options_changes');
+add_action('admin_menu', 'comicpress_add_options_menu');
+add_action('admin_notices', 'comicpress_admin_notices');
+
+$__comicpress_notices = array();
+
+function comicpress_add_options_menu() {
+  add_theme_page(__("ComicPress Config", 'comicpress'), __('ComicPress Config', 'comicpress'), 'edit_themes', basename(__FILE__), 'comicpress_options_menu');
+}
 
 function get_first_comic() {
   return get_terminal_post_in_category(get_all_comic_categories_as_cat_string());
@@ -39,6 +48,117 @@ function get_first_comic() {
 
 function get_last_comic() {
   return get_terminal_post_in_category(get_all_comic_categories_as_cat_string(), false);
+}
+
+function comicpress_admin_notices() {
+  global $__comicpress_notices;
+  
+  if (!empty($__comicpress_notices) && is_array($__comicpress_notices)) {
+    echo '<div class="updated fade">';
+      foreach ($__comicpress_notices as $notice) { echo '<p>' . $notice . '</p>'; }
+    echo '</div>';
+  }
+}
+
+function comicpress_handle_options_changes() {
+  global $__comicpress_notices;
+  
+  include(get_template_directory() . '/comicpress-config.php');
+  
+  if (isset($_POST['cp'])) {
+    if (wp_verify_nonce($_POST['cp']['_nonce'], 'comicpress')) {
+      foreach ($_POST['cp'] as $field => $value) {
+        ${$field} = $value;
+      }
+      
+      $lines = file(get_template_directory() . '/comicpress-config.php', FILE_IGNORE_NEW_LINES);
+      for ($i = 0, $il = count($lines); $i < $il; ++$i) {
+        if (preg_match('#\$([^\ ]+)#', $lines[$i], $matches) > 0) {
+          if (!empty(${$matches[1]})) {
+            $lines[$i] = "\${$matches[1]} = \"" . ${$matches[1]} . "\";";
+          }
+        }
+      }
+      
+      if (($fh = fopen(get_template_directory() . '/comicpress-config.php', "w")) !== false) {
+        foreach ($lines as $line) { fwrite($fh, $line . "\n"); }
+        fclose($fh);
+        $__comicpress_notices[] = __('ComicPress options updated.', 'comicpress');
+      } else {
+        $__comicpress_notices[] = __("Unable to write file. Check your theme directory's permissions.", 'comicpress');
+      }
+    }
+  }
+}
+
+function comicpress_options_menu() {
+  include(get_template_directory() . '/comicpress-config.php');
+  
+  $categories = get_all_category_ids();
+  
+  echo '<div class="wrap">';
+  _e('<h2>ComicPress Config</h2>', 'comicpress');
+  
+  echo '<form method="post">';
+  echo '<input type="hidden" name="cp[_nonce]" value="' . wp_create_nonce('comicpress') . '" />';
+  echo '<table>';
+    foreach (array(
+      'blogcat'              => array(
+        'type' => 'category',
+        'label' => __('Blog category', 'comicpress')
+      ),
+      'comiccat'             => array(
+        'type' => 'category',
+        'label' => __('Comic category', 'comicpress')
+      ),
+      'comic_folder'         => array(
+        'type' => 'text',
+        'label' => __('Comic folder', 'comicpress')
+      ),
+      'rss_comic_folder'     => array(
+        'type' => 'text',
+        'label' => __('RSS comic folder', 'comicpress')
+      ),
+      'archive_comic_folder' => array(
+        'type' => 'text',
+        'label' => __('Archive comic folder', 'comicpress')
+      ),
+      'archive_comic_width'  => array(
+        'type' => 'text',
+        'label' => __('Archive comic width', 'comicpress')
+      ),
+      'rss_comic_width'      => array(
+        'type' => 'text',
+        'label' => __('RSS comic width', 'comicpress')
+      ),
+      'blog_postcount'       => array(
+        'type' => 'text',
+        'label' => __('Blog postcount', 'comicpress')
+      )
+    ) as $field => $parameters) {
+      echo '<tr>';
+        echo '<th scope="row">' . $parameters['label'] . '</th>';
+        echo '<td>';
+          switch ($parameters['type']) {
+            case "category":
+              echo '<select name="cp[' . $field . ']">';
+              foreach ($categories as $category_id) {
+                echo '<option value="' . $category_id . '"' . ((${$field} == $category_id) ? 'selected="selected"' : "") . '>' . get_cat_name($category_id) . '</option>';
+              }
+              echo '</select>';
+              break;
+            case "text":
+              echo '<input type="text" name="cp[' . $field . ']" value="' . ${$field} . '" />';
+              break;
+          }
+        echo '</td>';
+      echo '</tr>';
+    }
+    
+    echo '<tr><td></td><td><input type="submit" /></td></tr>';
+    echo '</table>';
+  echo '</form>';
+  echo '</div>';
 }
 
 /**

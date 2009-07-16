@@ -10,10 +10,10 @@ $blogcat = "1";
 $comic_folder = "comics";
 
 //RSS COMIC FOLDER - the folder your comic files are in for the RSS feed (default "comics").
-$rss_comic_folder = "comics-rss";
+$rss_comic_folder = "comics";
 
 //ARCHIVE COMIC FOLDER - the folder your comic files are in for your archive pages (default "comics").
-$archive_comic_folder = "comics-archive";
+$archive_comic_folder = "comics";
 
 //ARCHIVE COMIC WIDTH - the width your comics will appear on archive or search results (default "380").
 $archive_comic_width = "380";
