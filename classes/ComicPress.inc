@@ -12,7 +12,8 @@ class ComicPress {
     'mini_dimensions' => '100x',
     'category_order' => false,
     'blogpost_count' => 10,
-    'comic_space' => 'comic_only'
+    'comic_space' => 'comic_only',
+    'category_page_usage' => 'archive_list'
   );
   
   var $additional_stylesheets = array();
@@ -20,7 +21,9 @@ class ComicPress {
   
   var $comic_post_attachments_cache = array();
   var $category_tree = array();
-
+  
+  var $partial_paths = array();
+  
   /**
    * Load ComicPress options.
    */

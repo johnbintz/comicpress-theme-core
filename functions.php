@@ -4,7 +4,7 @@
 add_action('init', '__comicpress_init');
 
 function __comicpress_init() {
-  global $comicpress;
+  global $comicpress, $wp_query;
   
   if (current_user_can('edit_files')) {
     wp_cache_flush();
@@ -50,14 +50,43 @@ function __comicpress_init() {
   }
 }
 
+function comicpress_get_header() {
+  global $post, $comicpress;
+  
+  if (!empty($post)) {
+    if (in_comic_category()) {
+      $category_ids = wp_get_post_categories($post->ID);
+      if (is_array($category_ids)) {
+        foreach ($category_ids as $id) {
+          $category = get_category($id);
+          if (!empty($category)) {
+            if (is_dir($target = get_template_directory() . '/subthemes/' . $category->slug)) {
+              $comicpress->partial_paths[] = $target;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  $comicpress->partial_paths[] = get_template_directory() . '/partials';
+
+  get_header();
+}
+
 function include_partial($partials = '') {
+  global $comicpress;
   if (!is_array($partials)) {
     $partials = func_get_args();
   }
   
   foreach ($partials as $partial) {
-    if (($result = include(get_template_directory() . '/partials/' . $partial . '.inc')) === true) {
-      return;
+    foreach ($comicpress->partial_paths as $path) {
+      $target = $path . '/' . $partial . '.inc';
+      if (file_exists($target)) {
+        include($target);
+        return;
+      }
     }
   }
 }

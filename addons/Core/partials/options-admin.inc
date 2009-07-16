@@ -75,6 +75,17 @@
         </td>
       </tr>
       <tr>
+        <th scope="row">Use comic category pages as:</th>
+        <td>
+          <?php foreach (array(
+            "archive_list" => __("The normal way, as a list of posts in that category", 'comicpress'),
+            "comic_frontpage" => __("As the front page to the comics in that category", 'comicpress')
+          ) as $value => $label) { ?>
+            <label><input type="radio" name="cp[category_page_usage]" value="<?php echo $value ?>" <?php echo ($this->comicpress->comicpress_options['category_page_usage'] == $value) ? 'checked="checked"' : "" ?> /> <?php echo $label ?></label><br />
+          <?php } ?>
+        </td>
+      </tr>
+      <tr>
         <td>&nbsp;</td>
         <td><input type="submit" value="<?php _e("Submit Changes", 'comicpress') ?>" /></td>
       </tr>

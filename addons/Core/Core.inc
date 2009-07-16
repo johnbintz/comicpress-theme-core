@@ -334,6 +334,7 @@ class ComicPressAddonCore extends ComicPressAddon {
               $this->comicpress->comicpress_options[$option] = (int)$_POST['cp'][$option];
               break;
             case 'comic_space':
+            case 'category_page_usage':
               $this->comicpress->comicpress_options[$option] = $_POST['cp'][$option];
               break;
           }
