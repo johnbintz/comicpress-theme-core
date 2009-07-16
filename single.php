@@ -5,11 +5,7 @@
 
   if (have_posts()) {
     the_post();
-    if (in_comic_category()) { ?>
-      <div id="comic-head"></div>
-      <div id="comic"><?php do_action('show_comic'); ?></div>
-      <div id="comic-foot"></div>
-    <?php }
+    if (in_comic_category()) { include_partial('single-display-comic') }
   }
   rewind_posts();
 
@@ -21,7 +17,9 @@
     if (have_posts()) {
       while (have_posts()) { the_post();
         if (in_comic_category()) {
-          include(get_template_directory() . '/partials/single-comic-post.inc');
+          if ($comicpress->comicpress_options['comic_space'] == "comic_only")) {
+            include(get_template_directory() . '/partials/single-comic-post.inc');
+          }
         } else {
           include(get_template_directory() . '/partials/single-blog-post.inc');
         }

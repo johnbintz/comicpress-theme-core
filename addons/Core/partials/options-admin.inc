@@ -64,6 +64,17 @@
         </td>
       </tr>
       <tr>
+        <th scope="row">Insert into comic space:</th>
+        <td>
+          <?php foreach (array(
+            "comic_only" => __("The comic only, with post content below", 'comicpress'),
+            "post_content" => __("The post content", 'comicpress')
+          ) as $value => $label) { ?>
+            <label><input type="radio" name="cp[comic_space]" value="<?php echo $value ?>" <?php echo ($this->comicpress->comicpress_options['comic_space'] == $value) ? 'checked="checked"' : "" ?> /> <?php echo $label ?></label><br />
+          <?php } ?>
+        </td>
+      </tr>
+      <tr>
         <td>&nbsp;</td>
         <td><input type="submit" value="<?php _e("Submit Changes", 'comicpress') ?>" /></td>
       </tr>

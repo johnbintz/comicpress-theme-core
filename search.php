@@ -2,7 +2,7 @@
 
 <div id="content" class="archive">
   <?php 
-    include(get_template_directory() . '/partials/search-results-count.inc');
+    include_partial('search-results-count');
 
     if (have_posts()) {
       query_posts($query_string . '&order=asc');
@@ -11,15 +11,15 @@
         the_post();
     
         if (in_comic_category()) {
-          include(get_template_directory() . '/partials/archive-comic-post.inc');
+          include_partial('search-comic-post', 'archive-comic-post');
         } else {
-          include(get_template_directory() . '/partials/archive-blog-post.inc');
+          include_partial('search-blog-post', 'archive-blog-post');
         }
       }
       
-      include(get_template_directory() . '/partials/archive-page-nav.inc');
+      include_partial('search-page-nav', 'archive-page-nav');
     } else {
-      include(get_template_directory() . '/partials/search-not-found.inc');
+      include_partial('search-not-found');
     }
   ?>
 </div>

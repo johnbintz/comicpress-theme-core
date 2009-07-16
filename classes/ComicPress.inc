@@ -11,7 +11,8 @@ class ComicPress {
     'archive_dimensions' => '125x',
     'mini_dimensions' => '100x',
     'category_order' => false,
-    'blogpost_count' => 10
+    'blogpost_count' => 10,
+    'comic_space' => 'comic_only'
   );
   
   var $additional_stylesheets = array();

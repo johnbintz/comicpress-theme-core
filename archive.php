@@ -2,7 +2,7 @@
 
 <div id="content" class="archive">
 	<?php if (have_posts()) {
-    include(get_template_directory() . '/partials/archive-header.inc');
+    include_partial('archive-header');
     
     // why can't wordpress allow for post date asc sorting out of the box...
     
@@ -11,15 +11,15 @@
       the_post();
       
       if (in_comic_category()) {
-        include(get_template_directory() . '/partials/archive-comic-post.inc');
+        include_partial('archive-comic-post');
       } else {
-        include(get_template_directory() . '/partials/archive-blog-post.inc');
+        include_partial('archive-blog-post');
       }
     }
 
-    include(get_template_directory() . '/partials/archive-page-nav.inc');
+    include_partial('archive-page-nav');
 	} else {
-    include(get_template_directory() . '/partials/archive-not-found.inc');	
+    include_partial('archive-not-found');	
   } ?>
 
 </div>

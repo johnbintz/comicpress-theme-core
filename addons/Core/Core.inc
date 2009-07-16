@@ -2,7 +2,7 @@
 
 class ComicPressAddonCore extends ComicPressAddon {
   function init($comicpress) {
-    add_action('admin_init', array(&$this, 'setup_admin_interface'));
+    add_action('admin_menu', array(&$this, 'setup_admin_interface'));
     add_filter('attachment_fields_to_edit', array(&$this, 'setup_comic_metadata_buttons'), 10, 2);
     add_action('show_comic', array(&$this, 'show_comic'), 1, 1);
     add_action('show_archive', array(&$this, 'show_archive'), 1, 1);
@@ -54,8 +54,18 @@ class ComicPressAddonCore extends ComicPressAddon {
     global $post;
     $post_to_use = (is_null($override_post)) ? $this->comicpress->get_last_comic() : $post;
     
-    $comic_post = new ComicPressComicPost($post_to_use, &$this->comicpress);
-    $comic_post->{$method}();
+    switch ($this->comicpress->comicpress_options['comic_space']) {
+      case "comic_only":
+        $comic_post = new ComicPressComicPost($post_to_use, &$this->comicpress);
+        $comic_post->{$method}();
+        break;
+      case "post_content":
+        $t = $post;
+        $post = $post_to_use;
+        include_partial('index-blog-post');
+        $post = $t;
+        break;
+    }
   }
   
   function show_comic($override_post = null) {
@@ -322,6 +332,9 @@ class ComicPressAddonCore extends ComicPressAddon {
               break;
             case 'blogpost_count':
               $this->comicpress->comicpress_options[$option] = (int)$_POST['cp'][$option];
+              break;
+            case 'comic_space':
+              $this->comicpress->comicpress_options[$option] = $_POST['cp'][$option];
               break;
           }
         }

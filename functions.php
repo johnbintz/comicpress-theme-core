@@ -50,6 +50,18 @@ function __comicpress_init() {
   }
 }
 
+function include_partial($partials = '') {
+  if (!is_array($partials)) {
+    $partials = func_get_args();
+  }
+  
+  foreach ($partials as $partial) {
+    if (($result = include(get_template_directory() . '/partials/' . $partial . '.inc')) === true) {
+      return;
+    }
+  }
+}
+
 function in_comic_category() {
   global $post, $comicpress;
   

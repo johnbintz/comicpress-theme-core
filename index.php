@@ -7,16 +7,12 @@
   $post = $nav_comics['last'];  
 ?>
 
-<?php if (!is_paged()) { ?>
-  <div id="comic-head"></div>
-  <div id="comic"><?php do_action('show_comic', null); ?></div>
-  <div id="comic-foot"></div>
-<?php } ?>
+<?php if (!is_paged()) { include_partial('index-display-comic'); } ?>
 	
 <div id="content" class="narrowcolumn">
-  <?php if (!is_paged()) { include(get_template_directory() . '/partials/index-comic-post.inc'); } ?>
+  <?php if (!is_paged() && ($comicpress->comicpress_options['comic_space'] == "comic_only")) { include_partial('index-comic-post'); } ?>
 
-  <div id="blogheader"><!-- This area can be used for a heading above your main page blog posts --></div>
+  <?php include_partial('index-blog-header'); ?>
 
   <?php 
     $wp_query = new WP_Query();
@@ -31,10 +27,10 @@
 
     while ($wp_query->have_posts()) {
       $wp_query->the_post();
-      include(get_template_directory() . '/partials/index-blog-post.inc');
+      include_partial('index-blog-post');
     }
 
-    include(get_template_directory() . '/partials/index-blog-post.inc');
+    include_partial('index-blog-post');
   ?>
 </div>
 
