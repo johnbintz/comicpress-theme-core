@@ -32,6 +32,9 @@
 <div id="page"><!-- Defines entire site width - Ends in Footer -->
 
 <div id="header">
+	<div class="headerad">
+		<?php if (function_exists('the_project_wonderful_ad')) { the_project_wonderful_ad('header'); } ?>
+	</div>
 	<h1><a href="<?php echo get_settings('home') ?>"><?php bloginfo('name') ?></a></h1>
 	<div class="description"><?php bloginfo('description') ?></div>
 </div>
