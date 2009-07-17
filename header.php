@@ -58,7 +58,7 @@
 	<ul id="menu">
 		<li <?php if (is_home()) { ?> class="current_page_item"<?php } ?>><a href="<?php bloginfo('url'); ?>">Home</a></li>
 		<?php wp_list_pages('sort_column=menu_order&depth=4&title_li=') ?>
-		<li><a href="<?php bloginfo('rss2_url') ?>">Subscribe</a></li>
+		<li><a href="<?php bloginfo('rss2_url'); ?>"><img src="<?php bloginfo('stylesheet_directory'); ?>/images/data_rss.gif" class="rss" alt="RSS" /></a></li>
 	</ul>
 
 	<div class="clear"></div>
