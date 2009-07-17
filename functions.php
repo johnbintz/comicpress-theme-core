@@ -1,8 +1,14 @@
 <?php
 
-include(get_template_directory() . '/comicpress-config.php');
+if (file_exists(get_template_directory().'/wpmu-functions.php')) {
+	include(get_template_directory() . '/wpmu-functions.php');
+} else {
+	include(get_template_directory() . '/comicpress-config.php');
+}
 include(get_template_directory() . '/comment-functions.php');
 include(get_template_directory() . '/custom-image-header.php');
+include(get_template_directory() . '/comic-navigation-functions.php');
+include(get_template_directory() . '/buystrip-functions.php');
 
 // If any errors occur while searching for a comic file, the error messages will be pushed into here.
 $comic_pathfinding_errors = array();
@@ -139,32 +145,34 @@ function get_terminal_post_in_category($categoryID, $first = true) {
 * @param string $filter The $comic_filename_filters to use.
 * @return string The relative path to the comic file, or false if not found.
 */
-function get_comic_path($folder = 'comic', $override_post = null, $filter = 'default') {
- global $post, $comic_filename_filters, $comic_folder, $archive_comic_folder, $rss_comic_folder, $comic_pathfinding_errors;
+if (!function_exists('get_comic_path')) {
+	function get_comic_path($folder = 'comic', $override_post = null, $filter = 'default') {
+	global $post, $comic_filename_filters, $comic_folder, $archive_comic_folder, $rss_comic_folder, $comic_pathfinding_errors;
 
- if (isset($comic_filename_filters[$filter])) {
-  $filter_to_use = $comic_filename_filters[$filter];
- } else {
-  $filter_to_use = '{date}*.*';
- }
+	if (isset($comic_filename_filters[$filter])) {
+		$filter_to_use = $comic_filename_filters[$filter];
+	} else {
+		$filter_to_use = '{date}*.*';
+	}
 
- switch ($folder) {
-  case "rss": $folder_to_use = $rss_comic_folder; break;
-  case "archive": $folder_to_use = $archive_comic_folder; break;
-  case "comic": default: $folder_to_use = $comic_folder; break;
- }
+	switch ($folder) {
+		case "rss": $folder_to_use = $rss_comic_folder; break;
+		case "archive": $folder_to_use = $archive_comic_folder; break;
+		case "comic": default: $folder_to_use = $comic_folder; break;
+	}
 
- $post_to_use = (is_object($override_post)) ? $override_post : $post;
- $post_date = mysql2date(CP_DATE_FORMAT, $post_to_use->post_date);
+	$post_to_use = (is_object($override_post)) ? $override_post : $post;
+	$post_date = mysql2date(CP_DATE_FORMAT, $post_to_use->post_date);
 
- $filter_with_date = str_replace('{date}', $post_date, $filter_to_use);
+	$filter_with_date = str_replace('{date}', $post_date, $filter_to_use);
 
- if (count($results = glob("${folder_to_use}/${filter_with_date}")) > 0) {
-  return reset($results);
- }
+	if (count($results = glob("${folder_to_use}/${filter_with_date}")) > 0) {
+		return reset($results);
+	}
 
- $comic_pathfinding_errors[] = sprintf(__("Unable to find the file in the <strong>%s</strong> folder that matched the pattern <strong>%s</strong>. Check your WordPress and ComicPress settings.", 'comicpress'), $folder, $filter_with_date);
- return false;
+	$comic_pathfinding_errors[] = sprintf(__("Unable to find the file in the <strong>%s</strong> folder that matched the pattern <strong>%s</strong>. Check your WordPress and ComicPress settings.", 'comicpress'), $folder, $filter_with_date);
+	return false;
+	}
 }
 
 /**
@@ -637,42 +645,4 @@ function szub_is_search_key($key='') {
 	return false;
 }
 
-function comic_navigation() {
-global $post;
-	echo '<div id="comic_navi_wrapper">';
-	echo '	<div id="comic_navi_prev">';
-	$at_first = false;
-	$first = get_first_comic();
-	if (!empty($first)) { $at_first = ($post->ID == $first->ID); }
-	if (!$at_first) {
-		echo '		<a href="'.get_permalink($at_first).'" class="rollfirst">&nbsp;</a>';
-	} else {
-		echo '		<img src="'.get_bloginfo('stylesheet_directory').'/images/disabled_firstroll.png" alt="At First" class="disabled_navi" />';
-	} 
-	$prev_comic = get_permalink(get_previous_comic()->ID);
-	if (!empty($prev_comic)) {
-		echo '		<a href="'.$prev_comic.'" class="rollprev">&nbsp;</a>';
-	} else { 
-		echo '		<img src="'.get_bloginfo('stylesheet_directory').'/images/disabled_prevroll.png" alt="No Previous" class="disabled_navi" />';
-	}
-	echo '	</div>';
-	echo '	<div id="comic_navi_next">';
-	$next = get_permalink(get_next_comic()->ID);
-	if (!empty($next)) {
-		echo '		<a href="'.get_permalink($next).'" class="rollnext">&nbsp;</a>';
-	} else {
-		echo '		<img src="'.get_bloginfo('stylesheet_directory').'/images/disabled_nextroll.png" alt="No Next" class="disabled_navi" />';
-	}		
-	$at_last = false;
-	$last = get_last_comic();
-	if (!empty($last)) { $at_last = ($post->idate == $last->idate); }
-	if (!$at_last) {
-		echo '		<a href="'.get_permalink($at_last).'" class="rollnext">&nbsp;</a>';
-	} else {
-		echo '		<img src="'.get_bloginfo('stylesheet_directory').'/images/disabled_lastroll.png" alt="No Last" class="disabled_navi" />';
-	}
-	echo '	</div>';
-	echo '	<div class="clear"></div>';
-	echo '</div>';
-}
 ?>

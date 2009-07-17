@@ -1,6 +1,6 @@
 <?php get_header() ?>
 
-<div id="content" class="archive">
+<div id="content" class="narrowcolumn">
 
 	<?php if (have_posts()) : ?>
 
@@ -93,6 +93,6 @@
 
 </div>
 
-<?php include(TEMPLATEPATH . '/sidebar.php') ?>
+<?php get_sidebar(); ?>
 
 <?php get_footer() ?>

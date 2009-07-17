@@ -4,7 +4,7 @@ Theme URI: http://comicpress.org
 Description: Publish a comic with WordPress. Standard Edition. <a href="http://comicpress.org">Visit the ComicPress Website.</a>
 Author: Tyler Martin, John Bintz, Philip M. Hofer (Frumph)
 Author URI: http://mindfaucet.com/
-Version: 2.7.2
+Version: 2.8
 .
 The CSS, XHTML and design is released under GPL v3:
 http://www.opensource.org/licenses/gpl-3.0.html
@@ -1050,3 +1050,18 @@ a.rollfirst:hover, a.rollprev:hover, a.rollnext:hover, a.rolllast:hover
 	width: 260px;
 	float: right;
 } 
+
+
+/** BUY THIS **/
+
+.buythis {
+	float: right;
+	margin-right: 100px;
+}
+
+.buythisbutton
+{
+	height: 28px;
+	width: 240px;
+	background: url('images/buythis.png') no-repeat;
+}

@@ -6,7 +6,8 @@
 		<img src="<?php the_comic() ?>" alt="<?php the_title() ?>" title="<?php the_hovertext() ?>" />
 	</div>
 	<div id="comic-foot"></div>
-	<?php comic_navigation(); ?>
+	<?php // if (function_exists('buy_this_comic')) { buy_this_comic(); } ?>		
+	<?php // if (function_exists('comic_navigation')) { comic_navigation(); } ?>
 <?php } endwhile; ?>
 
 <div id="content" class="narrowcolumn">

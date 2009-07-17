@@ -1,6 +1,6 @@
 <?php get_header() ?>
 
-<div id="content" class="archive">
+<div id="content" class="narrowcolumn">
 
   <div class="post-page-head"></div>
   <div class="post-page">			
@@ -77,6 +77,6 @@
 
 </div>
 
-<?php include(TEMPLATEPATH . '/sidebar.php') ?>
+<?php get_sidebar(); ?>
 
 <?php get_footer() ?>
