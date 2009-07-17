@@ -9,6 +9,7 @@
 			<img src="<?php the_comic() ?>" alt="<?php the_title() ?>" title="<?php the_hovertext() ?>" />
 		</div>
 		<div id="comic-foot"></div>
+		<?php comic_navigation(); ?>
 	<?php endwhile; ?>
 
 	<div id="content" class="narrowcolumn">
@@ -20,22 +21,23 @@
 					<div class="nav-first"><a href="<?php echo $first_comic ?>" title="Go to the First Comic">&lsaquo;&lsaquo; First</a></div>
 					<div class="nav-previous"><?php global $wp_query; $wp_query->is_single = true; previous_comic_link('%link', '&lsaquo; Previous'); $wp_query->is_single = false ?></div>
 				</div>
-				<div class="comicdate">
-					<?php the_time('F jS, Y') ?>
-				</div>
 				<div class="clear"></div>
 				<?php if (get_option('comicpress-enable-storyline-support') == 1) { ?>
 					<ul class="storyline-cats"><li class="storyline-root"><?php the_category(' &raquo; </li><li>', multiple) ?></li></ul>
 				<?php } ?>
-				<h2>
-					<a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title() ?>"><?php the_title() ?></a>
-				</h2>
+				<div class="comicdate">
+					<div class="date"><span><?php the_time('M') ?></span> <?php the_time('d') ?></div>
+				</div>
+				<h2><a href="<?php the_permalink(); ?>" rel="bookmark" title="Permanent Link to <?php the_title(); ?>"><?php the_title(); ?></a></h2>
+				By <?php the_author(); ?> on <?php the_time('F jS, Y'); ?> <?php edit_post_link('Edit Post', ' [ ', ' ] '); ?> <br />
+				Posted in: <?php the_category(','); ?>
+				<?php if(function_exists('the_ratings')) { the_ratings(); } ?> 
 				<div class="entry">
 					<?php the_content('&darr; Read the rest of this entry...') ?>
 				</div>
 				<?php the_transcript('styled') ?>
 				<div class="tags">
-					<?php the_tags('&#9492; Tags: ', ', ', ''); edit_post_link('Edit Post', ' [ ', ' ] ') ?> 
+					<?php the_tags('&#9492; Tags: ', ', ', ''); ?> 
 				</div>
 				<div class="comment-link">
 					<?php if ('open' == $post->comment_status) { comments_popup_link('&ldquo;Comment&rdquo;', '&ldquo;1 Comment&rdquo;', '&ldquo;% Comments&rdquo;'); } ?>
@@ -57,17 +59,18 @@
  while ($wp_query->have_posts()) : $wp_query->the_post() ?>
 		<div class="post-head"></div>
 		<div class="post" id="post-<?php the_ID() ?>">
-			<h3>
-				<a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title() ?>"><?php the_title() ?></a>
-			</h3>
-			<div class="postdate">
-				<?php the_time('F jS, Y') ?>
+			<div class="comicdate">
+				<div class="date"><span><?php the_time('M') ?></span> <?php the_time('d') ?></div>
 			</div>
+			<h2><a href="<?php the_permalink(); ?>" rel="bookmark" title="Permanent Link to <?php the_title(); ?>"><?php the_title(); ?></a></h2>
+			By <?php the_author(); ?> on <?php the_time('F jS, Y') ?> <?php edit_post_link('Edit Post', ' [ ', ' ] '); ?> <br />
+			Posted in: <?php the_category(','); ?>
+			<?php if(function_exists('the_ratings')) { the_ratings(); } ?> 
 			<div class="entry">
 				<?php the_content('&darr; Read the rest of this entry...') ?>
 			</div> 
 			<div class="tags">
-				<?php the_tags('&#9492; Tags: ', ', ', ''); edit_post_link('Edit Post', ' [ ', ' ] ') ?>
+				<?php the_tags('&#9492; Tags: ', ', ', ''); ?>
 			</div>
 			<div class="comment-link">
 				<?php if ('open' == $post->comment_status) { comments_popup_link('&ldquo;Comment&rdquo;', '&ldquo;1 Comment&rdquo;', '&ldquo;% Comments&rdquo;'); } ?>

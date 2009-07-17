@@ -64,11 +64,12 @@ Template Name: Comic Storyline Archive
 <div id="content" class="narrowcolumn">
 
 	<div class="post-page-head"></div>
-	<div class="post-page">
-		<h2 class="pagetitle"><?php the_title() ?></h2>
-		<div class="entry">
-			<?php while (have_posts()) : the_post(); the_content(); endwhile; ?>
-		</div>
+    <?php while (have_posts()) : the_post() ?>
+      <div class="entry">
+        <h2 class="pagetitle"><?php the_title() ?></h2>
+        <?php the_content(); ?>
+      </div>
+    <?php endwhile; ?>
 		<ul id="storyline" class="level-0">
 			<?php if (get_option('comicpress-enable-storyline-support') == 1) {
 				if (($result = get_option("comicpress-storyline-category-order")) !== false) {

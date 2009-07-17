@@ -22,6 +22,7 @@
 	<link rel="alternate" type="application/atom+xml" title="<?php bloginfo('name') ?> Atom Feed" href="<?php bloginfo('atom_url') ?>" />
 	<link rel="pingback" href="<?php bloginfo('pingback_url') ?>" />
 	<script type="text/javascript" src="<?php bloginfo('stylesheet_directory'); ?>/js/scroll.js"></script>
+	<?php if ( is_singular() ) wp_enqueue_script( 'comment-reply' ); ?>
 	<?php wp_head() ?>
 	<!--[if lt IE 7]><script type="text/javascript" src="<?php bloginfo('template_directory') ?>/js/ie6submenus.js"></script><![endif]-->
 </head>
