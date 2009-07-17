@@ -1,6 +1,8 @@
 <?php
 
-include(TEMPLATEPATH . '/comicpress-config.php');
+include(get_template_directory() . '/comicpress-config.php');
+include(get_template_directory() . '/comment-functions.php');
+include(get_template_directory() . '/custom-image-header.php');
 
 // If any errors occur while searching for a comic file, the error messages will be pushed into here.
 $comic_pathfinding_errors = array();
@@ -32,15 +34,6 @@ $comic_filename_filters['default'] = "{date}*.*";
 
 // load all of the comic & non-comic category information
 add_action('init', 'get_all_comic_categories');
-add_action('init', 'comicpress_handle_options_changes');
-add_action('admin_menu', 'comicpress_add_options_menu');
-add_action('admin_notices', 'comicpress_admin_notices');
-
-$__comicpress_notices = array();
-
-function comicpress_add_options_menu() {
-  add_theme_page(__("ComicPress Config", 'comicpress'), __('ComicPress Config', 'comicpress'), 'edit_themes', basename(__FILE__), 'comicpress_options_menu');
-}
 
 function get_first_comic() {
   return get_terminal_post_in_category(get_all_comic_categories_as_cat_string());
@@ -48,117 +41,6 @@ function get_first_comic() {
 
 function get_last_comic() {
   return get_terminal_post_in_category(get_all_comic_categories_as_cat_string(), false);
-}
-
-function comicpress_admin_notices() {
-  global $__comicpress_notices;
-  
-  if (!empty($__comicpress_notices) && is_array($__comicpress_notices)) {
-    echo '<div class="updated fade">';
-      foreach ($__comicpress_notices as $notice) { echo '<p>' . $notice . '</p>'; }
-    echo '</div>';
-  }
-}
-
-function comicpress_handle_options_changes() {
-  global $__comicpress_notices;
-  
-  include(get_template_directory() . '/comicpress-config.php');
-  
-  if (isset($_POST['cp'])) {
-    if (wp_verify_nonce($_POST['cp']['_nonce'], 'comicpress')) {
-      foreach ($_POST['cp'] as $field => $value) {
-        ${$field} = $value;
-      }
-      
-      $lines = file(get_template_directory() . '/comicpress-config.php', FILE_IGNORE_NEW_LINES);
-      for ($i = 0, $il = count($lines); $i < $il; ++$i) {
-        if (preg_match('#\$([^\ ]+)#', $lines[$i], $matches) > 0) {
-          if (!empty(${$matches[1]})) {
-            $lines[$i] = "\${$matches[1]} = \"" . ${$matches[1]} . "\";";
-          }
-        }
-      }
-      
-      if (($fh = fopen(get_template_directory() . '/comicpress-config.php', "w")) !== false) {
-        foreach ($lines as $line) { fwrite($fh, $line . "\n"); }
-        fclose($fh);
-        $__comicpress_notices[] = __('ComicPress options updated.', 'comicpress');
-      } else {
-        $__comicpress_notices[] = __("Unable to write file. Check your theme directory's permissions.", 'comicpress');
-      }
-    }
-  }
-}
-
-function comicpress_options_menu() {
-  include(get_template_directory() . '/comicpress-config.php');
-  
-  $categories = get_all_category_ids();
-  
-  echo '<div class="wrap">';
-  _e('<h2>ComicPress Config</h2>', 'comicpress');
-  
-  echo '<form method="post">';
-  echo '<input type="hidden" name="cp[_nonce]" value="' . wp_create_nonce('comicpress') . '" />';
-  echo '<table>';
-    foreach (array(
-      'blogcat'              => array(
-        'type' => 'category',
-        'label' => __('Blog category', 'comicpress')
-      ),
-      'comiccat'             => array(
-        'type' => 'category',
-        'label' => __('Comic category', 'comicpress')
-      ),
-      'comic_folder'         => array(
-        'type' => 'text',
-        'label' => __('Comic folder', 'comicpress')
-      ),
-      'rss_comic_folder'     => array(
-        'type' => 'text',
-        'label' => __('RSS comic folder', 'comicpress')
-      ),
-      'archive_comic_folder' => array(
-        'type' => 'text',
-        'label' => __('Archive comic folder', 'comicpress')
-      ),
-      'archive_comic_width'  => array(
-        'type' => 'text',
-        'label' => __('Archive comic width', 'comicpress')
-      ),
-      'rss_comic_width'      => array(
-        'type' => 'text',
-        'label' => __('RSS comic width', 'comicpress')
-      ),
-      'blog_postcount'       => array(
-        'type' => 'text',
-        'label' => __('Blog postcount', 'comicpress')
-      )
-    ) as $field => $parameters) {
-      echo '<tr>';
-        echo '<th scope="row">' . $parameters['label'] . '</th>';
-        echo '<td>';
-          switch ($parameters['type']) {
-            case "category":
-              echo '<select name="cp[' . $field . ']">';
-              foreach ($categories as $category_id) {
-                echo '<option value="' . $category_id . '"' . ((${$field} == $category_id) ? 'selected="selected"' : "") . '>' . get_cat_name($category_id) . '</option>';
-              }
-              echo '</select>';
-              break;
-            case "text":
-              echo '<input type="text" name="cp[' . $field . ']" value="' . ${$field} . '" />';
-              break;
-          }
-        echo '</td>';
-      echo '</tr>';
-    }
-    
-    echo '<tr><td></td><td><input type="submit" /></td></tr>';
-    echo '</table>';
-  echo '</form>';
-  echo '</div>';
 }
 
 /**
@@ -754,5 +636,43 @@ function szub_is_search_key($key='') {
 	}
 	return false;
 }
- 
+
+function comic_navigation() {
+global $post;
+	echo '<div id="comic_navi_wrapper">';
+	echo '	<div id="comic_navi_prev">';
+	$at_first = false;
+	$first = get_first_comic();
+	if (!empty($first)) { $at_first = ($post->ID == $first->ID); }
+	if (!$at_first) {
+		echo '		<a href="'.get_permalink($at_first).'" class="rollfirst">&nbsp;</a>';
+	} else {
+		echo '		<img src="'.get_bloginfo('stylesheet_directory').'/images/disabled_firstroll.png" alt="At First" class="disabled_navi" />';
+	} 
+	$prev_comic = get_permalink(get_previous_comic()->ID);
+	if (!empty($prev_comic)) {
+		echo '		<a href="'.$prev_comic.'" class="rollprev">&nbsp;</a>';
+	} else { 
+		echo '		<img src="'.get_bloginfo('stylesheet_directory').'/images/disabled_prevroll.png" alt="No Previous" class="disabled_navi" />';
+	}
+	echo '	</div>';
+	echo '	<div id="comic_navi_next">';
+	$next = get_permalink(get_next_comic()->ID);
+	if (!empty($next)) {
+		echo '		<a href="'.get_permalink($next).'" class="rollnext">&nbsp;</a>';
+	} else {
+		echo '		<img src="'.get_bloginfo('stylesheet_directory').'/images/disabled_nextroll.png" alt="No Next" class="disabled_navi" />';
+	}		
+	$at_last = false;
+	$last = get_last_comic();
+	if (!empty($last)) { $at_last = ($post->idate == $last->idate); }
+	if (!$at_last) {
+		echo '		<a href="'.get_permalink($at_last).'" class="rollnext">&nbsp;</a>';
+	} else {
+		echo '		<img src="'.get_bloginfo('stylesheet_directory').'/images/disabled_lastroll.png" alt="No Last" class="disabled_navi" />';
+	}
+	echo '	</div>';
+	echo '	<div class="clear"></div>';
+	echo '</div>';
+}
 ?>

@@ -10,8 +10,6 @@ The CSS, XHTML and design is released under GPL v3:
 http://www.opensource.org/licenses/gpl-3.0.html
 .
 */
- 
-
 
 /* STANDARD TAGS */
 
@@ -170,13 +168,20 @@ h3, h3 a, h3 a:hover {
 		letter-spacing: 2px;
 		}
 
-
+	.headerad 
+	{
+		float: right;
+		height: 70px;
+		width: 470px;
+		margin: 5px 5px 0 0;
+	}
 
 /* THE MENU */
 
 #menubar {
-	background: #000;
 	zoom: 1; /* IE fix, allows for variable height menu  */
+	background: #000 url('images/menubarbgdark.jpg') repeat-x;
+	border: 1px solid #050505;
 	}
 
 #menunav {
@@ -191,9 +196,10 @@ h3, h3 a, h3 a:hover {
 		color: #fff;
 		font-size: 19px;
 		font-weight: bold;
-		line-height: 25px;
+		line-height: 22px;
 		text-align: center;
-		border-left: 1px solid #fff;
+		border-left: 1px solid #353535;
+		border-right: 1px solid #454545;
 		}
 
 		#menunav a:hover {
@@ -211,12 +217,18 @@ h3, h3 a, h3 a:hover {
     }
 
 	#menu a {
-		padding: 0px 5px;
+		padding: 0px 10px 0 10px;
 		display: block;
 		color: #fff;
 		text-decoration: none;
-		border-right: 1px solid #fff;
+		border-left: 1px solid #353535;
+		border-right: 1px solid #454545;
 		}
+
+	#menu li .rss {
+		padding: 5px 0 5px 0; 
+	}
+	
 
 	#menu li {
 		float: left;
@@ -240,13 +252,13 @@ h3, h3 a, h3 a:hover {
 		left: -9999px;
 		width: 151px;
 		line-height: 1;
-		border-top: 1px solid #fff;
+		border-top: 1px solid #353535;
 		}
 	#menu li li {
 		width: 150px;
 		margin: 0 0 0 -1px;
 		border-width: 0 1px 1px 1px;
-		border-color: #fff;
+		border-color: #454545;
 		border-style: solid;
 		}
 	#menu li li a {
@@ -272,7 +284,8 @@ h3, h3 a, h3 a:hover {
 	    }
 	#menu li:hover ul, #menu li li:hover ul, #menu li li li:hover ul, #menu li li li li:hover ul, #menu li.sfhover ul, #menu li li.sfhover ul, #menu li li li.sfhover ul, #menu li li li li.sfhover ul {
 	    left: auto;
-	    background: #222; /*Submenu background color */
+		background: #646464;	    
+	    /* background: #222; Submenu background color */
 		text-transform: none;
 	    }
 	    
@@ -408,6 +421,49 @@ h3, h3 a, h3 a:hover {
 	}
 	
 	.comicdate {
+		color: #777;
+		font-family: 'Georgia' , serif;
+		font-size: 15px;
+		font-weight: bold;
+	}
+	
+	.comicdate .date {
+		height: 50px;
+		width: 45px;
+		background: url(images/calendar.png) no-repeat;
+		font: normal 22px Verdana, Arial, Helvetica, sans-serif;
+		color: #666666;
+		text-align: center;
+		padding: 0px 2px 0 0;
+		line-height: 100%;
+		float: left;
+		margin: 0 2px 0 4px;
+		}
+
+	.comicdate .date span {
+		height: 16px;
+		display: block;
+		font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+		color: #ffffff;
+		text-align: center;
+		padding-top: 5px;
+	}
+	
+	.post h2, .post h2 a, .post-comic h2, .post-comic h2 a  {
+		display: block;
+		height: 24px;
+		background: #eee;
+		border: solid 1px #cdcdcd;
+		font-size: 20px;
+		padding-left: 5px;
+		clear: none;
+	}
+	
+	.post h2 a:hover, .post-comic h2 a:hover, .post-page h2 a:hover {
+		color: #ff0000;
+	}
+	
+	.comicdate {
 		font-size: 14px;
 		}
 
@@ -471,7 +527,11 @@ h3, h3 a, h3 a:hover {
 	}
 
 	.comment .comment  {
-	border: 1px dotted #000;
+		border: 1px dotted #000;
+	}
+	
+	.bypostauthor {
+		background: #fffbdc;
 	}
 
 .comment-author {
@@ -544,6 +604,7 @@ ul.children {
 	background: #fff;
 	opacity: 0.99;
 	filter: alpha(opacity=99);
+	margin: 0 auto;
 	}
  
 	.comicarchiveframe:hover {
@@ -913,3 +974,79 @@ li.pingback div p, li.trackback div p {
 	line-height: 0;
 	font-size: 0;
 	}
+	
+.button
+{
+	color: #000;
+	height: 22px;
+	width: 20px;
+	background: #c5c5c5;
+	border: 1px solid #000;
+	padding: 0 0 3px 0;
+	font-weight: 700;
+}
+
+/* COMIC NAVIGATION */
+
+a.rollnext
+{
+	display: inline-block;
+	height: 50px;
+	width: 125px;
+	float: right;
+	text-decoration: none;
+	background: url('images/nextroll.png') no-repeat;
+}
+
+a.rolllast
+{
+	display: inline-block;
+	height: 50px;
+	width: 125px;
+	float: right;
+	text-decoration: none;
+	background: url('images/lastroll.png') no-repeat;
+}
+
+a.rollprev
+{
+	display: inline-block;
+	height: 50px;
+	width: 125px;
+	float: left;
+	text-decoration: none;
+	background: url('images/prevroll.png') no-repeat;
+}
+
+a.rollfirst
+{
+	display: inline-block;
+	height: 50px;
+	width: 125px;
+	float: left;
+	text-decoration: none;
+	background: url('images/firstroll.png') no-repeat;
+}
+
+a.rollfirst:hover, a.rollprev:hover, a.rollnext:hover, a.rolllast:hover
+{
+	background-position: -125px 0;
+}
+
+#comic_navi_wrapper
+{
+	width: 100%;
+	height: 50px;
+}
+
+#comic_navi_prev
+{
+	width: 260px;
+	float: left;
+}
+
+#comic_navi_next
+{
+	width: 260px;
+	float: right;
+} 
