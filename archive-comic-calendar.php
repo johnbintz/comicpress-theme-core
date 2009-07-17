@@ -166,6 +166,6 @@ $month['12'] = array('month' => 'December', 'days' => '31');
 
 </div>
 
-<?php include(TEMPLATEPATH . '/sidebar.php') ?>
+<?php get_sidebar(); ?>
 
 <?php get_footer() ?>

@@ -11,6 +11,6 @@
 	<div class="post-page-foot"></div>
 </div>
 
-<?php include(TEMPLATEPATH . '/sidebar.php') ?>
+<?php get_sidebar(); ?>
 
 <?php get_footer() ?>
