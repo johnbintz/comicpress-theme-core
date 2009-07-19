@@ -310,16 +310,21 @@ class ComicPress {
    */
   function get_next_comic($category = null, $override_post = null) { return $this->get_adjacent_comic($category, true, $override_post); }
   
+  /**
+   * Get the path to a partial.
+   * @param array $partials The partials to search for in each path.
+   * @return string|boolean The partial path to use, or false if no matches.
+   */
   function get_partial_path($partials) {
     foreach ($partials as $partial) {
       foreach ($comicpress->partial_paths as $path) {
         $target = $path . '/' . $partial . '.inc';
         if (file_exists($target)) {
-          include($target);
-          return;
+          return $target;
         }
       }
     }
+    return false;
   }
 }
 
