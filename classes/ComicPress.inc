@@ -229,9 +229,9 @@ class ComicPress {
       $comic_posts[$which] = $this->{"get_${which}_comic"}(); 
     }
     
-    $comic_posts['show_first']    = ($comic_posts['first']->ID != $comic_posts['last']->ID);
-    $comic_posts['show_previous'] = (!empty($comic_posts['previous']) && ($comic_posts['first']->ID != $comic_posts['previous']->ID));
-    $comic_posts['show_next']     = (!empty($comic_posts['next']) && ($comic_posts['last']->ID != $comic_posts['next']->ID));
+    $comic_posts['show_first']    = (trim($post->ID) != trim($comic_posts['first']->ID));
+    $comic_posts['show_previous'] = (!empty($comic_posts['previous']) && (trim($comic_posts['first']->ID) != trim($comic_posts['previous']->ID)));
+    $comic_posts['show_next']     = (!empty($comic_posts['next']) && (trim($comic_posts['last']->ID) != trim($comic_posts['next']->ID)));
     $comic_posts['show_last']     = (trim($post->ID) != trim($comic_posts['last']->ID));
     
     return $comic_posts;

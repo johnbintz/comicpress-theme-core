@@ -6,7 +6,10 @@ require_once(dirname(__FILE__) . '/../classes/ComicPress.inc');
 
 class ComicPressTest extends PHPUnit_Framework_TestCase {
   function setUp() {
+    global $post;
+    
     _reset_wp();
+    unset($post);
     $this->cp = new ComicPress();
   }
   
@@ -81,6 +84,92 @@ class ComicPressTest extends PHPUnit_Framework_TestCase {
     wp_set_post_categories(1, $post_categories);
     
     $this->assertEquals($is_in_category, $this->cp->in_comic_category(1));
+  }
+
+  function providerTestGetNavComics() {
+    return array(
+      array(
+        array(
+          'first'    => 1,
+          'previous' => 2,
+          'next'     => 4,
+          'last'     => 5
+        ),
+        3,
+        array(
+          'first'    => true,
+          'previous' => true,
+          'next'     => true,
+          'last'     => true
+        )
+      ),
+      array(
+        array(
+          'first'    => 1,
+          'previous' => false,
+          'next'     => false,
+          'last'     => 1
+        ),
+        1,
+        array(
+          'first'    => false,
+          'previous' => false,
+          'next'     => false,
+          'last'     => false
+        )
+      ),
+      array(
+        array(
+          'first'    => 1,
+          'previous' => false,
+          'next'     => 3,
+          'last'     => 3
+        ),
+        1,
+        array(
+          'first'    => false,
+          'previous' => false,
+          'next'     => false,
+          'last'     => true
+        )
+      ),
+      array(
+        array(
+          'first'    => 1,
+          'previous' => 1,
+          'next'     => false,
+          'last'     => 3
+        ),
+        3,
+        array(
+          'first'    => true,
+          'previous' => false,
+          'next'     => false,
+          'last'     => false
+        )
+      )
+    );
+  }
+
+  /**
+   * @dataProvider providerTestGetNavComics
+   */
+  function testGetNavComics($nav_comics, $given_post, $expected_shows) {
+    global $post;
+    
+    $cp = $this->getMock('ComicPress', array('get_first_comic', 'get_last_comic', 'get_previous_comic', 'get_next_comic'));
+    foreach ($nav_comics as $key => $result) {
+      $return = (is_numeric($result)) ? (object)array('ID' => $result) : false;
+      $cp->expects($this->once())->method("get_${key}_comic")->will($this->returnValue($return));
+    }
+    
+    $post = (is_numeric($given_post)) ? (object)array('ID' => $given_post) : false;
+    
+    $comic_posts = $cp->get_nav_comics();
+    
+    foreach ($expected_shows as $show => $expected) {
+      $this->assertEquals($expected, $comic_posts["show_${show}"], $show);
+    }
   }
 }
 
