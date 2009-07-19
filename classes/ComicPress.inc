@@ -303,6 +303,18 @@ class ComicPress {
    * Get the next comic from the current one.
    */
   function get_next_comic($category = null, $override_post = null) { return $this->get_adjacent_comic($category, true, $override_post); }
+  
+  function get_partial_path($partials) {
+    foreach ($partials as $partial) {
+      foreach ($comicpress->partial_paths as $path) {
+        $target = $path . '/' . $partial . '.inc';
+        if (file_exists($target)) {
+          include($target);
+          return;
+        }
+      }
+    }
+  }
 }
 
 ?>

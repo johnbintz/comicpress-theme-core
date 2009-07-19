@@ -76,19 +76,14 @@ function comicpress_get_header() {
 
 function include_partial($partials = '') {
   global $comicpress;
+  
   if (!is_array($partials)) {
     $partials = func_get_args();
   }
   
-  foreach ($partials as $partial) {
-    foreach ($comicpress->partial_paths as $path) {
-      $target = $path . '/' . $partial . '.inc';
-      if (file_exists($target)) {
-        include($target);
-        return;
-      }
-    }
-  }
+  $target = $comicpress->get_partial_path($partials);
+  
+  if ($target !== false) { include($target); }
 }
 
 function in_comic_category() {
