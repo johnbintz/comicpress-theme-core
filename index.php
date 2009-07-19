@@ -1,7 +1,7 @@
 <?php
   global $comicpress;
 
-  get_header();
+  comicpress_get_header();
 
   $nav_comics = $comicpress->get_nav_comics();
   $post = $nav_comics['last'];  
@@ -15,22 +15,9 @@
   <?php include_partial('index-blog-header'); ?>
 
   <?php 
-    $wp_query = new WP_Query();
-    $wp_query->query(
-      'showposts=' . 
-      (int)$comicpress->comicpress_options['blogpost_count'] .
-      '&cat=-' . 
-      $comicpress->comicpress_options['comic_category_id'] .
-      '&paged=' . 
-      $paged
-    );
-
-    while ($wp_query->have_posts()) {
-      $wp_query->the_post();
+    foreach ($comicpress->get_index_blog_posts() as $post) {
       include_partial('index-blog-post');
     }
-
-    include_partial('index-blog-post');
   ?>
 </div>
 

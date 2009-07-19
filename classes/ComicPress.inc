@@ -326,6 +326,34 @@ class ComicPress {
     }
     return false;
   }
+  
+  /**
+   * Gather blog posts for the given index page.
+   */
+  function get_index_blog_posts() {
+    global $post, $paged;
+    
+    $t = $post;
+   
+    $wp_query = new WP_Query();
+    $wp_query->query(
+      'showposts=' . 
+      (int)$this->comicpress_options['blogpost_count'] .
+      '&cat=-' . 
+      $this->comicpress_options['comic_category_id'] . 
+      '&paged=' .
+      $paged
+    );
+
+    $posts = array();
+    if ($wp_query->have_posts()) {
+      while ($wp_query->have_posts()) { $wp_query->the_post(); $posts[] = $post; }
+    }
+    
+    $post = $t;
+    
+    return $posts;
+  }
 }
 
 ?>
