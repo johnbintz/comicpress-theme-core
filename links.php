@@ -20,6 +20,6 @@ Template Name: Links
   </div>
 </div>
 	
-<?php include(get_template_directory() . '/sidebar.php') ?>
+<?php ge_sidebar() ?>
 
 <?php get_footer() ?>

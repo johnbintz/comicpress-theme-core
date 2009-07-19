@@ -66,6 +66,6 @@ Template Name: Comic Year Archive
 	
 </div>
 
-<?php include(get_template_directory() . '/sidebar.php') ?>
+<?php get_sidebar() ?>
 
 <?php get_footer() ?>

@@ -45,6 +45,6 @@ Template Name: Comic Archive
     <div class="post-page-foot"></div>
 </div>
 
-<?php include(get_template_directory() . '/sidebar.php') ?>
+<?php get_sidebar() ?>
 
 <?php get_footer() ?>
