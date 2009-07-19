@@ -67,6 +67,7 @@ class ComicPress {
 
   /**
    * Flatten all WP categories into nodes like 0/3/5.
+   * @tested
    */
   function flatten_categories() {
     $this->category_tree = array();
@@ -99,6 +100,7 @@ class ComicPress {
   
   /**
    * Separate categories into comics and non-comics categories.
+   * @tested
    */
   function separate_categories() {
     $comic_categories = array();
@@ -119,6 +121,7 @@ class ComicPress {
   
   /**
    * Sort the category tree, adding in new categories in the order as necessary.
+   * @tested
    */
   function sort_comic_categories() {
     if (is_array($this->comicpress_options['category_order'])) {
@@ -155,6 +158,7 @@ class ComicPress {
   
   /**
    * Turn the tree of comics categories into a string to be fed into wp_query functions.
+   * @tested
    */
   function get_all_comic_categories_as_cat_string() {
     if (empty($this->all_comic_categories_as_string)) {
@@ -169,6 +173,7 @@ class ComicPress {
 
   /**
    * Return true if the current post is in the comics category or a child category.
+   * @tested
    */
   function in_comic_category($post_id = null) {
     global $post;
