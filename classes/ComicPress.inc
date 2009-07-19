@@ -317,7 +317,7 @@ class ComicPress {
    */
   function get_partial_path($partials) {
     foreach ($partials as $partial) {
-      foreach ($comicpress->partial_paths as $path) {
+      foreach ($this->partial_paths as $path) {
         $target = $path . '/' . $partial . '.inc';
         if (file_exists($target)) {
           return $target;

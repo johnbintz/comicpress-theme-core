@@ -80,7 +80,7 @@ function include_partial($partials = '') {
   if (!is_array($partials)) {
     $partials = func_get_args();
   }
-  
+
   $target = $comicpress->get_partial_path($partials);
   
   if ($target !== false) { include($target); }
