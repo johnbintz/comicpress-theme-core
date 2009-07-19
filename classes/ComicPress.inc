@@ -220,6 +220,7 @@ class ComicPress {
   
   /**
    * Get the comics necessary to build the navigation.
+   * @tested
    */
   function get_nav_comics() {
     global $post;
