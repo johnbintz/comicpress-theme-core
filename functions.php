@@ -50,7 +50,7 @@ function __comicpress_init() {
   }
 }
 
-function comicpress_get_header() {
+function comicpress_init() {
   global $post, $comicpress;
   
   if (!empty($post)) {
@@ -70,7 +70,9 @@ function comicpress_get_header() {
   }
   
   $comicpress->partial_paths[] = get_template_directory() . '/partials';
+}
 
+function comicpress_get_header() {
   get_header();
 }
 
