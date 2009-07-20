@@ -4,6 +4,7 @@
   comicpress_init();
 
   $nav_comics = $comicpress->get_nav_comics();
+  $t = $post;
   $post = $nav_comics['last'];  
 
   ob_start();
@@ -23,6 +24,7 @@
   }
 
   $content = ob_get_clean();
-
+  $post = $t;
+  
   include(get_template_directory() . '/layouts/classic.php');
 ?>
