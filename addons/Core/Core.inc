@@ -1,6 +1,10 @@
 <?php
 
 class ComicPressAddonCore extends ComicPressAddon {
+  /**
+   * Initialize the addon.
+   * @param ComicPress $comicpress The master ComicPress object.
+   */
   function init($comicpress) {
     add_action('admin_menu', array(&$this, 'setup_admin_interface'));
     add_filter('attachment_fields_to_edit', array(&$this, 'setup_comic_metadata_buttons'), 10, 2);
@@ -16,7 +20,9 @@ class ComicPressAddonCore extends ComicPressAddon {
     $this->comicpress = $comicpress;
   }
 
-  //Generate a random comic page - to use simply create a URL link to "/?randomcomic"
+  /**
+   * Callback to send the reader to a random comic.
+   */
   function go_to_random_comic() {
     $random_comic_query = new WP_Query();
     $random_comic_query->query('showposts=1&orderby=rand&cat=' . $this->comicpress->get_all_comic_categories_as_cat_string());
@@ -30,10 +36,16 @@ class ComicPressAddonCore extends ComicPressAddon {
     }
   }
 
+  /**
+   * Markup to insert a comic into the comic feed.
+   */
   function comic_feed() { ?>
     <p><a href="<?php the_permalink() ?>"><?php do_action('show_rss') ?></a></p><?php
   }
 
+  /**
+   * Filter to insert the comic into the RSS feed.
+   */
   function insert_comic_feed($content) {
     if (is_feed() && in_comic_category()) {
       return $this->comic_feed() . $content;
@@ -42,6 +54,9 @@ class ComicPressAddonCore extends ComicPressAddon {
     }
   }
 
+  /**
+   * Set up the admin interface and meta boxes.
+   */
   function setup_admin_interface() {
     add_theme_page(__("ComicPress Core", 'comicpress'), __('ComicPress Core', 'comicpress'), 'edit_themes', basename(__FILE__), array(&$this, 'render_admin'));
     
@@ -50,6 +65,11 @@ class ComicPressAddonCore extends ComicPressAddon {
     }
   }
   
+  /**
+   * Show comic media.
+   * @param object $override_post If not nul;, the post to use instead of the current Loop post.
+   * @param string $method The method to call on the comic post.
+   */
   function show_media($override_post, $method) {
     global $post;
     $post_to_use = (is_null($override_post)) ? $this->comicpress->get_last_comic() : $post;
@@ -68,18 +88,30 @@ class ComicPressAddonCore extends ComicPressAddon {
     }
   }
   
+  /**
+   * Show a comic.
+   */
   function show_comic($override_post = null) {
     $this->show_media($override_post, "display_comics");
   }
   
+  /**
+   * Show an archive comic.
+   */
   function show_archive($override_post = null) {
     $this->show_media($override_post, "display_archive");
   }
   
+  /**
+   * Show an RSS comic.
+   */
   function show_rss($override_post = null) {
     $this->show_media($override_post, "display_rss");
   }
 
+  /**
+   * Modify the Media Gallery for ComicPress use.
+   */
   function setup_comic_metadata_buttons($form_fields, $post) {
     global $pagenow;
   
@@ -126,6 +158,9 @@ class ComicPressAddonCore extends ComicPressAddon {
     return $form_fields;
   }
 
+  /**
+   * Render the admin interface.
+   */
   function render_admin() {
     $nonce = wp_create_nonce('comicpress');
     $root_categories = $this->get_root_categories();
@@ -133,10 +168,17 @@ class ComicPressAddonCore extends ComicPressAddon {
     include(dirname(__FILE__) . '/partials/options-admin.inc'); 
   }
 
+  /**
+   * Render the comic image ordering interface.
+   */
   function render_comic_image_ordering() {
     echo "made it";
   }
 
+  /**
+   * Get all categories with a parent ID of 0.
+   * @return array All root categories.
+   */
   function get_root_categories() {
     $root_categories = array();
     foreach (get_all_category_ids() as $id) {
@@ -150,6 +192,12 @@ class ComicPressAddonCore extends ComicPressAddon {
     return $root_categories;
   }
 
+  /**
+   * Create &lt;option&gt; elements for each of the provided categories.
+   * @param array $categories The categories to display as either IDs or category objects.
+   * @param int $selected_id The category to mark as selected.
+   * @return string The category options as HTML.
+   */
   function create_category_options($categories, $selected_id) {
     $output = array();
     if (is_array($categories)) {
@@ -173,6 +221,12 @@ class ComicPressAddonCore extends ComicPressAddon {
     return implode("\n", $output);
   }
   
+  /**
+   * Create a dimension selector.
+   * @param string $root The field name root.
+   * @param $dimension The dimension to pre-fill into the fields.
+   * @return string The dimension selector as HTML.
+   */
   function create_dimension_selector($root, $dimension) {
     $output = array();
     
@@ -188,6 +242,10 @@ class ComicPressAddonCore extends ComicPressAddon {
     return implode("\n", $output);
   }
   
+  /**
+   * Determine whether or not storyline categories can be moved or not.
+   * @return array The storyline nodes with their move statuses.
+   */
   function get_storyline_move_statuses() {
     $nodes_with_statuses = array();
     for ($i = 0, $il = count($this->comicpress->category_tree); $i < $il; ++$i) {
@@ -214,7 +272,12 @@ class ComicPressAddonCore extends ComicPressAddon {
     }
     return $nodes_with_statuses;
   }
-  
+
+  /**
+   * Move a category in the hierarchy.
+   * @param array $category The category to move.
+   * @param int $direction The direction to move it in (-1 for up, 1 for down)
+   */
   function move_storyline_category_order($category, $direction) {
     for ($i = 0, $il = count($this->comicpress->category_tree); $i < $il; ++$i) {
       $node = $this->comicpress->category_tree[$i];
@@ -249,9 +312,7 @@ class ComicPressAddonCore extends ComicPressAddon {
           $target_index_node = $new_order[$target_index];
 
           $move = array_splice($new_order, $i, $end_i_index - $i);
-
           $target = array_search($target_index_node, $new_order);
-          
           $prefix = array_splice($new_order, 0, $target);
           
           if ($direction == -1) {
@@ -278,6 +339,9 @@ class ComicPressAddonCore extends ComicPressAddon {
     }
   }
   
+  /**
+   * Handle an update.
+   */
   function handle_update() {
     if (isset($_POST['attachments'])) {
       //coming from media editor
