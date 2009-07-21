@@ -166,7 +166,7 @@ class CoreTest extends PHPUnit_Framework_TestCase {
     
     $_POST = $change;
 
-    $this->core->handle_update();
+    $this->core->handle_update_comicpress_options();
     
     foreach ($new as $key => $value) {
       $this->assertEquals($value, $this->core->comicpress->comicpress_options[$key]);

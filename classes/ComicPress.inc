@@ -5,14 +5,14 @@
  */
 class ComicPress {
   var $comicpress_options = array(
-    'comic_category_id' => 1,
-    'comic_dimensions' => '760x',
-    'rss_dimensions' => '350x',
-    'archive_dimensions' => '125x',
-    'mini_dimensions' => '100x',
-    'category_order' => false,
-    'blogpost_count' => 10,
-    'comic_space' => 'comic_only',
+    'comic_category_id'   => 1,
+    'comic_dimensions'    => '760x',
+    'rss_dimensions'      => '350x',
+    'archive_dimensions'  => '125x',
+    'mini_dimensions'     => '100x',
+    'category_order'      => false,
+    'blogpost_count'      => 10,
+    'comic_space'         => 'comic_only',
     'category_page_usage' => 'archive_list'
   );
   
