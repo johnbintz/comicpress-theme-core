@@ -295,6 +295,96 @@ class CoreTest extends PHPUnit_Framework_TestCase {
     
     $this->assertEquals($new_order, $this->core->comicpress->comicpress_options['category_order']);
   }
+  
+  function providerTestUpdateAttachments() {
+    return array(
+      array(
+        array(
+          'post_meta' => array(),
+        ),
+        array(
+          'comic_image_type' => "test"
+        ),
+        array(
+          'post_meta' => array(
+            'comic_image_type' => "test"
+          ),
+        ),
+      ),
+      array(
+        array(
+          'post' => array(
+            'post_parent' => 0
+          ),
+        ),
+        array(
+          'post_parent' => "2"
+        ),
+        array(
+          'post' => array(
+            'post_parent' => 0
+          ),
+        ),
+      ),  
+      array(
+        array(
+          'post' => array(
+            'post_parent' => 0
+          ),
+        ),
+        array(
+          'post_parent' => "2",
+          'auto_attach' => 1
+        ),
+        array(
+          'post' => array(
+            'post_parent' => 2
+          ),
+        ),
+      )
+    ); 
+  }
+  
+  /**
+   * @dataProvider providerTestUpdateAttachments
+   */
+  function testUpdateAttachments($original_settings, $changes, $expected_settings) {
+    foreach ($original_settings as $settings_type => $settings) {
+      switch ($settings_type) {
+        case "post_meta":
+          foreach ($settings as $key => $value) {
+            update_post_meta(1, $key, $value);
+          }
+          break;
+        case "post":
+          wp_insert_post((object)array_merge(array(
+            'ID' => 1
+          ), $settings));
+          break;
+      }
+    }
+    
+    $_POST = array(
+      'attachments' => array('1' => $changes)
+    );
+    
+    $this->core->handle_update_attachments();
+    
+    foreach ($expected_settings as $settings_type => $settings) {
+      switch ($settings_type) {
+        case "post_meta":
+          foreach ($settings as $key => $value) {
+            $this->assertEquals($value, get_post_meta(1, $key, true));
+          }
+          break; 
+        case "post":
+          $post = get_post(1);
+          foreach ($settings as $key => $value) {
+            $this->assertEquals($value, $post->{$key});
+          }
+      }
+    }    
+  }
 }
 
 ?>
