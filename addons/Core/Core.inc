@@ -1,6 +1,13 @@
 <?php
 
 class ComicPressAddonCore extends ComicPressAddon {
+  var $comic_image_types = array(
+    'none'    => __('Not a comic', 'comicpress'),
+    'comic'   => __('Comic', 'comicpress'),
+    'rss'     => __('RSS', 'comicpress'),
+    'archive' => __('Archive', 'comicpress')
+  );
+  
   /**
    * Initialize the addon.
    * @param ComicPress $comicpress The master ComicPress object.
@@ -115,18 +122,11 @@ class ComicPressAddonCore extends ComicPressAddon {
   function setup_comic_metadata_buttons($form_fields, $post) {
     global $pagenow;
   
-    $comic_image_types = array(
-      'none' => __('Not a comic', 'comicpress'),
-      'comic' => __('Comic', 'comicpress'),
-      'rss' => __('RSS', 'comicpress'),
-      'archive' => __('Archive', 'comicpress')
-    );
-    
     $current_type = get_post_meta($post->ID, 'comic_image_type', true);
     
     $field_html_lines = array();
     $field_html_lines[] = '<input type="hidden" name="cp[_nonce]" value="' . wp_create_nonce('comicpress')  . '" />';
-    foreach ($comic_image_types as $field => $label) {
+    foreach ($this->comic_image_types as $field => $label) {
       $field_html_lines[] = '<label>'
                           . ' <input type="radio" name="attachments['
                           . $post->ID
@@ -172,7 +172,20 @@ class ComicPressAddonCore extends ComicPressAddon {
    * Render the comic image ordering interface.
    */
   function render_comic_image_ordering() {
-    echo "made it";
+    if (isset($_REQUEST['post'])) {
+      $comic_post = new ComicPressComicPost($_REQUEST['post'], &$this->comicpress);
+      $ordering = $comic_post->normalize_comic_image_ordering();
+      if (is_array($ordering)) {
+        foreach ($ordering as $type => $attachment_ids) {
+          echo '<h3>' . $this->comic_image_types[$type] . '</h3>';
+          $index = 1;
+          foreach ($attachment_ids as $attachment_id) {
+            echo '<img src="' . wp_get_attachment_url($attachment_id) . '" width="60" height="60" />';
+          }
+          echo '<input type="text" name="cp[ordering][' . $type . '][' . $attachment_id . ']" value="' . $index . '" />';
+        }
+      } 
+    }
   }
 
   /**
