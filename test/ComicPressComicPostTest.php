@@ -85,7 +85,7 @@ class ComicPressComicPostTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($expected_result, $this->p->breakdown_comic_ordering_string($string));
   }
   
-  function testGetComicImageOrdering() {
+  function testNormalizeComicImageOrdering() {
     $p = $this->getMock('ComicPressComicPost', array('get_comic_image_attachments'));
     
     $comic_attachments = array(
@@ -153,9 +153,10 @@ class ComicPressComicPostTest extends PHPUnit_Framework_TestCase {
     wp_insert_post((object)array('ID' => 1));
     update_post_meta(1, 'comic_ordering', "comic:3,2");
     
-    $result = $p->get_comic_image_ordering(1);
+    $result = $p->normalize_comic_image_ordering(1);
     
     $this->assertEquals(array('comic' => array(3,2), 'rss' => array(5,4)), $result);
+    $this->assertEquals('comic:3,2;rss:5,4', get_post_meta(1, 'comic_ordering', true));
   }
 }
 

@@ -103,7 +103,7 @@ class ComicPressComicPost {
     return $orderings;
   }
   
-  function get_comic_image_ordering($post_id) {
+  function normalize_comic_image_ordering($post_id) {
     if (is_array($this->get_comic_image_attachments())) {
       $ordering_by_type = array();
       $ordering_types = get_post_meta($post_id, 'comic_ordering', true);
@@ -114,12 +114,12 @@ class ComicPressComicPost {
       if (!empty($ordering_types)) {
         foreach ($ordering_types as $type => $post_ids) {
           $comic_image_ordering[$type] = array();
-          foreach ($post_ids as $post_id) {
+          foreach ($post_ids as $ordering_post_id) {
             foreach ($this->get_comic_image_attachments() as $attachment) {
               if (!isset($found_post_ids[$attachment->ID])) {
-                if ($attachment->ID == $post_id) {              
+                if ($attachment->ID == $ordering_post_id) {              
                   $comic_image_ordering[$type][] = $attachment->ID;
-                  $found_post_ids[$post_id] = true;
+                  $found_post_ids[$ordering_post_id] = true;
                 } 
               }
             }
@@ -145,7 +145,16 @@ class ComicPressComicPost {
         usort($remaining_posts_to_sort[$type], array(&$this, 'sort_remaining_comic_images')); 
       }
       
-      return array_merge($comic_image_ordering, $remaining_posts_to_sort);
+      $result = array_merge($comic_image_ordering, $remaining_posts_to_sort);
+      $result_string_parts = array();
+      
+      foreach ($result as $key => $values) {
+        $result_string_parts[] = "${key}:" . implode(",", $values);
+      }
+      sort($result_string_parts);
+      
+      update_post_meta($post_id, 'comic_ordering', implode(";", $result_string_parts));
+      return $result;
     }
   }
   
