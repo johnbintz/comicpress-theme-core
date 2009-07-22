@@ -47,7 +47,115 @@ class ComicPressComicPostTest extends PHPUnit_Framework_TestCase {
     }
   }
   
-  function testNormalizeAttachmentSorting() {
+  function providerTestBreakdownComicOrderingString() {
+    return array(
+      array(
+        "",
+        array()
+      ),
+      array(
+        "comic|123",
+        array()
+      ),
+      array(
+        "comic|123:meow",
+        array()
+      ),
+      array(
+        "comic123:meow",
+        array("comic123" => array())
+      ),
+      array(
+        "comic123:1",
+        array("comic123" => array(1))
+      ),
+      array(
+        "comic123:1,2;comic234:meow",
+        array("comic123" => array(1, 2),
+              "comic234" => array())
+      ),
+      
+    );
+  }
+  
+  /**
+   * @dataProvider providerTestBreakdownComicOrderingString
+   */
+  function testBreakdownComicOrderingString($string, $expected_result) {
+    $this->assertEquals($expected_result, $this->p->breakdown_comic_ordering_string($string));
+  }
+  
+  function testGetComicImageOrdering() {
+    $p = $this->getMock('ComicPressComicPost', array('get_comic_image_attachments'));
+    
+    $comic_attachments = array(
+      array(
+        'ID' => 2,
+        'post_parent' => 1,
+        'post_title' => 'Comic one',
+        'post_meta' => array(
+          'comic_image_type' => 'comic'
+        ),
+        'post_date' => 1
+      ),
+      array(
+        'ID' => 3,
+        'post_parent' => 1,
+        'post_title' => 'Comic two',
+        'post_meta' => array(
+          'comic_image_type' => 'comic'
+        ),
+        'post_date' => 2
+      ),
+      array(
+        'ID' => 4,
+        'post_parent' => 1,
+        'post_title' => 'Comic three',
+        'post_meta' => array(
+          'comic_image_type' => 'rss'
+        ),
+        'post_date' => 4
+      ),      
+      array(
+        'ID' => 5,
+        'post_parent' => 1,
+        'post_title' => 'Comic four',
+        'post_meta' => array(
+          'comic_image_type' => 'rss'
+        ),
+        'post_date' => 3
+      ),      
+    );
+    
+    $attachments = array();
+    foreach ($comic_attachments as $attachment_info) {
+      $attachment = (object)array();
+      foreach ($attachment_info as $field => $value) {        
+        switch ($field) {
+          case "post_meta":
+            foreach ($value as $meta => $meta_value) {
+              update_post_meta($attachment_info['ID'], $meta, $meta_value);
+            }
+            break;
+          case "post_date":
+            $attachment->{$field} = date("r", $value);
+            break;
+          default:
+            $attachment->{$field} = $value;
+            break; 
+        }
+      }
+      $attachments[] = $attachment;
+    }
+    
+    $p->expects($this->any())->method('get_comic_image_attachments')->will($this->returnValue($attachments));
+    
+    wp_insert_post((object)array('ID' => 1));
+    update_post_meta(1, 'comic_ordering', "comic:3,2");
+    
+    $result = $p->get_comic_image_ordering(1);
+    
+    $this->assertEquals(array('comic' => array(3,2), 'rss' => array(5,4)), $result);
   }
 }
 
