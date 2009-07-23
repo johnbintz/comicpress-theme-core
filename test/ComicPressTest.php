@@ -192,10 +192,14 @@ FILE
           'layout.php' => <<<FILE
 /*
 Layout Name: Test
+Sidebars: left,right
 */ 
 FILE
         ),
-        array('layout.php' => 'Test')
+        array('layout.php' => array(
+          'Layout Name' => 'Test',
+          'Sidebars' => 'left,right',
+        ))
       ),
     );
   }
