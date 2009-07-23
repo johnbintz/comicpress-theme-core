@@ -26,5 +26,5 @@
   $content = ob_get_clean();
   $post = $t;
   
-  include(get_template_directory() . '/layouts/classic.php');
+  include(get_template_directory() . '/layouts/classic.inc');
 ?>
