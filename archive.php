@@ -1,7 +1,11 @@
-<?php get_header() ?>
+<?php
+  global $comicpres, $post, $posts;
 
-<div id="content" class="archive">
-	<?php if (have_posts()) {
+  comicpress_init();
+  
+  ob_start();
+  
+	if (have_posts()) {
     include_partial('archive-header');
     
     // why can't wordpress allow for post date asc sorting out of the box...
@@ -20,10 +24,9 @@
     include_partial('archive-page-nav');
 	} else {
     include_partial('archive-not-found');	
-  } ?>
+  }
 
-</div>
-
-<?php get_sidebar() ?>
-
-<?php get_footer() ?>
+  $content = ob_get_clean();
+  
+  include(get_template_directory() . '/layouts/' . $comicpress->comicpress_options['layout']);
+?>

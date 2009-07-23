@@ -1,9 +1,10 @@
+<?php global $posts ?>
 <div class="post-page-head"></div>
 <div class="post-page"> 
   <?php $post = $posts[0]; // Hack. Set $post so that the_date() works. ?>
   <?php /* Category Archive */ if (is_category()) { ?>
     <div class="content"><h2 class="pagetitle">Archive for &#8216;<?php single_cat_title() ?>&#8217;</h2></div>
-  <?php /* Tag Archive */ } elseif( is_tag() ) { ?>
+  <?php /* Tag Archive */ } elseif(is_tag()) { ?>
     <div class="content"><h2 class="pagetitle">Posts Tagged &#8216;<?php single_tag_title() ?>&#8217;</h2></div>
   <?php /* Daily Archive */ } elseif (is_day()) { ?>
     <div class="content"><h2 class="pagetitle">Archive for <?php the_time('F jS, Y') ?></h2></div>
