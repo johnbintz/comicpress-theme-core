@@ -13,7 +13,8 @@ class ComicPress {
     'category_order'      => false,
     'blogpost_count'      => 10,
     'comic_space'         => 'comic_only',
-    'category_page_usage' => 'archive_list'
+    'category_page_usage' => 'archive_list',
+    'layout'              => 'classic.inc'
   );
   
   var $additional_stylesheets = array();
