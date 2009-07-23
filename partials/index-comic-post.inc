@@ -2,7 +2,7 @@
 <div class="post-comic">
   <?php include('nav.inc') ?>
   <div class="comicdate">
-    <?php echo mysql2date('F jS, Y', $post->post_date) ?>
+    <?php the_date('F jS, Y') ?>
   </div>
   <div class="clear"></div>
   <?php if (get_option('comicpress-enable-storyline-support') == 1) { ?>
