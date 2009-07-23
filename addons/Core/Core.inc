@@ -456,6 +456,14 @@ class ComicPressAddonCore extends ComicPressAddon {
     }
     return $layouts;
   }
+  
+  function create_layout_options($layouts, $current_layout) {
+    $output = array();
+    foreach ($layouts as $layout_filename => $name) {
+      $output[] = '<option value="' . $layout_filename . '"' . (($layout_filename == $current_layout) ? ' selected="selected"' : '') . '>' . $name . '</option>';
+    }
+    return implode("\n", $output);
+  }
 }
 
 ?>

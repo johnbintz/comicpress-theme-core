@@ -11,6 +11,14 @@
           </select>
         </td>
       </tr>
+      <tr>
+        <th scope="row" valign="top"><?php _e('Layout', 'comicpress') ?></th>
+        <td>
+          <select name="cp[layout]">
+            <?php echo $this->create_layout_options($this->get_layout_choices(), $this->comicpress->comicpress_options['layout']) ?>
+          </select>
+        </td>
+      </tr>
       <?php foreach (array(
         'comic_dimensions' => __('Comic Image Dimensions', 'comicpress'),
         'rss_dimensions' => __('RSS Feed Image Dimensions', 'comicpress'),
