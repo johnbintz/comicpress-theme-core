@@ -413,8 +413,9 @@ class ComicPressAddonCore extends ComicPressAddon {
             break;
           case 'comic_space':
           case 'category_page_usage':
+          case 'layout';
             $this->comicpress->comicpress_options[$option] = $_POST['cp'][$option];
-            break;
+            break;            
         }
       }
     }
@@ -443,10 +444,13 @@ class ComicPressAddonCore extends ComicPressAddon {
     }
   }
   
+  /**
+   * Create the dropdown for choosing a layout.
+   */
   function create_layout_options($layouts, $current_layout) {
     $output = array();
-    foreach ($layouts as $layout_filename => $name) {
-      $output[] = '<option value="' . $layout_filename . '"' . (($layout_filename == $current_layout) ? ' selected="selected"' : '') . '>' . $name . '</option>';
+    foreach ($layouts as $layout_filename => $info) {
+      $output[] = '<option value="' . $layout_filename . '"' . (($layout_filename == $current_layout) ? ' selected="selected"' : '') . '>' . $info['Layout Name'] . '</option>';
     }
     return implode("\n", $output);
   }

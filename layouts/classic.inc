@@ -1,11 +1,8 @@
 <?php
 /*
 Layout Name: Classic
+Sidebars: right
 */
-
-if (function_exists('register_sidebar')) {
-  register_sidebar('right');
-}
 
 ?>
 

@@ -1,12 +1,8 @@
 <?php
 /*
-Layout Name: Classic
+Layout Name: Three Column
+Sidebars: left,right
 */
-
-if (function_exists('register_sidebar')) {
-  register_sidebar('left');
-  register_sidebar('right');
-}
 
 ?>
 
