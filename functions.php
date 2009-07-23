@@ -177,9 +177,6 @@ function the_transcript($displaymode = 'raw') {
 	
 // Register Sidebar and Define Widgets
 	
-if ( function_exists('register_sidebar') )
-    register_sidebar();
-
  function widget_comicpress_latest_comics() { ?>
 	<li>
 		<h2>Latest Comics</h2>

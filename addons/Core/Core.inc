@@ -443,20 +443,6 @@ class ComicPressAddonCore extends ComicPressAddon {
     }
   }
   
-  function _glob($pattern) { return glob($pattern); }
-  function _file_get_contents($file) { return file_get_contents($file); }
-  
-  function get_layout_choices() {
-    $layouts = array();
-    foreach ($this->_glob(get_template_directory() . '/layouts/*') as $file) {
-      $content = $this->_file_get_contents($file); 
-      if (preg_match('#/\*.*Layout Name: ([^\n]+).*\*/#s', $content, $matches) > 0) {        
-        $layouts[pathinfo($file, PATHINFO_BASENAME)] = $matches[1];
-      }
-    }
-    return $layouts;
-  }
-  
   function create_layout_options($layouts, $current_layout) {
     $output = array();
     foreach ($layouts as $layout_filename => $name) {
