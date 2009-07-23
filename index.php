@@ -20,8 +20,10 @@
 
   include_partial('index-blog-header');
 
-  foreach ($comicpress->get_index_blog_posts() as $post) {
-    setup_postdata($post);
+  $index_posts_query = $comicpress->get_index_blog_posts_query();
+
+  while ($index_posts_query->have_posts()) {
+    $index_posts_query->the_post(); 
     include_partial('index-blog-post');
   }
 

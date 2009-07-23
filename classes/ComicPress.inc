@@ -332,7 +332,7 @@ class ComicPress {
   /**
    * Gather blog posts for the given index page.
    */
-  function get_index_blog_posts() {
+  function get_index_blog_posts_query() {
     global $post, $paged;
     
     $t = $post;
@@ -346,15 +346,8 @@ class ComicPress {
       '&paged=' .
       $paged
     );
-
-    $posts = array();
-    if ($wp_query->have_posts()) {
-      while ($wp_query->have_posts()) { $wp_query->the_post(); $posts[] = $post; }
-    }
     
-    $post = $t;
-    
-    return $posts;
+    return $wp_query;
   }
   
   function _glob($pattern) { return glob($pattern); }
