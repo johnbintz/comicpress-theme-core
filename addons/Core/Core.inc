@@ -1,13 +1,6 @@
 <?php
 
-class ComicPressAddonCore extends ComicPressAddon {
-  var $comic_image_types = array(
-    'none'    => __('Not a comic', 'comicpress'),
-    'comic'   => __('Comic', 'comicpress'),
-    'rss'     => __('RSS', 'comicpress'),
-    'archive' => __('Archive', 'comicpress')
-  );
-  
+class ComicPressAddonCore extends ComicPressAddon {  
   /**
    * Initialize the addon.
    * @param ComicPress $comicpress The master ComicPress object.
@@ -25,6 +18,13 @@ class ComicPressAddonCore extends ComicPressAddon {
     }
 
     $this->comicpress = $comicpress;
+    
+    $this->comic_image_types = array(  
+      'none'    => __('Not a comic', 'comicpress'),
+      'comic'   => __('Comic', 'comicpress'),
+      'rss'     => __('RSS', 'comicpress'),
+      'archive' => __('Archive', 'comicpress')
+    );
   }
 
   /**
