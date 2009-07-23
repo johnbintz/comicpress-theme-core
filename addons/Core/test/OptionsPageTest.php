@@ -383,7 +383,53 @@ class CoreTest extends PHPUnit_Framework_TestCase {
             $this->assertEquals($value, $post->{$key});
           }
       }
-    }    
+    }
+  }
+  
+  function providerTestGetLayoutChoices() {
+    return array(
+      array(
+        array(),
+        array()
+      ),
+      array(
+        array(
+          'layout.php' => <<<FILE
+            Test
+FILE
+        ),
+        array()
+      ),
+      array(
+        array(
+          'layout.php' => <<<FILE
+/*
+Layout Name: Test
+*/ 
+FILE
+        ),
+        array('layout.php' => 'Test')
+      ),
+    );
+  }
+  
+  /**
+   * @dataProvider providerTestGetLayoutChoices
+   */
+  function testGetLayoutChoices($files, $expected_results) {
+    $core = $this->getMock('ComicPressAddonCore', array('_glob', '_file_get_contents'));
+    
+    _set_template_directory('/test');
+    
+    $file_names = array();
+    foreach (array_keys($files) as $file) { $file_names[] = '/test/layouts/' . $file; }
+    
+    $core->expects($this->once())->method('_glob')->with('/test/layouts/*')->will($this->returnValue($file_names));
+    foreach ($files as $file => $contents) {
+      $core->expects($this->once())->method('_file_get_contents')->with('/test/layouts/' . $file)->will($this->returnValue($contents)); 
+    }
+    
+    $this->assertEquals($expected_results, $core->get_layout_choices());
   }
 }
 
