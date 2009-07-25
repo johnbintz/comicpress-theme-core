@@ -3,11 +3,11 @@
 Template Name: Comic Archive
 */
 
-  global $comicpress;
+global $comicpress;
 
-  $comicpress->additional_stylesheets[] = '/style/archive-comic-calendar.css';
 
-  get_header();
+
+get_header();
 ?>
 
 <div id="content" class="narrowcolumn">

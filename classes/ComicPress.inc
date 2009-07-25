@@ -210,26 +210,28 @@ class ComicPress {
    * Get the first comic in a category.
    */
   function get_first_comic() {
-    return $this->get_terminal_post_in_category($this->get_all_comic_categories_as_cat_string());
+    return $this->get_terminal_post_in_category($category);
   }
   
   /**
    * Get the last comic in a category.
    */
-  function get_last_comic() {
-    return $this->get_terminal_post_in_category($this->get_all_comic_categories_as_cat_string(), false);  
+  function get_last_comic($category) {
+    return $this->get_terminal_post_in_category($category, false);  
   }
   
   /**
    * Get the comics necessary to build the navigation.
    * @tested
    */
-  function get_nav_comics() {
+  function get_nav_comics($override_category_id = null) {
     global $post;
+    
+    $category = is_numeric($override_category_id) ? $override_category_id : $this->comicpress_options['comic_category_id'];
     
     $comic_posts = array();
     foreach (array('first', 'last', 'previous', 'next') as $which) {
-      $comic_posts[$which] = $this->{"get_${which}_comic"}(); 
+      $comic_posts[$which] = $this->{"get_${which}_comic"}($category); 
     }
     
     $comic_posts['show_first']    = (trim($post->ID) != trim($comic_posts['first']->ID));
