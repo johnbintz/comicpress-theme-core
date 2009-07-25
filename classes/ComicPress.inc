@@ -196,7 +196,8 @@ class ComicPress {
   /**
    * Find the terminal post in a specific category.
    */
-  function get_terminal_post_in_category($category_id, $first = true) {
+  function get_terminal_post_in_category($category_id = null, $first = true) {
+    $category_id = is_null($category_id) ? $this->comicpress_options['comic_category_id'] : $category_id;
     $sort_order = $first ? "asc" : "desc";
     $terminal_comic_query =$this->_new_wp_query();
     $terminal_comic_query->query("showposts=1&order=${sort_order}&cat=${category_id}&status=publish");
@@ -209,15 +210,15 @@ class ComicPress {
   /**
    * Get the first comic in a category.
    */
-  function get_first_comic() {
-    return $this->get_terminal_post_in_category($category);
+  function get_first_comic($category_id = null) {
+    return $this->get_terminal_post_in_category($category_id);
   }
   
   /**
    * Get the last comic in a category.
    */
-  function get_last_comic($category) {
-    return $this->get_terminal_post_in_category($category, false);  
+  function get_last_comic($category_id = null) {
+    return $this->get_terminal_post_in_category($category_id, false);  
   }
   
   /**
@@ -374,6 +375,21 @@ class ComicPress {
       }
     }
     return $this->layouts;
+  }
+  
+  function get_previous_next_categories($category_id) {
+    $prev_next_categories = array();
+    
+    for ($i = 0, $il < count($this->category_tree); $i < $il; ++$i) {
+      $parts = explode("/", $this->category_tree);
+      if (count($parts) > 2) {
+        if (end($parts) == $category_id) {
+          
+        }
+      }
+    }
+    
+    return $prev_next_categories;
   }
 }
 

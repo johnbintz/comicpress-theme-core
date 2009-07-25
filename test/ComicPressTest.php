@@ -172,75 +172,45 @@ class ComicPressTest extends PHPUnit_Framework_TestCase {
     }
   }
   
-  function providerTestGetStorylineNavComics() {
+  function providerTestGetPreviousNextCategories() {
     return array(
       array(
         array(
-          '1' => array(
-            'first' => 8,
-            'previous' => 9,
-            'next' => 11,
-            'last' => 12
-          ),
-          '2' => array(
-            'first' => 10,
-            'previous' => false,
-            'next' => 15,
-            'last' => 15
-          ),
-          '3' => array(
-            'first' => 20,
-            'previous' => 20,
-            'next' => false,
-            'last' => 21
-          )
-        )
+          '0/1'
+        ),
+        1,
+        array()
       ),
       array(
-        '1' => array(
-          'first' => true,
-          'previous' => true,
-          'next' => true,
-          'last' => true
+        array(
+          '0/1',
+          '0/1/2'
         ),
-        '2' => array(
-          'first' => true,
-          'previous' => false,
-          'next' => false,
-          'last' => true
+        2,
+        array()
+      ),
+      array(
+        array(
+          '0/1',
+          '0/1/2',
+          '0/1/3',
         ),
-        '3' => array(
-          'first' => true,
-          'previous' => false,
-          'next' => false,
-          'last' => true
+        2,
+        array(
+          '1' => array('next' => 3)
         )
-      )
-    ); 
+      ),
+    );
   }
   
   /**
-   * @dataProvider providerTestGetStorylineNavComics
+   * @dataProvider providerTestGetPreviousNextCategories
    */
-  function testGetStorylineNavComics($category_info, $expected_category_results) {
-    $cp = $this->getMock('ComicPress', array('get_first_comic', 'get_last_comic', 'get_previous_comic', 'get_next_comic'));
-    foreach ($category_info as $category => $nav_comics) {
-      foreach ($nav_comics as $key => $result) {
-        $return = (is_numeric($result)) ? (object)array('ID' => $result) : false;
-        $cp->expects($this->once())->method("get_${key}_comic")->with($category)->will($this->returnValue($return));
-      }
-    }
+  function testGetPreviousNextCategories($category_tree, $current_category, $expected_prev_nexts) {
+    $this->cp->category_tree = $category_tree;
     
-    $post = (is_numeric($given_post)) ? (object)array('ID' => $given_post) : false;
-    
-    $comic_posts = $cp->get_nav_comics();
-    
-    foreach ($expected_shows as $show => $expected) {
-      $this->assertEquals($expected, $comic_posts["show_${show}"], $show);
-    }
-    
+    $this->assertEquals($expected_prev_nexts, $this->cp->get_previous_next_categories($current_category));
   }
-
   
   function providerTestGetLayoutChoices() {
     return array(
