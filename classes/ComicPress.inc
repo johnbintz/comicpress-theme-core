@@ -90,10 +90,10 @@ class ComicPress {
         z-index: 100;
         padding: 4px;
         border: solid #333 1px;
-        background-color: #447;
-        opacity: 0.1;
-        -moz-opacity: 0.1;
-        -khtml-opacity: 0.1;
+        background-color: #99d;
+        opacity: 0.2;
+        -moz-opacity: 0.2;
+        -khtml-opacity: 0.2;
         zoom: 1;
         cursor: crosshair
       }
@@ -106,7 +106,7 @@ class ComicPress {
     </style>
     <!--[if IE gte 6]>
       <style type="text/css">
-        .partial-helper { filter: alpha(opacity=10); }
+        .partial-helper { filter: alpha(opacity=20); }
         .partial-helper:hover { filter: alpha(opacity=100); }
       </style>
     <![endif]-->
