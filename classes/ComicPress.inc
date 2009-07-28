@@ -379,12 +379,35 @@ class ComicPress {
   
   function get_previous_next_categories($category_id) {
     $prev_next_categories = array();
-    
-    for ($i = 0, $il < count($this->category_tree); $i < $il; ++$i) {
-      $parts = explode("/", $this->category_tree);
+
+    for ($i = 0, $il = count($this->category_tree); $i < $il; ++$i) {
+      $parts = explode("/", $this->category_tree[$i]);
       if (count($parts) > 2) {
         if (end($parts) == $category_id) {
-          
+          while (count($parts) > 2) {
+            foreach (array(
+              'previous' => -1,
+              'next' => 1
+            ) as $key => $direction) {
+              $index = $i;
+              while (isset($this->category_tree[$index])) {
+                $index += $direction;
+                if (isset($this->category_tree[$index])) {
+                  $compare_parts = explode("/", $this->category_tree[$index]);
+                  if (count($compare_parts) == count($parts)) {
+                    $target_category = array_pop($compare_parts);
+                    $parent_category = array_pop($compare_parts);
+                    
+                    if (!isset($prev_next_categories[$parent_category])) {
+                      $prev_next_categories[$parent_category] = array();
+                    }
+                    $prev_next_categories[$parent_category][$key] = $target_category;
+                  }
+                }
+              }
+            }
+            array_pop($parts);
+          }
         }
       }
     }

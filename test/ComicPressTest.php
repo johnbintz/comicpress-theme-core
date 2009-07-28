@@ -200,6 +200,21 @@ class ComicPressTest extends PHPUnit_Framework_TestCase {
           '1' => array('next' => 3)
         )
       ),
+      array(
+        array(
+          '0/1',
+          '0/1/6',
+          '0/1/2',
+          '0/1/2/4',
+          '0/1/2/5',
+          '0/1/3',
+        ),
+        5,
+        array(
+          '2' => array('previous' => 4),
+          '1' => array('previous' => 6, 'next' => 3),
+        )
+      ),
     );
   }
   
