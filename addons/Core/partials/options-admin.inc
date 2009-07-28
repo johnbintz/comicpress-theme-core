@@ -2,7 +2,8 @@
   <h2><?php _e('ComicPress Config', 'comicpress') ?></h2>
   <form method="post">
     <input type="hidden" name="cp[_nonce]" value="<?php echo $nonce ?>" />
-    <table>
+    <h3><?php _e('Global Options', 'comicpress') ?></h3>
+    <table class="widefat fixed">
       <tr>
         <th scope="row" valign="top"><?php _e('Master Comic Category', 'comicpress') ?></th>
         <td>
@@ -93,10 +94,23 @@
           <?php } ?>
         </td>
       </tr>
+    </table>
+    <h3><?php _e('Admin Options', 'comicpress') ?></h3>
+    <table class="widefat fixed">
       <tr>
-        <td>&nbsp;</td>
-        <td><input type="submit" value="<?php _e("Submit Changes", 'comicpress') ?>" /></td>
+        <th scope="row">
+          Enable editing helpers
+        </th>
+        <td>
+          <?php
+            foreach (array(
+              "show_partials_info" => __('Show partials info', 'comicpress')
+            ) as $key => $label) { ?>
+              <label><input type="checkbox" name="cp[helpers][<?php echo $key ?>]" value="yes" <?php echo (($this->comicpress->comicpress_options['helpers'][$key] === true) ? 'checked="checked"' : '') ?> /> <?php echo $label ?></label>
+            <?php }
+          ?>
+        </td>
       </tr>
     </table>
-  </form>
+    <input type="submit" value="<?php _e("Submit Changes", 'comicpress') ?>" />  </form>
 </div>

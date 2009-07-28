@@ -95,7 +95,11 @@ function include_partial($partials = '') {
 
   $target = $comicpress->get_partial_path($partials);
   
-  if ($target !== false) { include($target); }
+  if ($target !== false) {
+    ob_start();
+    include($target);
+    echo apply_filters("comicpress_partial", ob_get_clean(), $target);
+  }
 }
 
 function in_comic_category() {

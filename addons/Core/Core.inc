@@ -5,7 +5,7 @@ class ComicPressAddonCore extends ComicPressAddon {
    * Initialize the addon.
    * @param ComicPress $comicpress The master ComicPress object.
    */
-  function init($comicpress) {
+  function init(&$comicpress) {
     add_action('admin_menu', array(&$this, 'setup_admin_interface'));
     add_filter('attachment_fields_to_edit', array(&$this, 'setup_comic_metadata_buttons'), 10, 2);
     add_action('show_comic', array(&$this, 'show_comic'), 1, 1);
@@ -372,6 +372,7 @@ class ComicPressAddonCore extends ComicPressAddon {
    * Update ComicPress options.
    */
   function handle_update_comicpress_options() {
+    $this->comicpress->comicpress_options['helpers'] = array();
     foreach ($this->comicpress->comicpress_options as $option => $value) {
       if (isset($_POST['cp'][$option])) {
         switch ($option) {
@@ -415,7 +416,12 @@ class ComicPressAddonCore extends ComicPressAddon {
           case 'category_page_usage':
           case 'layout';
             $this->comicpress->comicpress_options[$option] = $_POST['cp'][$option];
-            break;            
+            break;
+          case 'helpers':
+            foreach ($_POST['cp'][$option] as $helper => $set) {
+              $this->comicpress->comicpress_options['helpers'][$helper] = true;
+            }
+            break;
         }
       }
     }

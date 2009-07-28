@@ -14,7 +14,8 @@ class ComicPress {
     'blogpost_count'      => 10,
     'comic_space'         => 'comic_only',
     'category_page_usage' => 'archive_list',
-    'layout'              => 'classic.inc'
+    'layout'              => 'classic.inc',
+    'helpers'             => array()
   );
   
   var $additional_stylesheets = array();
@@ -56,6 +57,17 @@ class ComicPress {
     $this->sort_comic_categories();
     
     add_action('wp_head', array(&$this, 'wp_head'));
+
+    if (current_user_can('edit_themes')) {
+      if (!empty($this->comicpress_options['helpers'])) {
+        if (isset($this->comicpress_options['helpers']['show_partials_info'])) {
+          add_filter('comicpress_partial', array(&$this, 'comicpress_partial'), 10, 2);
+          add_action('wp_head', array(&$this, 'setup_comicpress_partial'));
+        }
+        
+        add_action('wp_footer', array(&$this, 'announce_activated_helpers'));
+      }
+    }
   }
 
   function wp_head() {
@@ -65,6 +77,43 @@ class ComicPress {
     foreach ($this->additional_javascripts as $uri) { ?>
       <script type="text/javascript" src="<?php echo get_template_directory_uri() . $uri ?>"></script>
     <?php }
+  }
+  
+  function announce_activated_helpers() {
+    echo "<center>[ <strong>Activated ComicPress helpers:</strong> " . implode(", ", array_keys($this->comicpress_options['helpers'])) . " ]</center>";
+  }
+  
+  function setup_comicpress_partial() { ?>
+    <style type="text/css">
+      .partial-helper {
+        position: absolute;
+        z-index: 100;
+        padding: 4px;
+        border: solid #333 1px;
+        background-color: #447;
+        opacity: 0.1;
+        -moz-opacity: 0.1;
+        -khtml-opacity: 0.1;
+        zoom: 1;
+        cursor: crosshair
+      }
+      
+      .partial-helper:hover {
+        opacity: 1;
+        -moz-opacity: 1;
+        -khtml-opacity: 1;
+      }
+    </style>
+    <!--[if IE gte 6]>
+      <style type="text/css">
+        .partial-helper { filter: alpha(opacity=10); }
+        .partial-helper:hover { filter: alpha(opacity=100); }
+      </style>
+    <![endif]-->
+  <?php }
+  
+  function comicpress_partial($content, $target) {
+    return '<div class="partial-helper">' . substr(realpath($target), strlen(realpath(get_template_directory())) + 1) . '</div>' . $content;
   }
 
   /**
