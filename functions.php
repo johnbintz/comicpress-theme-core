@@ -64,7 +64,7 @@ function comicpress_init() {
   global $post, $comicpress;
   
   if (!empty($post)) {
-    if (in_comic_category()) {
+    if (in_comic_category() && $comicpress->is_multicomic()) {
       $category_ids = wp_get_post_categories($post->ID);
       if (is_array($category_ids)) {
         foreach ($category_ids as $id) {

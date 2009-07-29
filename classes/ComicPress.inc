@@ -13,7 +13,7 @@ class ComicPress {
     'category_order'      => false,
     'blogpost_count'      => 10,
     'comic_space'         => 'comic_only',
-    'category_page_usage' => 'archive_list',
+    'category_usage'      => 'storyline',
     'layout'              => 'classic.inc',
     'helpers'             => array()
   );
@@ -68,6 +68,14 @@ class ComicPress {
         add_action('wp_footer', array(&$this, 'announce_activated_helpers'));
       }
     }
+  }
+
+  function needs_storyline_nav() {
+    return (count($this->category_tree) > 1) && ($this->comicpress_options['category_usage'] == "storyline");
+  }
+  
+  function is_multicomic() {
+    return $this->comicpress_options['category_usage'] == "multicomic";
   }
 
   function wp_head() {
@@ -462,6 +470,24 @@ class ComicPress {
     }
     
     return $prev_next_categories;
+  }
+  
+  function get_sorted_post_categories($override_post = null) {
+    global $post;
+    $post_to_use = (!empty($override_post)) ? $override_post : $post;
+    
+    $categories = wp_get_post_categories($post_to_use->ID);
+    
+    $sorted_categories = array();
+    
+    foreach ($this->category_tree as $node) {
+      $category_id = end(explode("/", $node));
+      if (in_array($category_id, $categories)) {
+        $sorted_categories[] = $category_id;
+      }
+    }
+    
+    return $sorted_categories;
   }
 }
 

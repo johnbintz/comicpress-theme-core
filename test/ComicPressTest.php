@@ -276,6 +276,37 @@ FILE
     
     $this->assertEquals($expected_results, $cp->get_layout_choices());
   }
+  
+  function providerTestGetSortedPostCategories() {
+    return array(
+      array(
+        array(1),
+        array('0/1'),
+        array(1)
+      ),
+      array(
+        array(2, 1),
+        array('0/1', '0/1/2'),
+        array(1, 2)
+      ),
+      array(
+        array(2, 1),
+        array('0/1', '0/1/3', '0/1/2'),
+        array(1, 2)
+      ),
+    );
+  }
+  
+  /**
+   * @dataProvider providerTestGetSortedPostCategories
+   */
+  function testGetSortedPostCategories($post_categories, $category_tree, $expected_sort_order) {
+    $this->cp->category_tree = $category_tree;
+    
+    wp_set_post_categories(1, $post_categories);
+    
+    $this->assertEquals($expected_sort_order, $this->cp->get_sorted_post_categories((object)array('ID' => 1)));
+  }
 }
 
 ?>

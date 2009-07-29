@@ -1,7 +1,7 @@
  <?php 
   global $comicpress, $nav_comics;
 
-  comicpress_get_header();
+  comicpress_init();
 
   ob_start();
 
@@ -12,7 +12,7 @@
   rewind_posts();
   
   $comic = ob_get_clean();
-  
+
   ob_start();
 
   $nav_comics = $comicpress->get_nav_comics();

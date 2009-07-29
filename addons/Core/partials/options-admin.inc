@@ -73,7 +73,7 @@
         </td>
       </tr>
       <tr>
-        <th scope="row">Insert into comic space:</th>
+        <th scope="row"><?php _e('Insert into comic space:', 'comicpress') ?></th>
         <td>
           <?php foreach (array(
             "comic_only" => __("The comic only, with post content below", 'comicpress'),
@@ -84,13 +84,13 @@
         </td>
       </tr>
       <tr>
-        <th scope="row">Use comic category pages as:</th>
+        <th scope="row"><?php _e('Use subcategories of the Master Comic Category as:', 'comicpress') ?></th>
         <td>
           <?php foreach (array(
-            "archive_list" => __("The normal way, as a list of posts in that category", 'comicpress'),
-            "comic_frontpage" => __("As the front page to the comics in that category", 'comicpress')
+            "storyline" => __("Storyline indicators for a single comic", 'comicpress'),
+            "multicomic" => __("Multicomic indicators, with direct descendents being separate comics", 'comicpress')
           ) as $value => $label) { ?>
-            <label><input type="radio" name="cp[category_page_usage]" value="<?php echo $value ?>" <?php echo ($this->comicpress->comicpress_options['category_page_usage'] == $value) ? 'checked="checked"' : "" ?> /> <?php echo $label ?></label><br />
+            <label><input type="radio" name="cp[category_usage]" value="<?php echo $value ?>" <?php echo ($this->comicpress->comicpress_options['category_usage'] == $value) ? 'checked="checked"' : "" ?> /> <?php echo $label ?></label><br />
           <?php } ?>
         </td>
       </tr>
