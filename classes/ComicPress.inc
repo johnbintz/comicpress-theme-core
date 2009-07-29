@@ -57,6 +57,8 @@ class ComicPress {
     $this->sort_comic_categories();
     
     add_action('wp_head', array(&$this, 'wp_head'));
+    add_filter('comicpress_nav', array(&$this, 'comicpress_nav'), 10, 2);
+    add_filter('comicpress_nav_fields', array(&$this, 'comicpress_nav_fields'));
 
     if (current_user_can('edit_themes')) {
       if (!empty($this->comicpress_options['helpers'])) {
@@ -76,6 +78,29 @@ class ComicPress {
   
   function is_multicomic() {
     return $this->comicpress_options['category_usage'] == "multicomic";
+  }
+  
+  function comicpress_nav($type, $content) {
+    return $type;
+  }
+  
+  function comicpress_nav_fields($nav_fields) {
+    $nav_fields = array(
+      'first'    => '&lsaquo;&lsaquo; ' . __('First', 'comicpress'),
+      'previous' => '&lsaquo; ' . __('Previous', 'comicpress'),
+      'next'     => __('Next', 'comicpress') . ' &rsaquo;',
+      'last'     => __('Last', 'comicpress') . ' &rsaquo;&rsaquo;'
+    );
+
+    if ($this->needs_storyline_nav()) {
+      $nav_fields = array_merge(
+        array('prior'    => '&lsaquo;&lsaquo; ' . __('Prior Storyline', 'comicpress')),
+        $nav_fields,
+        array('upcoming' => __('Upcoming Storyline', 'comicpress')  . ' &rsaquo;&rsaquo;')
+      );
+    }
+    
+    return $nav_fields;
   }
 
   function wp_head() {
@@ -297,6 +322,40 @@ class ComicPress {
     $comic_posts['show_next']     = (!empty($comic_posts['next']) && (trim($comic_posts['last']->ID) != trim($comic_posts['next']->ID)));
     $comic_posts['show_last']     = (trim($post->ID) != trim($comic_posts['last']->ID));
     
+    if ($this->needs_storyline_nav()) {
+      $comic_posts = array_merge($comic_posts, $this->get_storyline_nav_comics());
+    }
+    
+    return $comic_posts;
+  }
+  
+  function get_storyline_nav_comics() {
+    $comic_posts = array('prior' => false, 'upcoming' => false);
+    foreach ($this->get_sorted_post_categories() as $category_id) {
+      $prev_next_categories = $this->get_previous_next_categories($category_id);
+      
+      foreach ($prev_next_categories as $master_id => $cat_list) {
+        foreach ($cat_list as $which => $id) {
+          switch ($which) {
+            case "previous":
+              $terminal_post = $this->get_last_comic($id);
+              $which_field = "prior";
+              break;
+            case "next":
+              $terminal_post = $this->get_first_comic($id);
+              $which_field = "upcoming";
+              break;
+          }
+
+          if (is_object($terminal_post)) {
+            $comic_posts[$which_field] = $terminal_post;
+            $comic_posts["show_${which_field}"] =true;
+          }
+          
+          if (count($terminal_post) == 2) { break; }
+        }
+      }
+    }
     return $comic_posts;
   }
   

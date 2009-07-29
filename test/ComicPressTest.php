@@ -172,6 +172,106 @@ class ComicPressTest extends PHPUnit_Framework_TestCase {
     }
   }
   
+  function providerTestGetNavStorylineEnabled() {
+    return array(
+      array(
+        array('10'),
+        array(
+          '10' => array(
+            '10' => array('previous' => '9', 'next' => '11')
+          )
+        ),
+        array(
+          '9'  => true,
+          '11' => true
+        ),
+        array(
+          'prior' => true,
+          'upcoming' => true
+        )
+      ),
+      array(
+        array('10', '20'),
+        array(
+          '10' => array(
+            '10' => array('previous' => '7', 'next' => '3')
+          ),
+          '20' => array(
+            '20' => array('previous' => '9', 'next' => '11')
+          ),
+        ),
+        array(
+          '9'  => true,
+          '11' => true
+        ),
+        array(
+          'prior' => true,
+          'upcoming' => true
+        )
+      ),
+      array(
+        array('10'),
+        array(
+          '10' => array(
+            '10' => array('previous' => '7', 'next' => '3')
+          ),
+        ),
+        array(
+          '15'  => true,
+          '20' => true
+        ),
+        array(
+          'prior' => false,
+          'upcoming' => false
+        )
+      ),
+      array(
+        array('10'),
+        array(
+          '10' => array(
+            '7' => array('previous' => '15', 'next' => '20')
+          ),
+        ),
+        array(
+          '15'  => true,
+          '20' => true
+        ),
+        array(
+          'prior' => true,
+          'upcoming' => true
+        )
+      ),
+    );
+  }
+  
+  /**
+   * @dataProvider providerTestGetNavStorylineEnabled
+   */
+  function testGetNavComicsStorylineEnabled($post_categories, $previous_next_categories, $terminal_comics, $expected_results) {
+    $cp = $this->getMock('ComicPress', array('get_sorted_post_categories', 'get_previous_next_categories', 'get_last_comic', 'get_first_comic'));
+    
+    $cp->expects($this->once())->method('get_sorted_post_categories')->will($this->returnValue($post_categories));
+    $cp->expects($this->any())->method('get_previous_next_categories')->will($this->returnCallback(array(&$this, 'callbackGetPreviousNextCategories')));
+    $cp->expects($this->any())->method('get_first_comic')->will($this->returnCallback(array(&$this, 'callbackGetTerminalComic')));
+    $cp->expects($this->any())->method('get_last_comic')->will($this->returnCallback(array(&$this, 'callbackGetTerminalComic')));
+    
+    $this->_previous_next_categories = $previous_next_categories;
+    $this->_terminal_comics = $terminal_comics;
+    
+    $result = $cp->get_storyline_nav_comics();
+    foreach ($expected_results as $field => $value) {
+      $this->assertEquals($value, $result["show_${field}"]);
+    }
+  }
+  
+  function callbackGetPreviousNextCategories($id) {
+    return $this->_previous_next_categories[$id];
+  }
+  
+  function callbackGetTerminalComic($id) {
+    return isset($this->_terminal_comics[$id]) ? (object)array() : false;
+  }
+
   function providerTestGetPreviousNextCategories() {
     return array(
       array(
