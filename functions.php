@@ -64,18 +64,8 @@ function comicpress_init() {
   global $post, $comicpress;
   
   if (!empty($post)) {
-    if (in_comic_category() && $comicpress->is_multicomic()) {
-      $category_ids = wp_get_post_categories($post->ID);
-      if (is_array($category_ids)) {
-        foreach ($category_ids as $id) {
-          $category = get_category($id);
-          if (!empty($category)) {
-            if (is_dir($target = get_template_directory() . '/subthemes/' . $category->slug)) {
-              $comicpress->partial_paths[] = $target;
-            }
-          }
-        }
-      }
+    if (in_comic_category() && $comicpress->is_multicomic() && !is_index()) {
+      $comicpress->setup_multicomic_partial_paths($post->ID);
     }
   }
   

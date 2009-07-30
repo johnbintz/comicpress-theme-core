@@ -407,6 +407,22 @@ FILE
     
     $this->assertEquals($expected_sort_order, $this->cp->get_sorted_post_categories((object)array('ID' => 1)));
   }
+  
+  function testSetupMulticomicPartialPaths() {
+    $cp = $this->getMock('ComicPress', array('_is_dir'));
+    
+    wp_set_post_categories(1, array('2', '3'));
+    
+    add_category('2', (object)array('slug' => 'test-one'));
+    add_category('3', (object)array('slug' => 'test-two'));
+    
+    $cp->expects($this->at(0))->method('_is_dir')->with('/subthemes/test-one')->will($this->returnValue(true));
+    $cp->expects($this->at(1))->method('_is_dir')->with('/subthemes/test-two')->will($this->returnValue(false));
+    
+    $cp->setup_multicomic_partial_paths(1);
+    
+    $this->assertEquals(array('/subthemes/test-one'), $cp->partial_paths);
+  }
 }
 
 ?>

@@ -548,6 +548,23 @@ class ComicPress {
     
     return $sorted_categories;
   }
+  
+  function _is_dir($dir) { return is_dir($dir); }
+  
+  function setup_multicomic_partial_paths($post_id) {
+    $this->partial_paths = array();
+    $category_ids = wp_get_post_categories($post_id);
+    if (is_array($category_ids)) {
+      foreach ($category_ids as $id) {
+        $category = get_category($id);
+        if (!empty($category)) {
+          if ($this->_is_dir($target = get_template_directory() . '/subthemes/' . $category->slug)) {
+            $this->partial_paths[] = $target;
+          }
+        }
+      }
+    }
+  }
 }
 
 ?>
