@@ -173,7 +173,7 @@ class ComicPressAddonCore extends ComicPressAddon {
    */
   function render_comic_image_ordering() {
     if (isset($_REQUEST['post'])) {
-      $comic_post = new ComicPressComicPost($_REQUEST['post'], &$this->comicpress);
+      $comic_post = new ComicPressComicPost(get_post($_REQUEST['post']), &$this->comicpress);
       $ordering = $comic_post->normalize_comic_image_ordering();
       if (is_array($ordering)) {
         foreach ($ordering as $type => $attachment_ids) {
@@ -181,8 +181,9 @@ class ComicPressAddonCore extends ComicPressAddon {
           $index = 1;
           foreach ($attachment_ids as $attachment_id) {
             echo '<img src="' . wp_get_attachment_url($attachment_id) . '" width="60" height="60" />';
+            echo '<input size="3" type="text" name="cp[ordering][' . $type . '][' . $attachment_id . ']" value="' . $index . '" />';
+            ++$index;
           }
-          echo '<input type="text" name="cp[ordering][' . $type . '][' . $attachment_id . ']" value="' . $index . '" />';
         }
       } 
     }
@@ -434,6 +435,9 @@ class ComicPressAddonCore extends ComicPressAddon {
     if (isset($_POST['attachments'])) {
       //coming from media editor
       $this->handle_update_attachments();
+    } else if (isset($_POST['cp']['ordering'])) {
+      // comic ordering
+      $this->handle_update_comic_ordering();
     } else {
       //coming from us
       $this->handle_update_comicpress_options();

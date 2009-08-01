@@ -158,6 +158,23 @@ class ComicPressComicPostTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(array('comic' => array(3,2), 'rss' => array(5,4)), $result);
     $this->assertEquals('comic:3,2;rss:5,4', get_post_meta(1, 'comic_ordering', true));
   }
+  
+  function providerTestChangeComicImageOrdering() {
+  
+  }
+  
+  /**
+   * @dataProvider providerTestChangeComicImageOrdering
+   */
+  function testChangeComicImageOrdering($current_ordering, $revised_ordering, $expected_result) {
+    update_post_meta(1, 'comic_ordering', array('comic:1,2,3'));
+    
+    $this->p->change_comic_image_ordering(array(
+      'comic' => array(
+        '3' => 1, '2' => 3, '1' => 2
+      )
+    ));
+  }
 }
 
 ?>

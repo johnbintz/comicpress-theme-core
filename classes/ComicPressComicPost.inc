@@ -105,10 +105,10 @@ class ComicPressComicPost {
     return $orderings;
   }
   
-  function normalize_comic_image_ordering($post_id) {
+  function normalize_comic_image_ordering() {
     if (is_array($this->get_comic_image_attachments())) {
       $ordering_by_type = array();
-      $ordering_types = get_post_meta($post_id, 'comic_ordering', true);
+      $ordering_types = get_post_meta($this->post->id, 'comic_ordering', true);
       if (!empty($ordering_types)) { $ordering_types = $this->breakdown_comic_ordering_string($ordering_types); }
       
       $comic_image_ordering = array();
