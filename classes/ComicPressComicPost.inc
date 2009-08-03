@@ -169,38 +169,39 @@ class ComicPressComicPost {
   }
   
   function change_comic_image_ordering($requested_new_order) {
+    $orderings = array();
     if (($order_string = get_post_meta($this->post->ID, 'comic_ordering', true)) !== false) {
       $orderings = $this->breakdown_comic_ordering_string($order_string);
-      
-      $new_order = array();
-      
-      foreach ($orderings as $type => $current_order) {
-        $new_order[$type] = array();
-        $sort_by_position = array();
-        foreach ($requested_new_order[$type] as $id => $position) {
-          if (!isset($sort_by_position[$position])) {
-            $sort_by_position[$position] = array(); 
-          }
-          $sort_by_position[$position][] = $id;
+    }
+    
+    $new_order = array();
+    
+    foreach ($orderings as $type => $current_order) {
+      $new_order[$type] = array();
+      $sort_by_position = array();
+      foreach ($requested_new_order[$type] as $id => $position) {
+        if (!isset($sort_by_position[$position])) {
+          $sort_by_position[$position] = array(); 
         }
-        ksort($sort_by_position);
-        $requested_order = array();
-        foreach ($sort_by_position as $position => $ids) {
-          sort($ids);
-          $requested_order = array_merge($requested_order, $ids);
-        }
-        
-        $requested_order = array_merge($requested_order, array_diff($current_order, $requested_order));
-        
-        foreach ($requested_order as $requested_comic) {
-          if (in_array($requested_comic, $current_order)) {
-            $new_order[$type][] = $requested_comic;
-          }
-        }
+        $sort_by_position[$position][] = $id;
+      }
+      ksort($sort_by_position);
+      $requested_order = array();
+      foreach ($sort_by_position as $position => $ids) {
+        sort($ids);
+        $requested_order = array_merge($requested_order, $ids);
       }
       
-      update_post_meta($this->post->ID, 'comic_ordering', $this->build_comic_ordering_string($new_order));
+      $requested_order = array_merge($requested_order, array_diff($current_order, $requested_order));
+      
+      foreach ($requested_order as $requested_comic) {
+        if (in_array($requested_comic, $current_order)) {
+          $new_order[$type][] = $requested_comic;
+        }
+      }
     }
+    
+    update_post_meta($this->post->ID, 'comic_ordering', $this->build_comic_ordering_string($new_order));
   }
 }
 

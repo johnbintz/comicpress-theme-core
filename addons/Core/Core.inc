@@ -175,6 +175,7 @@ class ComicPressAddonCore extends ComicPressAddon {
     if (isset($_REQUEST['post'])) {
       $comic_post = new ComicPressComicPost(get_post($_REQUEST['post']), &$this->comicpress);
       $ordering = $comic_post->normalize_comic_image_ordering();
+      echo '<input type="hidden" name="cp[_nonce]" value="' . wp_create_nonce('comicpress')  . '" />';
       if (is_array($ordering)) {
         foreach ($ordering as $type => $attachment_ids) {
           echo '<h3>' . $this->comic_image_types[$type] . '</h3>';
@@ -428,6 +429,15 @@ class ComicPressAddonCore extends ComicPressAddon {
     }
   }
   
+  function handle_update_comic_ordering() {
+    if (is_numeric($_POST['post_ID'])) {
+      if ($post = get_post($_POST['post_ID'])) {
+        $comic_post = new ComicPressComicPost(&$post);
+        $comic_post->change_comic_image_ordering($_POST['cp']['ordering']);
+      }
+    }
+  }
+  
   /**
    * Handle an update.
    */
@@ -435,8 +445,22 @@ class ComicPressAddonCore extends ComicPressAddon {
     if (isset($_POST['attachments'])) {
       //coming from media editor
       $this->handle_update_attachments();
-    } else if (isset($_POST['cp']['ordering'])) {
+    } else if (is_array($_POST['cp']['ordering'])) {
       // comic ordering
+      
+      $meta_key_to_ignore = false;
+      foreach ($_POST['meta'] as $meta_key => $params) {
+        foreach ($params as $type => $value) {
+          if ($type == "key" && $value == "comic_ordering") {
+            $meta_key_to_ignore = $meta_key; break;
+          }
+        }
+      }
+      
+      if ($meta_key_to_ignore !== false) {
+        unset($_POST['meta'][$meta_key_to_ignore]);
+      }
+      
       $this->handle_update_comic_ordering();
     } else {
       //coming from us
