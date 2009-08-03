@@ -153,27 +153,50 @@ class ComicPressComicPostTest extends PHPUnit_Framework_TestCase {
     wp_insert_post((object)array('ID' => 1));
     update_post_meta(1, 'comic_ordering', "comic:3,2");
     
-    $result = $p->normalize_comic_image_ordering(1);
+    $p->post = (object)array('ID' => 1);
+    
+    $result = $p->normalize_comic_image_ordering();
     
     $this->assertEquals(array('comic' => array(3,2), 'rss' => array(5,4)), $result);
     $this->assertEquals('comic:3,2;rss:5,4', get_post_meta(1, 'comic_ordering', true));
   }
   
   function providerTestChangeComicImageOrdering() {
-  
+    return array(
+      array(
+        'comic:1,2,3',
+        array(
+          'comic' => array('1' => 3, '2' => 1, '3' => 2)
+        ),
+        'comic:2,3,1'
+      ),
+      array(
+        'comic:1,2,3',
+        array(
+          'comic' => array('1' => 2, '2' => 2, '3' => 1)
+        ),
+        'comic:3,1,2'
+      ),
+      array(
+        'comic:1,2,3',
+        array(
+          'comic' => array('1' => 1, '2' => 2)
+        ),
+        'comic:1,2,3'
+      ),
+    );
   }
   
   /**
    * @dataProvider providerTestChangeComicImageOrdering
    */
   function testChangeComicImageOrdering($current_ordering, $revised_ordering, $expected_result) {
-    update_post_meta(1, 'comic_ordering', array('comic:1,2,3'));
+    update_post_meta(1, 'comic_ordering', $current_ordering);
     
-    $this->p->change_comic_image_ordering(array(
-      'comic' => array(
-        '3' => 1, '2' => 3, '1' => 2
-      )
-    ));
+    $this->p->post = (object)array('ID' => 1);
+    $this->p->change_comic_image_ordering($revised_ordering);
+    
+    $this->assertEquals($expected_result, get_post_meta(1, 'comic_ordering', true));
   }
 }
 

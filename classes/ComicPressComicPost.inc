@@ -105,10 +105,20 @@ class ComicPressComicPost {
     return $orderings;
   }
   
+  function build_comic_ordering_string($order) {
+    $result_string_parts = array();
+    
+    foreach ($order as $key => $values) {
+      $result_string_parts[] = "${key}:" . implode(",", $values);
+    }
+    sort($result_string_parts);
+    return implode(";", $result_string_parts);
+  }
+  
   function normalize_comic_image_ordering() {
     if (is_array($this->get_comic_image_attachments())) {
       $ordering_by_type = array();
-      $ordering_types = get_post_meta($this->post->id, 'comic_ordering', true);
+      $ordering_types = get_post_meta($this->post->ID, 'comic_ordering', true);
       if (!empty($ordering_types)) { $ordering_types = $this->breakdown_comic_ordering_string($ordering_types); }
       
       $comic_image_ordering = array();
@@ -148,20 +158,49 @@ class ComicPressComicPost {
       }
       
       $result = array_merge($comic_image_ordering, $remaining_posts_to_sort);
-      $result_string_parts = array();
-      
-      foreach ($result as $key => $values) {
-        $result_string_parts[] = "${key}:" . implode(",", $values);
-      }
-      sort($result_string_parts);
-      
-      update_post_meta($post_id, 'comic_ordering', implode(";", $result_string_parts));
+
+      update_post_meta($this->post->ID, 'comic_ordering', $this->build_comic_ordering_string($result));
       return $result;
     }
   }
   
   function sort_remaining_comic_images($a, $b) {
     return strtotime($a->post_date) - strtotime($b->post_date); 
+  }
+  
+  function change_comic_image_ordering($requested_new_order) {
+    if (($order_string = get_post_meta($this->post->ID, 'comic_ordering', true)) !== false) {
+      $orderings = $this->breakdown_comic_ordering_string($order_string);
+      
+      $new_order = array();
+      
+      foreach ($orderings as $type => $current_order) {
+        $new_order[$type] = array();
+        $sort_by_position = array();
+        foreach ($requested_new_order[$type] as $id => $position) {
+          if (!isset($sort_by_position[$position])) {
+            $sort_by_position[$position] = array(); 
+          }
+          $sort_by_position[$position][] = $id;
+        }
+        ksort($sort_by_position);
+        $requested_order = array();
+        foreach ($sort_by_position as $position => $ids) {
+          sort($ids);
+          $requested_order = array_merge($requested_order, $ids);
+        }
+        
+        $requested_order = array_merge($requested_order, array_diff($current_order, $requested_order));
+        
+        foreach ($requested_order as $requested_comic) {
+          if (in_array($requested_comic, $current_order)) {
+            $new_order[$type][] = $requested_comic;
+          }
+        }
+      }
+      
+      update_post_meta($this->post->ID, 'comic_ordering', $this->build_comic_ordering_string($new_order));
+    }
   }
 }
 
