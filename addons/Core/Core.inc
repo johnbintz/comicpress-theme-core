@@ -140,7 +140,7 @@ class ComicPressAddonCore extends ComicPressAddon {
   /**
    * Show an archive comic.
    */
-  function show_archive($override_post = null, $format = "") {
+  function show_archive($override_post = null, $format = "%s<br />") {
     $this->show_media($override_post, "display_archive", $format);
   }
   

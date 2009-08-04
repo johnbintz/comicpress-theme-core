@@ -32,8 +32,15 @@ class ComicPressComicPost {
         if (get_post_meta($attachment_id, "comic_image_type", true) == $type) {
           $attachment = get_post($attachment_id);
           $title = (!empty($attachment->post_excerpt) ? $attachment->post_excerpt : $attachment->post_title);
+          
+          $url = wp_get_attachment_url($attachment->ID, '');
+          $sizes = image_downsize($attachment->ID, $size_type);
+          if ($sizes) {
+            $url = $sizes[0];
+          }
+          
           $output[] = apply_filters('comicpress_attached_image', 
-                                    sprintf($format, $this->get_comic_img_tag(wp_get_attachment_url($attachment->ID, ''), $size_type, array('title' => $title))),
+                                    sprintf($format, $this->get_comic_img_tag($url, $size_type, array('title' => $title))),
                                     $attachment_id,
                                     $i++);
           $found = true;

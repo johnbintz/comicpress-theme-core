@@ -70,6 +70,19 @@ class ComicPress {
         add_action('wp_footer', array(&$this, 'announce_activated_helpers'));
       }
     }
+    
+    add_filter('intermediate_image_sizes', array(&$this, 'intermediate_image_sizes'));
+    
+    foreach (array('comic', 'rss', 'archive', 'mini') as $size) {
+      list($w, $h) = explode("x", $this->comicpress_options["${size}_dimensions"]);
+      update_option("${size}_size_w", $w);
+      update_option("${size}_size_h", $h);
+      update_option("${size}_crop", 0);
+    }
+  }
+
+  function intermediate_image_sizes($sizes) {
+    return array_merge($sizes, array('comic', 'rss', 'archive', 'mini'));
   }
 
   function needs_storyline_nav() {
