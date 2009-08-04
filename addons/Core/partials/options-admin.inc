@@ -104,9 +104,10 @@
         <td>
           <?php
             foreach (array(
-              "show_partials_info" => __('Show partials info', 'comicpress')
+              "show_partials_info" => __('Show partials info', 'comicpress'),
+              "show_inline_comic_ordering" => __('Show inline comic ordering', 'comicpress')
             ) as $key => $label) { ?>
-              <label><input type="checkbox" name="cp[helpers][<?php echo $key ?>]" value="yes" <?php echo (($this->comicpress->comicpress_options['helpers'][$key] === true) ? 'checked="checked"' : '') ?> /> <?php echo $label ?></label>
+              <label><input type="checkbox" name="cp[helpers][<?php echo $key ?>]" value="yes" <?php echo (($this->comicpress->comicpress_options['helpers'][$key] === true) ? 'checked="checked"' : '') ?> /> <?php echo $label ?></label><br />
             <?php }
           ?>
         </td>

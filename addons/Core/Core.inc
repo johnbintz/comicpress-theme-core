@@ -17,6 +17,11 @@ class ComicPressAddonCore extends ComicPressAddon {
       add_action('template_redirect', array(&$this, 'go_to_random_comic'));
     }
 
+    if (current_user_can('edit_posts') && isset($comicpress->comicpress_options['helpers']['show_inline_comic_ordering'])) {
+      add_filter('comicpress_attached_image', array(&$this, 'comicpress_attached_image'), 10, 3);
+      add_filter('comicpress_display_attached_images', array(&$this, 'comicpress_display_attached_images'), 10, 2);
+    }
+
     $this->comicpress = $comicpress;
     
     $this->comic_image_types = array(  
@@ -25,6 +30,36 @@ class ComicPressAddonCore extends ComicPressAddon {
       'rss'     => __('RSS', 'comicpress'),
       'archive' => __('Archive', 'comicpress')
     );
+  }
+
+  function comicpress_attached_image($content, $attachment_id, $index) {
+    $content .= '<label class="comic-image-ordering">'
+              . __('Image index:', 'comicpress')
+              . ' '
+              . '<input type="text" name="cp[ordering][comic]['
+              . $attachment_id
+              . ']" value="'
+              . $index
+              . '" /></label>';
+              
+    return $content;
+  }
+  
+  function comicpress_display_attached_images($content, $post_id) {
+    $content = '<form method="post">'
+             . '<input type="hidden" name="cp[_nonce]" value="'
+             . wp_create_nonce('comicpress')
+             . '" />'
+             . '<input type="hidden" name="post_ID" value="'
+             . $post_id
+             . '" />'
+             . $content
+             . '<input type="submit" value="'
+             . __('Change image ordering', 'comicpress')
+             . '" />'
+             . '</form>';
+    
+    return $content;
   }
 
   /**
@@ -77,14 +112,14 @@ class ComicPressAddonCore extends ComicPressAddon {
    * @param object $override_post If not nul;, the post to use instead of the current Loop post.
    * @param string $method The method to call on the comic post.
    */
-  function show_media($override_post, $method) {
+  function show_media($override_post, $method, $format) {
     global $post;
     $post_to_use = (is_null($override_post)) ? $this->comicpress->get_last_comic() : $post;
     
     switch ($this->comicpress->comicpress_options['comic_space']) {
       case "comic_only":
         $comic_post = new ComicPressComicPost($post_to_use, &$this->comicpress);
-        $comic_post->{$method}();
+        $comic_post->{$method}($format);
         break;
       case "post_content":
         $t = $post;
@@ -98,22 +133,22 @@ class ComicPressAddonCore extends ComicPressAddon {
   /**
    * Show a comic.
    */
-  function show_comic($override_post = null) {
-    $this->show_media($override_post, "display_comics");
+  function show_comic($override_post = null, $format = "%s<br />") {
+    $this->show_media($override_post, "display_comics", $format);
   }
   
   /**
    * Show an archive comic.
    */
-  function show_archive($override_post = null) {
-    $this->show_media($override_post, "display_archive");
+  function show_archive($override_post = null, $format = "") {
+    $this->show_media($override_post, "display_archive", $format);
   }
   
   /**
    * Show an RSS comic.
    */
-  function show_rss($override_post = null) {
-    $this->show_media($override_post, "display_rss");
+  function show_rss($override_post = null, $format = "%s<br />") {
+    $this->show_media($override_post, "display_rss", $format);
   }
 
   /**
@@ -434,6 +469,10 @@ class ComicPressAddonCore extends ComicPressAddon {
       if ($post = get_post($_POST['post_ID'])) {
         $comic_post = new ComicPressComicPost(&$post);
         $comic_post->change_comic_image_ordering($_POST['cp']['ordering']);
+        
+        if (isset($this->comicpress->comicpress_options['helpers']['show_inline_comic_ordering']) && !is_admin()) {
+          $this->info(sprintf(__("Comic ordering for post #%s updated", 'comicpress'), $_POST['post_ID']));
+        }
       }
     }
   }
@@ -448,17 +487,19 @@ class ComicPressAddonCore extends ComicPressAddon {
     } else if (is_array($_POST['cp']['ordering'])) {
       // comic ordering
       
-      $meta_key_to_ignore = false;
-      foreach ($_POST['meta'] as $meta_key => $params) {
-        foreach ($params as $type => $value) {
-          if ($type == "key" && $value == "comic_ordering") {
-            $meta_key_to_ignore = $meta_key; break;
+      if (isset($_POST['meta'])) {
+        $meta_key_to_ignore = false;
+        foreach ($_POST['meta'] as $meta_key => $params) {
+          foreach ($params as $type => $value) {
+            if ($type == "key" && $value == "comic_ordering") {
+              $meta_key_to_ignore = $meta_key; break;
+            }
           }
         }
-      }
-      
-      if ($meta_key_to_ignore !== false) {
-        unset($_POST['meta'][$meta_key_to_ignore]);
+        
+        if ($meta_key_to_ignore !== false) {
+          unset($_POST['meta'][$meta_key_to_ignore]);
+        }
       }
       
       $this->handle_update_comic_ordering();

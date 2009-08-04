@@ -30,7 +30,7 @@ function __comicpress_init() {
             if (class_exists($classname)) {
               $addons[] = new $classname();
               end($addons)->init(&$comicpress);
-              if (is_admin()) {
+              if (current_user_can('edit_posts')) {
                 if (is_array($_REQUEST['cp'])) {
                   if (isset($_REQUEST['cp']['_nonce'])) {
                     if (wp_verify_nonce($_REQUEST['cp']['_nonce'], 'comicpress')) {
@@ -40,7 +40,11 @@ function __comicpress_init() {
                     }
                   }
                 }
-                add_action('admin_notices', array(end($addons), 'display_messages'));
+                if (is_admin()) {
+                  add_action('admin_notices', array(end($addons), 'display_messages'));
+                } else {
+                  add_action('wp_head', array(end($addons), 'display_messages'));
+                }
               }
             }
           }

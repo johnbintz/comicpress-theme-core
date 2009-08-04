@@ -21,17 +21,21 @@ class ComicPressComicPost {
     return $this->attachments;
   }
   
-  function display_attached_images($type = "comic", $limit = null, $size_type = null) {
+  function display_attached_images($type = "comic", $limit = null, $size_type = null, $format = "%s") {
     if (is_null($size_type)) { $size_type = $type; }
     $found = false;
     $ordering = $this->normalize_comic_image_ordering($this->post->ID);
+    $output = array();
     if (is_array($ordering[$type])) {
+      $i = 1;
       foreach ($ordering[$type] as $attachment_id) {        
         if (get_post_meta($attachment_id, "comic_image_type", true) == $type) {
           $attachment = get_post($attachment_id);
           $title = (!empty($attachment->post_excerpt) ? $attachment->post_excerpt : $attachment->post_title);
-          echo $this->get_comic_img_tag(wp_get_attachment_url($attachment->ID, ''), $size_type, array('title' => $title));
-          echo "<br />";
+          $output[] = apply_filters('comicpress_attached_image', 
+                                    sprintf($format, $this->get_comic_img_tag(wp_get_attachment_url($attachment->ID, ''), $size_type, array('title' => $title))),
+                                    $attachment_id,
+                                    $i++);
           $found = true;
           
           if (!is_null($limit)) {
@@ -40,20 +44,22 @@ class ComicPressComicPost {
         }
       }
     }
+    echo apply_filters('comicpress_display_attached_images', implode("\n", $output), $this->post->ID);
+    
     return $found;
   }
   
-  function display_comics() { $this->display_attached_images(); }
+  function display_comics($format) { $this->display_attached_images('comic', null, 'comic', $format); }
   
-  function display_archive() {
-    if (!$this->display_attached_images('archive', 1)) {
-      $this->display_attached_images('comic', 1, 'archive');
+  function display_archive($format) {
+    if (!$this->display_attached_images('archive', 1, 'archive', $format)) {
+      $this->display_attached_images('comic', 1, 'archive', $format);
     }
   }
 
-  function display_rss() {
-    if (!$this->display_attached_images('rss')) {
-      $this->display_attached_images('comic', null, 'rss');
+  function display_rss($format) {
+    if (!$this->display_attached_images('rss', null, 'rss', $formar)) {
+      $this->display_attached_images('comic', null, 'rss', $format);
     }
   }
 
