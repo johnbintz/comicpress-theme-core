@@ -18,6 +18,12 @@ function __comicpress_init() {
   $comicpress->init();
   $addons = array();
 
+  if (get_magic_quotes_gpc()) {
+    $_POST = stripslashes_deep($_POST);
+    $_GET = stripslashes_deep($_GET);
+    $_REQUEST = stripslashes_deep($_REQUEST);
+  }  
+  
   if (is_dir($addons_dir = (dirname(__FILE__) . '/addons'))) {
     $entries = glob($addons_dir . '/*');
     if (is_array($entries)) {
@@ -28,24 +34,26 @@ function __comicpress_init() {
             require_once($entry . "/${classname}.inc");
             $classname = "ComicPressAddon${classname}";
             if (class_exists($classname)) {
-              $addons[] = new $classname();
-              end($addons)->init(&$comicpress);
+              $addon =& new $classname();
+
+              $addon->init(&$comicpress);
               if (current_user_can('edit_posts')) {
                 if (is_array($_REQUEST['cp'])) {
                   if (isset($_REQUEST['cp']['_nonce'])) {
                     if (wp_verify_nonce($_REQUEST['cp']['_nonce'], 'comicpress')) {
-                      if (method_exists(end($addons), 'handle_update')) {
-                        end($addons)->handle_update();
+                      if (method_exists($addon, 'handle_update')) {
+                        $addon->handle_update();
                       }
                     }
                   }
                 }
                 if (is_admin()) {
-                  add_action('admin_notices', array(end($addons), 'display_messages'));
+                  add_action('admin_notices', array(&$addon, 'display_messages'));
                 } else {
-                  add_action('wp_head', array(end($addons), 'display_messages'));
+                  add_action('wp_head', array(&$addon, 'display_messages'));
                 }
               }
+              $addons[] = $addon;
             }
           }
         }
@@ -83,16 +91,23 @@ function comicpress_get_header() {
 function include_partial($partials = '') {
   global $comicpress, $post, $nav_comics;
   
-  if (!is_array($partials)) {
-    $partials = func_get_args();
-  }
-
-  $target = $comicpress->get_partial_path($partials);
+  if (!is_array($partials)) { $partials = func_get_args(); }
   
-  if ($target !== false) {
-    ob_start();
-    include($target);
-    echo apply_filters("comicpress_partial", ob_get_clean(), $target);
+  $content = $target = null;
+
+  if (($result = $comicpress->get_options_partial($partials)) !== false) {
+    list($target, $code) = $result;
+    ob_start(); eval('?>' . $code . '<?'); $content = ob_get_clean();
+  } else {
+    $target = $comicpress->get_partial_path($partials);
+    
+    if ($target !== false) {
+      ob_start(); include($target); $content = ob_get_clean();
+    }
+  }
+  
+  if (!empty($target) && !empty($content)) {
+    echo apply_filters("comicpress_partial", $content, $target);
   }
 }
 

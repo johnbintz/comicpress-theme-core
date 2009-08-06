@@ -15,7 +15,7 @@ class CoreTest extends PHPUnit_Framework_TestCase {
   function testShowOptionsPage() {
     $nonce = wp_create_nonce('comicpress');
   
-    $this->core->comicpress = $this->getMock('ComicPress');
+    $this->core->comicpress = $this->getMock('ComicPress', array('get_layout_choices'));
     $this->core->comicpress->expects($this->once())->method('get_layout_choices')->will($this->returnValue(array()));
   
     ob_start();
@@ -386,6 +386,38 @@ class CoreTest extends PHPUnit_Framework_TestCase {
             $this->assertEquals($value, $post->{$key});
           }
       }
+    }
+  }
+  
+  function providerTestHandleUpdateOverridePartial() {
+    return array(
+      array(
+        'hello',
+        'Update partial'
+      ),
+      array(
+        'meow',
+        'Delete override partial'
+      ),
+    );
+  }
+  
+  /**
+   * @dataProvider providerTestHandleUpdateOverridePartial
+   */
+  function testHandleUpdateOverridePartial($code, $action) {
+    $this->core->comicpress = (object)array(
+      'comicpress_options' => array(
+        'override_partials' => array(
+          'index' => '$hiss;'
+        )
+      )
+    );
+    
+    $this->core->handle_update_override_partial(array_merge(compact('code', 'action'), array('partial' => 'index')));
+    
+    if ($result && $action == "Update partial") {
+      $this->assertEquals($code, $this->core->comicpress->comicpress_options['override_partials']['index']);
     }
   }
 }

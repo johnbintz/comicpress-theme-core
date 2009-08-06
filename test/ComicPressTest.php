@@ -423,6 +423,34 @@ FILE
     
     $this->assertEquals(array('/subthemes/test-one'), $cp->partial_paths);
   }
+  
+  function providerTestGetOverridePartials() {
+    return array(
+      array(
+        array('partials'),
+        array('index'),
+        array('partials/index'),
+        array('partials/index', true)
+      ),
+      array(
+        array('partials'),
+        array('index'),
+        array('partials/single'),
+        false
+      )
+    );
+  }
+  
+  /**
+   * @dataProvider providerTestGetOverridePartials
+   */
+  function testGetOverridePartials($partial_paths, $requested_partials, $override_partials, $expected_result) {
+    $this->cp->partial_paths = $partial_paths;
+    foreach ($override_partials as $partial) {
+      $this->cp->comicpress_options['override_partials'][$partial] = true;
+    }
+    $this->assertEquals($expected_result, $this->cp->get_options_partial($requested_partials));
+  }
 }
 
 ?>

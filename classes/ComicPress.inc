@@ -15,7 +15,8 @@ class ComicPress {
     'comic_space'         => 'comic_only',
     'category_usage'      => 'storyline',
     'layout'              => 'classic.inc',
-    'helpers'             => array()
+    'helpers'             => array(),
+    'override_partials'   => array()
   );
   
   var $additional_stylesheets = array();
@@ -159,7 +160,7 @@ class ComicPress {
   <?php }
   
   function comicpress_partial($content, $target) {
-    return '<div class="partial-helper">' . substr(realpath($target), strlen(realpath(get_template_directory())) + 1) . '</div>' . $content;
+    return '<div class="partial-helper">' . str_replace(get_template_directory() . DIRECTORY_SEPARATOR, '', $target) . '</div>' . $content;
   }
 
   /**
@@ -461,6 +462,19 @@ class ComicPress {
     return false;
   }
   
+  function get_options_partial($partials) {
+    foreach ($partials as $partial) {
+      foreach ($this->partial_paths as $path) {
+        $target = str_replace(get_template_directory() . DIRECTORY_SEPARATOR, '', $path) . DIRECTORY_SEPARATOR . $partial;
+        
+        if (isset($this->comicpress_options['override_partials'][$target])) {
+          return array($target, $this->comicpress_options['override_partials'][$target]);
+        }
+      }
+    }
+    return false;
+  }
+  
   /**
    * Gather blog posts for the given index page.
    */
@@ -526,7 +540,7 @@ class ComicPress {
                   if (count($compare_parts) == count($parts)) {
                     $target_category = array_pop($compare_parts);
                     $parent_category = array_pop($compare_parts);
-                    
+
                     if (!isset($prev_next_categories[$parent_category])) {
                       $prev_next_categories[$parent_category] = array();
                     }

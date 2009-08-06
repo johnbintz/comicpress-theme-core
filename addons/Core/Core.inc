@@ -100,7 +100,8 @@ class ComicPressAddonCore extends ComicPressAddon {
    * Set up the admin interface and meta boxes.
    */
   function setup_admin_interface() {
-    add_theme_page(__("ComicPress Core", 'comicpress'), __('ComicPress Core', 'comicpress'), 'edit_themes', basename(__FILE__), array(&$this, 'render_admin'));
+    add_theme_page(__("ComicPress Core", 'comicpress'), __('ComicPress Core', 'comicpress'), 'edit_themes', 'comicpress/render_admin', array(&$this, 'render_admin'));
+    add_theme_page(__("Edit Partials", 'comicpress'), __('Edit Partials', 'comicpress'), 'edit_themes', 'comicpress/edit_partials', array(&$this, 'render_edit_partials'));
     
     if (isset($_REQUEST['post'])) {
       add_meta_box("comic-image-ordering", __("Comic Image Ordering", 'comicpress'), array(&$this, 'render_comic_image_ordering'), "post", "normal", "low");
@@ -201,6 +202,12 @@ class ComicPressAddonCore extends ComicPressAddon {
     $root_categories = $this->get_root_categories();
 
     include(dirname(__FILE__) . '/partials/options-admin.inc'); 
+  }
+  
+  function render_edit_partials() {
+    $nonce = wp_create_nonce('comicpress');
+
+    include(dirname(__FILE__) . '/partials/edit-partials.inc');
   }
 
   /**
@@ -476,7 +483,18 @@ class ComicPressAddonCore extends ComicPressAddon {
       }
     }
   }
-  
+
+  function handle_update_override_partial($info) {
+    switch ($info['action']) {
+      case __('Update partial', 'comicpress'):
+        $this->comicpress->comicpress_options['override_partials'][$info['partial']] = $info['code'];
+        break;
+      case __('Delete override partial', 'comicpress'):
+        unset($this->comicpress->comicpress_options['override_partials'][$info['partial']]);
+        break;
+    }
+  }
+
   /**
    * Handle an update.
    */
@@ -503,6 +521,12 @@ class ComicPressAddonCore extends ComicPressAddon {
       }
       
       $this->handle_update_comic_ordering();
+    } else if (isset($_POST['cp']['partial'])) {
+      $this->handle_update_override_partial($_POST['cp']);
+      $this->info(sprintf(__("Partial %s updated.", 'comicpress'), $_POST['cp']['partial']));
+
+      $this->comicpress->save();
+      $this->comicpress->init();
     } else {
       //coming from us
       $this->handle_update_comicpress_options();
@@ -513,7 +537,7 @@ class ComicPressAddonCore extends ComicPressAddon {
 
       $this->comicpress->save();
       
-      $this->info("ComicPress configuration updated.");
+      $this->info(__("ComicPress configuration updated.", 'comicpress'));
       
       $this->comicpress->init();
     }
