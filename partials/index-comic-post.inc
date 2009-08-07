@@ -1,6 +1,6 @@
 <div class="post-comic-head"></div>
 <div class="post-comic">
-  <?php include('nav.inc') ?>
+  <?php include_partial('nav') ?>
   <div class="comicdate"><?php the_date('F jS, Y') ?></div>
   <br class="clear" />
   <h2>
