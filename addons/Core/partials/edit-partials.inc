@@ -42,6 +42,9 @@
         if ($partial_name == $selected) { echo '<strong>'; }
         echo '<a href="' . add_query_arg('cp[partial]', $partial_name) . '">' . $partial_name . '</a>';
         if ($partial_name == $selected) { echo '</strong>'; }
+        if (isset($this->comicpress->comicpress_options['override_partials'][$partial_name])) {
+          echo "(@)";
+        }
       echo '</li>';
     }
     echo '</ul>';
@@ -50,7 +53,7 @@
     if ($_REQUEST['cp']['action'] == __('Delete override partial', 'comicpress')) {
       unset($_REQUEST['cp']['code']);
     }
-    
+
     if (isset($_REQUEST['cp']['code'])) {
       $partial_code = htmlentities($_REQUEST['cp']['code']);
     } else {
