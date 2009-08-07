@@ -575,7 +575,7 @@ class ComicPressAddonCore extends ComicPressAddon {
   function handle_update_override_partial($info) {
     switch ($info['action']) {
       case __('Update partial', 'comicpress'):
-        $this->comicpress->comicpress_options['override_partials'][$info['partial']] = $info['code'];
+        $this->comicpress->comicpress_options['override_partials'][$info['partial']] = stripslashes($info['code']);
         break;
       case __('Delete override partial', 'comicpress'):
         unset($this->comicpress->comicpress_options['override_partials'][$info['partial']]);

@@ -17,12 +17,6 @@ function __comicpress_init() {
   $comicpress = new ComicPress();
   $comicpress->init();
   $addons = array();
-
-  if (get_magic_quotes_gpc()) {
-    $_POST = array_map('stripslashes_deep', $_POST);
-    $_GET = array_map('stripslashes_deep', $_GET);
-    $_REQUEST = array_map('stripslashes_deep', $_REQUEST);
-  }  
   
   if (is_dir($addons_dir = (dirname(__FILE__) . '/addons'))) {
     $entries = glob($addons_dir . '/*');
