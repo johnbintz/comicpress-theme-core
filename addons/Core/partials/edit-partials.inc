@@ -72,10 +72,15 @@
     <form method="post">
       <input type="hidden" name="cp[_nonce]" value="<?php echo $nonce ?>" />
       <input type="hidden" name="cp[partial]" value="<?php echo $selected ?>" />
-      <textarea name="cp[code]" rows="20" style="width: 100%"><?php echo $partial_code ?></textarea>
+      <textarea id="editor" name="cp[code]" rows="20" style="width: 100%"><?php echo $partial_code ?></textarea>
       <input type="submit" class="button" name="cp[action]" value="<?php _e('Update partial', 'comicpress') ?>" />
       <input type="submit" class="button" name="cp[action]" value="<?php _e('Delete override partial', 'comicpress') ?>" onclick="return confirm('<?php _e('Are you sure?', 'comicpress') ?>')" />
     </form>
   </div>
+  <script type="text/javascript">
+    editAreaLoader.init({
+      id: "editor", syntax: "php", start_highlight: true
+    });
+  </script>
   <br style="clear: both" />
 </div>

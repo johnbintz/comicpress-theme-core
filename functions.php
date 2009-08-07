@@ -43,6 +43,7 @@ function __comicpress_init() {
                     if (wp_verify_nonce($_REQUEST['cp']['_nonce'], 'comicpress')) {
                       if (method_exists($addon, 'handle_update')) {
                         $addon->handle_update();
+                        $comicpress->load();
                       }
                     }
                   }
@@ -104,6 +105,8 @@ function include_partial($partials = '') {
     if ($target !== false) {
       ob_start(); include($target); $content = ob_get_clean();
     }
+
+    $target = str_replace(".inc", "", $target);
   }
   
   if (!empty($target) && !empty($content)) {
