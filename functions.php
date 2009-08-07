@@ -19,9 +19,9 @@ function __comicpress_init() {
   $addons = array();
 
   if (get_magic_quotes_gpc()) {
-    $_POST = stripslashes_deep($_POST);
-    $_GET = stripslashes_deep($_GET);
-    $_REQUEST = stripslashes_deep($_REQUEST);
+    $_POST = array_map('stripslashes_deep', $_POST);
+    $_GET = array_map('stripslashes_deep', $_GET);
+    $_REQUEST = array_map('stripslashes_deep', $_REQUEST);
   }  
   
   if (is_dir($addons_dir = (dirname(__FILE__) . '/addons'))) {
@@ -98,7 +98,7 @@ function include_partial($partials = '') {
 
   if (($result = $comicpress->get_options_partial($partials)) !== false) {
     list($target, $code) = $result;
-    ob_start(); eval('?>' . $code . '<?'); $content = ob_get_clean();
+    ob_start(); eval(' ?>' . $code . '<?php '); $content = ob_get_clean();
   } else {
     $target = $comicpress->get_partial_path($partials);
     
