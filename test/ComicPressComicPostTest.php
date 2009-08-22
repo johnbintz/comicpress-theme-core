@@ -151,7 +151,7 @@ class ComicPressComicPostTest extends PHPUnit_Framework_TestCase {
     $p->expects($this->any())->method('get_comic_image_attachments')->will($this->returnValue($attachments));
     
     wp_insert_post((object)array('ID' => 1));
-    update_post_meta(1, 'comic_ordering', "comic:3,2");
+    update_post_meta(1, 'comic_ordering', "comic:3");
     
     $p->post = (object)array('ID' => 1);
     
