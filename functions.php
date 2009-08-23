@@ -30,22 +30,27 @@ function __comicpress_init() {
             if (class_exists($classname)) {
               $addon =& new $classname();
 
-              $addon->init(&$comicpress);
-              if (current_user_can('edit_posts')) {
-                if (is_array($_REQUEST['cp'])) {
-                  if (isset($_REQUEST['cp']['_nonce'])) {
-                    if (wp_verify_nonce($_REQUEST['cp']['_nonce'], 'comicpress')) {
-                      if (method_exists($addon, 'handle_update')) {
-                        $addon->handle_update();
-                        $comicpress->load();
+              if (
+                $comicpress->comicpress_options['addons'][$addon->name] ||
+                $addon->is_addon_manager
+              ) {
+                $addon->init(&$comicpress);
+                if (current_user_can('edit_posts')) {
+                  if (is_array($_REQUEST['cp'])) {
+                    if (isset($_REQUEST['cp']['_nonce'])) {
+                      if (wp_verify_nonce($_REQUEST['cp']['_nonce'], 'comicpress')) {
+                        if (method_exists($addon, 'handle_update')) {
+                          $addon->handle_update();
+                          $comicpress->load();
+                        }
                       }
                     }
                   }
-                }
-                if (is_admin()) {
-                  add_action('admin_notices', array(&$addon, 'display_messages'));
-                } else {
-                  add_action('wp_head', array(&$addon, 'display_messages'));
+                  if (is_admin()) {
+                    add_action('admin_notices', array(&$addon, 'display_messages'));
+                  } else {
+                    add_action('wp_head', array(&$addon, 'display_messages'));
+                  }
                 }
               }
               $addons[] = $addon;
@@ -54,6 +59,10 @@ function __comicpress_init() {
         }
       }
     }
+  }
+  
+  foreach ($addons as $addon) {
+    if ($addon->is_addon_manager) { $addon->all_addons =& $addons; break; } 
   }
   
   $layouts = $comicpress->get_layout_choices();
