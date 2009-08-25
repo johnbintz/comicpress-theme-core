@@ -7,6 +7,7 @@
 
 class ComicPressAddonSearchTranscripts extends ComicPressAddon {
   var $custom_template_default = 'search-transcript.php';
+  var $name = "Search Transcripts";
 
   function init($comicpress) {
     add_filter('posts_join', array(&$this, 'search_custom_join'));

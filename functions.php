@@ -17,12 +17,6 @@ function __comicpress_init() {
   $comicpress = new ComicPress();
   $comicpress->init();
   $addons = array();
-
-  if (get_magic_quotes_gpc()) {
-    $_POST = stripslashes_deep($_POST);
-    $_GET = stripslashes_deep($_GET);
-    $_REQUEST = stripslashes_deep($_REQUEST);
-  }  
   
   if (is_dir($addons_dir = (dirname(__FILE__) . '/addons'))) {
     $entries = glob($addons_dir . '/*');
@@ -36,22 +30,27 @@ function __comicpress_init() {
             if (class_exists($classname)) {
               $addon =& new $classname();
 
-              $addon->init(&$comicpress);
-              if (current_user_can('edit_posts')) {
-                if (is_array($_REQUEST['cp'])) {
-                  if (isset($_REQUEST['cp']['_nonce'])) {
-                    if (wp_verify_nonce($_REQUEST['cp']['_nonce'], 'comicpress')) {
-                      if (method_exists($addon, 'handle_update')) {
-                        $addon->handle_update();
-                        $comicpress->load();
+              if (
+                $comicpress->comicpress_options['addons'][$addon->name] ||
+                $addon->is_addon_manager
+              ) {
+                $addon->init(&$comicpress);
+                if (current_user_can('edit_posts')) {
+                  if (is_array($_REQUEST['cp'])) {
+                    if (isset($_REQUEST['cp']['_nonce'])) {
+                      if (wp_verify_nonce($_REQUEST['cp']['_nonce'], 'comicpress')) {
+                        if (method_exists($addon, 'handle_update')) {
+                          $addon->handle_update();
+                          $comicpress->load();
+                        }
                       }
                     }
                   }
-                }
-                if (is_admin()) {
-                  add_action('admin_notices', array(&$addon, 'display_messages'));
-                } else {
-                  add_action('wp_head', array(&$addon, 'display_messages'));
+                  if (is_admin()) {
+                    add_action('admin_notices', array(&$addon, 'display_messages'));
+                  } else {
+                    add_action('wp_head', array(&$addon, 'display_messages'));
+                  }
                 }
               }
               $addons[] = $addon;
@@ -60,6 +59,10 @@ function __comicpress_init() {
         }
       }
     }
+  }
+  
+  foreach ($addons as $addon) {
+    if ($addon->is_addon_manager) { $addon->all_addons =& $addons; break; } 
   }
   
   $layouts = $comicpress->get_layout_choices();
@@ -98,7 +101,7 @@ function include_partial($partials = '') {
 
   if (($result = $comicpress->get_options_partial($partials)) !== false) {
     list($target, $code) = $result;
-    ob_start(); eval('?>' . $code . '<?'); $content = ob_get_clean();
+    ob_start(); eval(' ?>' . $code . '<?php '); $content = ob_get_clean();
   } else {
     $target = $comicpress->get_partial_path($partials);
     

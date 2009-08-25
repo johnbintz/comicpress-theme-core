@@ -170,10 +170,16 @@ class ComicPressComicPost {
         usort($remaining_posts_to_sort[$type], array(&$this, 'sort_remaining_comic_images')); 
       }
       
-      $result = array_merge($comic_image_ordering, $remaining_posts_to_sort);
+      foreach ($remaining_posts_to_sort as $type => $posts) {
+        if (is_array($comic_image_ordering[$type])) {
+          $comic_image_ordering[$type] = array_merge($comic_image_ordering[$type], $posts);
+        } else {
+          $comic_image_ordering[$type] = $posts; 
+        }
+      }
 
-      update_post_meta($this->post->ID, 'comic_ordering', $this->build_comic_ordering_string($result));
-      return $result;
+      update_post_meta($this->post->ID, 'comic_ordering', $this->build_comic_ordering_string($comic_image_ordering));
+      return $comic_image_ordering;
     }
   }
   

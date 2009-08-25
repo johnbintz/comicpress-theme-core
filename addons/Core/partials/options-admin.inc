@@ -69,7 +69,7 @@
               <?php }
             }
           ?>
-          <p><em>(categories can be modified on the Posts -> Categories page)</em></p>
+          <p><em><?php _e('(categories can be modified on the Posts -> Categories page)', 'comicpress') ?></em></p>
         </td>
       </tr>
       <tr>
@@ -98,20 +98,51 @@
     <h3><?php _e('Admin Options', 'comicpress') ?></h3>
     <table class="widefat fixed">
       <tr>
-        <th scope="row">
-          Enable editing helpers
-        </th>
+        <th scope="row"><?php _e('Enable editing helpers', 'comicpress') ?></th>
         <td>
           <?php
             foreach (array(
               "show_partials_info" => __('Show partials info', 'comicpress'),
               "show_inline_comic_ordering" => __('Show inline comic ordering', 'comicpress')
             ) as $key => $label) { ?>
-              <label><input type="checkbox" name="cp[helpers][<?php echo $key ?>]" value="yes" <?php echo (($this->comicpress->comicpress_options['helpers'][$key] === true) ? 'checked="checked"' : '') ?> /> <?php echo $label ?></label><br />
+              <label>
+                <input type="checkbox"
+                       name="cp[helpers][<?php echo $key ?>]"
+                       value="yes"
+                       <?php echo (($this->comicpress->comicpress_options['helpers'][$key] === true) ? 'checked="checked"' : '') ?> />
+                <?php echo $label ?>
+              </label>
+              <br />
             <?php }
           ?>
         </td>
       </tr>
+      <?php if (is_array($this->all_addons)) { ?>
+        <tr>
+          <th scope="row"><?php _e('Enable addons', 'comicpress') ?></th>
+          <td>
+            <?php
+              foreach ($this->all_addons as $addon) {
+                if (!empty($addon->name)) {                
+                  $enabled = ($addon->is_addon_manager !== true);
+                  $checked = $enabled && $this->comicpress->comicpress_options['addons'][$addon->name];
+                  ?>
+                  
+                  <label>
+                    <input type="checkbox"
+                           name="cp[addons][<?php echo $addon->name ?>]"
+                           value="yes"
+                           <?php echo !$enabled ? 'disabled="disabled"' : '' ?>
+                           <?php echo $checked ? 'checked="checked"' : '' ?> />
+                    <?php echo $addon->name ?>
+                  </label><br />
+                <?php }
+              }
+            ?>
+          </td>
+        </tr>
+      <?php } ?>      
     </table>
-    <input type="submit" value="<?php _e("Submit Changes", 'comicpress') ?>" />  </form>
+    <input class="button" type="submit" value="<?php _e('Submit Changes', 'comicpress') ?>" />
+  </form>
 </div>

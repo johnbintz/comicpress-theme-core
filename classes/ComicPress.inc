@@ -16,7 +16,8 @@ class ComicPress {
     'category_usage'      => 'storyline',
     'layout'              => 'classic.inc',
     'helpers'             => array(),
-    'override_partials'   => array()
+    'override_partials'   => array(),
+    'addons'              => array()
   );
   
   var $additional_stylesheets = array();
