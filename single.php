@@ -26,8 +26,6 @@
       } else {
         include_partial('single-blog-post');
       }
-      
-      comments_template();
     }
   } else {
     include_partial('single-no-matches');

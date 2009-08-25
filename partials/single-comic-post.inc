@@ -1,7 +1,7 @@
 <div class="post-comic-head"></div>
 <div class="post-comic" id="post-<?php the_ID() ?>">
   <div class="comicdate">
-    <?php include('nav.inc') ?>
+    <?php include_partial('nav') ?>
     <?php the_time('F jS, Y') ?>
   </div>
   <?php if (get_option('comicpress-enable-storyline-support') == 1) { ?>
@@ -19,3 +19,4 @@
   <br class="clear-margins" />
 </div>
 <div class="post-comic-foot"></div>
+<?php comments_template(); ?>

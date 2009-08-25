@@ -18,3 +18,4 @@
   <br class="clear-margins" />
 </div>
 <div class="post-foot"></div>
+<?php comments_template(); ?>
