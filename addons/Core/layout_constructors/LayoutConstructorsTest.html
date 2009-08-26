@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <title>LayoutConstructorsTest</title>
+    <script type="text/javascript" src="testcase.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.0.3/prototype.js"></script>
+    <script type="text/javascript" src="FloatedDivConstructor.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      var FloatedDivConstructorTest = TestCase.create({
+        name: "Floated Div Constructor Test",
+
+        testGenerateHTML: function() {
+          var myThis = this;
+          [
+            {
+              'input': {},
+              'expected_result': '<div id="container">\n  <div id="header"><?php echo $header ?></div>\n  <div id="comic"><?php echo $comic ?></div>\n  <div id="body"><?php echo $body ?></div>\n  <div id="footer"><?php echo $footer ?></div>\n</div>'
+            },
+            {
+              'input': {'left': [0, 0]},
+              'expected_result': '<div id="container">\n  <div id="sidebar-container">\n    <div id="left-sidebar"><?php echo $left_sidebar ?></div>\n    <div id="header"><?php echo $header ?></div>\n    <br class="clear" />\n  </div>\n  <div id="comic"><?php echo $comic ?></div>\n  <div id="body"><?php echo $body ?></div>\n  <div id="footer"><?php echo $footer ?></div>\n</div>'
+            },
+            {
+              'input': {'left': [0, 1]},
+              'expected_result': '<div id="container">\n  <div id="sidebar-container">\n    <div id="left-sidebar"><?php echo $left_sidebar ?></div>\n    <div id="header"><?php echo $header ?></div>\n    <div id="comic"><?php echo $comic ?></div>\n    <br class="clear" />\n  </div>\n  <div id="body"><?php echo $body ?></div>\n  <div id="footer"><?php echo $footer ?></div>\n</div>'
+            },
+            {
+              'input': {'right': [0, 1]},
+              'expected_result': '<div id="container">\n  <div id="sidebar-container">\n    <div id="right-sidebar"><?php echo $right_sidebar ?></div>\n    <div id="header"><?php echo $header ?></div>\n    <div id="comic"><?php echo $comic ?></div>\n    <br class="clear" />\n  </div>\n  <div id="body"><?php echo $body ?></div>\n  <div id="footer"><?php echo $footer ?></div>\n</div>'
+            }
+          ].each(function(info) {
+            var f = new FloatedDivConstructor();
+            myThis.assertEqual(info.expected_result, f.generate_html(info.input));
+          });
+        },
+
+        testCreateCSS: function() {
+          var myThis = this;
+          [
+            {
+              'input': {},
+              'expected_result': ''
+            },
+            {
+              'input': {'left': {'width': '200'}},
+              'expected_result': '#sidebar-container { overflow: hidden }\n#left-sidebar { float: left; display: inline; width: 200px }\n.clear { clear: both }'
+            },
+            {
+              'input': {'left': {'width': '200'}, 'right': {'width': '100'}},
+              'expected_result': '#sidebar-container { overflow: hidden }\n#left-sidebar { float: left; display: inline; width: 200px }\n#right-sidebar { float: right; display: inline; width: 100px }\n.clear { clear: both }'
+            }
+          ].each(function(info) {
+            var f = new FloatedDivConstructor();
+            myThis.assertEqual(info.expected_result, f.generate_css(info.input));
+          });
+        }
+      });
+
+      FloatedDivConstructorTest.run();
+    </script>
+  </body>
+</html>
