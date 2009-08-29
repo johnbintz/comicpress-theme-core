@@ -9,7 +9,6 @@ class ComicPressAddonBookmarkWidget extends ComicPressAddon {
     $this->comicpress = $comicpress;
 
     add_action('wp_head', array(&$this, 'wp_head'));
-    $this->comicpress->additional_javascripts[] = '/js/bookmark.js';
     
     wp_enqueue_script('prototype');
     wp_enqueue_script('cookiejar', get_template_directory_uri() . '/js/cookiejar.js', array('prototype'));

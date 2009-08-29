@@ -16,7 +16,9 @@ var LayoutEditor = Class.create({
     this.section_handles = [];
     for (i = 0, il = this.sections.length; i < il; ++i) {
       var sh = Math.floor(this.height * this.sections[i][1]);
-      var section = new Element("div", { 'style': "height: " + sh + "px" });
+      var section = new Element("div", { 'style': "height: " + sh + "px", "class": this.sections[i][0] });
+      var inside = new Element("div");
+      section.insert(inside);
       this.container.insert(section);
       this.section_handles.push(section);
     }
@@ -25,6 +27,8 @@ var LayoutEditor = Class.create({
     var myThis = this;
     $w('left right').each(function(which) {
       myThis.sidebar_handles[which] = new Element("div", { 'style': 'position: absolute; z-index: 1' });
+      var inside = new Element("div");
+      myThis.sidebar_handles[which].insert(inside);
       myThis.container.insert(myThis.sidebar_handles[which]);
     });
   },
