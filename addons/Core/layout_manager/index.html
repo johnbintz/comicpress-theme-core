@@ -13,20 +13,29 @@
         width: 100%;
         height: 100%      
       }
+      
+      #layout-editor-container div.top,
+      #layout-editor-container div.bottom {
+        height: 5px;
+        background: #999;
+        position: absolute;
+        border: none
+      }
+      
+      #layout-editor-container div.top {
+        cursor: n-resize 
+      }
+
+      #layout-editor-container div.bottom {
+        cursor: s-resize 
+      }
     </style>
   </head>
   <body>
     <div id="layout-editor-container" style="width: 300px"></div>
     <form id="layout-editor-controls">
       <h3>Sidebars</h3>
-      <?php foreach (array(
-        'left' => array(
-          'name' => 'Left Sidebar'
-        )
-      ) as $key => $info) { ?>
-        <h4><?php echo $info['name'] ?></h4>
-          
-      <?php } ?>
+      
     </form>
   </body>
 </html>

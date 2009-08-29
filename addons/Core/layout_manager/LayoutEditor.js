@@ -26,15 +26,97 @@ var LayoutEditor = Class.create({
     this.sidebar_handles = {};
     var myThis = this;
     $w('left right').each(function(which) {
-      myThis.sidebar_handles[which] = new Element("div", { 'style': 'position: absolute; z-index: 1' });
+      var handle = new Element("div", { 'style': 'position: absolute; z-index: 1' });      
       var inside = new Element("div");
-      myThis.sidebar_handles[which].insert(inside);
-      myThis.container.insert(myThis.sidebar_handles[which]);
+      
+      var t = new Element("div", { 'class': 'top' });
+      var b = new Element("div", { 'class': 'bottom' });
+      
+      handle.align_bottom = function() {
+        var h = handle.getDimensions()['height'];
+        b.style.top = h - 5;
+      };
+      
+      handle.insert(t);
+      handle.insert(b);      
+      handle.insert(inside);
+      myThis.container.insert(handle);
+      
+      var generate_handle_move = function(g) {
+        return function(e) {
+          Event.stop(e);
+          
+          var cy = handle.viewportOffset()['top'];
+          var ch = handle.getDimensions()['height'];          
+          var ny, nh;
+          
+          switch(g.className) {
+            case 'top':
+              ny = e.clientY;
+              nh = ch + (cy - ny);
+              break;
+            case 'bottom': 
+              nh = ch + (cy + ch - e.clientY);
+              break;
+          }
+          if (nh < 5) { nh = 5; }
+          handle.style.top = ny;
+          handle.style.height = nh;
+
+          handle.align_bottom();
+        };
+      };
+      
+      var snap_handle = function() {
+        var ty = handle.viewportOffset()['top'];
+        var by = ty + handle.getDimensions()['height'];
+        
+        var i, il;
+        var h = 0;
+        var closest = { 'top': null, 'bottom': null };
+        for (i = 0, il = myThis.section_handles.length; i < il; ++i) {
+          var distance = { 'top': null, 'bottom': null };
+          distance.top = Math.abs(ty - h);
+          h += myThis.section_handles[i].getDimensions()['height'];
+          distance.bottom = Math.abs(by - h);
+          for (field in closest) {
+            if (closest[field] == null) { closest[field] = [distance[field], i]; }
+            if (distance[field] < closest[field][0]) {
+              closest[field] = [distance[field], i]; 
+            }
+          }
+        }
+        top.console.log(closest);
+        myThis.info.change('sidebars', which, [closest.top[1], closest.bottom[1]]);
+      };
+      
+      inside.observe('mousedown', function(e) { Event.stop(e); });
+      handle.observe('mousedown', function(e) { Event.stop(e); });
+      
+      var t_handle = generate_handle_move(t);
+      var b_handle = generate_handle_move(b);
+      
+      t.observe('mousedown', function(e) {
+        Event.observe(document.body, 'mousemove', t_handle);
+      });
+      b.observe('mousedown', function(e) {
+        Event.observe(document.body, 'mousemove', b_handle);         
+      });
+      Event.observe(document.body, 'mouseup', function() {
+        Event.stopObserving(document.body, 'mousemove', t_handle);
+        Event.stopObserving(document.body, 'mousemove', b_handle);
+        snap_handle();
+      });
+      
+      myThis.sidebar_handles[which] = handle;
     });
   },
   'register_info': function(info) {
     this.info = info;
-    this.info.onchange = this.draw;
+    var myThis = this;
+    this.info.onchange = function() {
+      myThis.draw_sidebars();  
+    }
   },
   'draw': function() {
     this.draw_sidebars();  
@@ -69,6 +151,7 @@ var LayoutEditor = Class.create({
         for (param in field_map) {
           myThis.sidebar_handles[field].style[param] = field_map[param];
         }
+        myThis.sidebar_handles[field].align_bottom();
       }
     });
   }
