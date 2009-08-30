@@ -41,55 +41,62 @@ var LayoutEditor = Class.create({
       handle.insert(b);      
       handle.insert(inside);
       myThis.container.insert(handle);
+      myThis.sidebar_handles[which] = handle;
       
       var generate_handle_move = function(g) {
         return function(e) {
           Event.stop(e);
           
-          var cy = handle.viewportOffset()['top'];
+          var cy = handle.viewportOffset()['top'] + document.viewport.getScrollOffsets()['top'];
           var ch = handle.getDimensions()['height'];          
           var ny, nh;
           
           switch(g.className) {
             case 'top':
-              ny = e.clientY;
+              ny = e.clientY + document.viewport.getScrollOffsets()['top'];
               nh = ch + (cy - ny);
               break;
-            case 'bottom': 
-              nh = ch + (cy + ch - e.clientY);
+            case 'bottom':
+              ny = cy; 
+              nh = e.clientY - cy + document.viewport.getScrollOffsets()['top'];
               break;
           }
           if (nh < 5) { nh = 5; }
           handle.style.top = ny;
           handle.style.height = nh;
 
+          var i, il;
+          var h = 0;
+          var closest = { 'top': null, 'bottom': null };
+          
+          var ty = ny;
+          var by = ty + nh;
+          
+          for (i = 0, il = myThis.section_handles.length; i < il; ++i) {
+            var distance = { 'top': null, 'bottom': null };
+            distance.top = Math.abs(ty - h);
+            h += myThis.section_handles[i].getDimensions()['height'];
+            distance.bottom = Math.abs(by - h);
+            for (field in closest) {
+              var ty = handle.viewportOffset()['top'];
+              var by = ny + handle.getDimensions()['height'];
+              
+              if (closest[field] == null) { closest[field] = [distance[field], i]; }
+              if (distance[field] < closest[field][0]) {
+                closest[field] = [distance[field], i]; 
+              }
+            }
+          }
+          if (closest['bottom'][1] < closest['top'][1]) {
+            closest['bottom'][1] = closest['top'][1]; 
+          }
+          myThis.info.info[which].start = closest['top'][1];
+          myThis.info.info[which].end = closest['bottom'][1];
+          
           handle.align_bottom();
         };
       };
-      
-      var snap_handle = function() {
-        var ty = handle.viewportOffset()['top'];
-        var by = ty + handle.getDimensions()['height'];
-        
-        var i, il;
-        var h = 0;
-        var closest = { 'top': null, 'bottom': null };
-        for (i = 0, il = myThis.section_handles.length; i < il; ++i) {
-          var distance = { 'top': null, 'bottom': null };
-          distance.top = Math.abs(ty - h);
-          h += myThis.section_handles[i].getDimensions()['height'];
-          distance.bottom = Math.abs(by - h);
-          for (field in closest) {
-            if (closest[field] == null) { closest[field] = [distance[field], i]; }
-            if (distance[field] < closest[field][0]) {
-              closest[field] = [distance[field], i]; 
-            }
-          }
-        }
-        top.console.log(closest);
-        myThis.info.change('sidebars', which, [closest.top[1], closest.bottom[1]]);
-      };
-      
+            
       inside.observe('mousedown', function(e) { Event.stop(e); });
       handle.observe('mousedown', function(e) { Event.stop(e); });
       
@@ -105,18 +112,19 @@ var LayoutEditor = Class.create({
       Event.observe(document.body, 'mouseup', function() {
         Event.stopObserving(document.body, 'mousemove', t_handle);
         Event.stopObserving(document.body, 'mousemove', b_handle);
-        snap_handle();
       });
-      
-      myThis.sidebar_handles[which] = handle;
+    });
+    
+    Event.observe(document.body, 'mouseup', function() {
+      myThis.draw_sidebars();
     });
   },
   'register_info': function(info) {
     this.info = info;
     var myThis = this;
-    this.info.onchange = function() {
-      myThis.draw_sidebars();  
-    }
+    this.info.onChange = function() {
+      myThis.draw();
+    };
   },
   'draw': function() {
     this.draw_sidebars();  
@@ -124,62 +132,85 @@ var LayoutEditor = Class.create({
   'draw_sidebars': function() {
     var myThis = this;
     $w('left right').each(function(field) {
-      if (myThis.info.sidebars[field]) {
-        var fi = myThis.info.sidebars[field];
-        var t = myThis.section_handles[fi[0]].viewportOffset()['top'];
+      if (myThis.info.info[field].active) {
+        myThis.sidebar_handles[field].show();
+        var fi = myThis.info.info[field];
+        var t = myThis.section_handles[fi.start].viewportOffset()['top'] + document.viewport.getScrollOffsets()['top'];
         var h = 0;
         var i;
-        for (i = fi[0]; i <= fi[1]; ++i) {
+        for (i = fi.start; i <= fi.end; ++i) {
           h += myThis.section_handles[i].getDimensions()['height'];
         }
-        var w = Math.floor((myThis.info.widths[field] / myThis.info.widths.body) * myThis.width);
+        var w = Math.floor((fi.width / myThis.info.info.body) * myThis.width);
         var l;
         switch (field) {
           case 'left':
-            l = myThis.container.viewportOffset()['left'];
-            break;
+            l = myThis.container.viewportOffset()['left']; break;
           case 'right':
-            l = myThis.container.viewportOffset()['left'] + myThis.width - w;
-            break;
+            l = myThis.container.viewportOffset()['left'] + myThis.width - w; break;
         }
-        var field_map = {
-          'top': t,
-          'left': l,
-          'width': w,
-          'height': h
-        };
+        var field_map = { 'top': t, 'left': l, 'width': w, 'height': h };
         for (param in field_map) {
           myThis.sidebar_handles[field].style[param] = field_map[param];
         }
         myThis.sidebar_handles[field].align_bottom();
+      } else {
+        myThis.sidebar_handles[field].hide();
       }
     });
+    myThis.info.do_sidebar_drag();
   }
 });
+
 
 var LayoutInfo = Class.create({
-  'sidebars': {
-    'left': [1, 3], 'right': [2, 3]
-  },
-  'widths': {
-    'body': 800, 'left': 200, 'right': 175
-  },  
-  'change': function(group, detail, value) {
-    if (this[group]) {
-      if (this[group][detail]) {
-        this[group][detail] = value;
-        this.onchange(); 
-      } 
+  'info': { 
+    'body': 800,
+    'left': {
+      'active': true, 
+      'start':  0,
+      'end':    3,
+      'width':  200
+    }, 
+    'right': {
+      'active': true, 
+      'start':  0,
+      'end':    3,
+      'width':  175
     }
-  }
+  },
+  'register_form': function(target) {
+    var myThis = this;
+    $w('left right').each(function(which) {
+      var i;
+      var get_v = function(v) { return v; }
+      for (i in myThis.info[which]) {
+        var my_which = get_v(which);
+        var f = target.select('#' + which + "-" + i).pop();        
+        if (f) {
+          switch (i) {
+            case 'active':
+              f.checked = myThis.info[my_which]['active'];
+              f.observe('click', function(e) {
+                myThis.info[my_which]['active'] = e.currentTarget.checked;
+                myThis.onChange();
+              });
+              break;
+            case 'width':
+              f.value = myThis.info[my_which]['width'];
+              f.observe('keyup', function(e) {
+                myThis.info[my_which]['width'] = e.currentTarget.value.replace(/[^0-9]/, '');
+                myThis.onChange();
+              });
+              break; 
+          }  
+        }
+      }
+    });
+  },
+  'do_sidebar_drag': function() {
+    this.onSidebarDrag();
+  },
+  'onChange': function() {}
 });
 
-Event.observe(window, 'load', function() {
-  if ($('layout-editor-container')) {
-    var l = new LayoutEditor($('layout-editor-container')); 
-    
-    var info = new LayoutInfo();
-    l.register_info(info);
-    l.draw();
-  }
-});

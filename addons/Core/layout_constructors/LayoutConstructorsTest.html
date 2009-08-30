@@ -14,7 +14,18 @@
           var myThis = this;
           [
             {
-              'input': {},
+              'input': {
+                'left': {
+                  'active': false,
+                  'start':  0,
+                  'end':    3
+                },
+                'right': {
+                  'active': false,
+                  'start':  1,
+                  'end':    3
+                }
+              },
               'expected_result': '<div id="container">\n' +
                                  '  <div id="header"><?php echo $header ?></div>\n' +
                                  '  <div id="comic"><?php echo $comic ?></div>\n' +
@@ -23,7 +34,18 @@
                                  '</div>'
             },
             {
-              'input': {'left': [0, 0]},
+              'input': {
+                'left': {
+                  'active': true,
+                  'start':  0, 
+                  'end':    0
+                }, 
+                'right': {
+                  'active': false,
+                  'start':  0,
+                  'end':    3
+                }
+              },
               'expected_result': '<div id="container">\n' +
                                  '  <div id="sidebar-container">\n' +
                                  '    <div id="left-sidebar"><?php echo $left_sidebar ?></div>\n' +
@@ -36,7 +58,17 @@
                                  '</div>'
             },
             {
-              'input': {'left': [0, 1]},
+              'input': {
+                'left': {
+                  'active': true, 
+                  'start':  0, 
+                  'end':    1
+                }, 'right': {
+                  'active': false, 
+                  'start':  1, 
+                  'end':    3
+                }
+               },
               'expected_result': '<div id="container">\n' +
                                  '  <div id="sidebar-container">\n' +
                                  '    <div id="left-sidebar"><?php echo $left_sidebar ?></div>\n' +
@@ -49,7 +81,18 @@
                                  '</div>'
             },
             {
-              'input': {'right': [0, 1]},
+              'input': {
+                'right': {
+                  'active': true, 
+                  'start':  0, 
+                  'end':    1
+                 }, 
+                 'left': {
+                  'active': false, 
+                  'start':  1, 
+                  'end':    3
+                 }
+               },
               'expected_result': '<div id="container">\n' +
                                  '  <div id="sidebar-container">\n' +
                                  '    <div id="right-sidebar"><?php echo $right_sidebar ?></div>\n' +
@@ -62,7 +105,18 @@
                                  '</div>'
             },
             {
-              'input': {'left': [0, 3], 'right': [0, 1]},
+              'input': {
+                'left': {
+                  'active': true,
+                  'start': 0, 
+                  'end':   3
+                },
+                'right': {
+                  'active': true,
+                  'start':  0, 
+                  'end':    1
+                }
+              },
               'expected_result': '<div id="container">\n' +
                                  '  <div id="whole-sidebar-container">\n' +
                                  '    <div id="left-sidebar"><?php echo $left_sidebar ?></div>\n' +
@@ -88,20 +142,94 @@
           var myThis = this;
           [
             {
-              'input': {},
+              'input': {
+                'left': {
+                  'active': false, 
+                  'start':  0,
+                  'end':    0, 
+                  'width':  0
+                }, 
+                'right': {
+                  'active': false, 
+                  'start':  0, 
+                  'end':    0, 
+                  'width':  0
+                }
+              },
               'expected_result': ''
             },
             {
-              'input': {'left': {'width': '200'}},
-              'expected_result': '#sidebar-container, #whole-sidebar-container { overflow: hidden }\n'
+              'input': {
+                'body': '800', 
+                'left': {
+                  'active': true, 
+                  'start':  0, 
+                  'end':    3, 
+                  'width':  200
+                }, 
+                'right': {
+                  'active': false, 
+                  'start':  1, 
+                  'end':    3, 
+                  'width':  175
+                }
+              },
+              'expected_result': '#container { width: 800px }\n'
+                               + '#sidebar-container, #whole-sidebar-container { overflow: hidden }\n'
                                + '#left-sidebar { float: left; display: inline; width: 200px }\n'
+                               + '#header { margin-left: 200px }\n'
+                               + '#comic { margin-left: 200px }\n'
+                               + '#body { margin-left: 200px }\n'
+                               + '#footer { margin-left: 200px }\n'
                                + '.clear { clear: both }'
             },
             {
-              'input': {'left': {'width': '200'}, 'right': {'width': '100'}},
-              'expected_result': '#sidebar-container, #whole-sidebar-container { overflow: hidden }\n'
+              'input': {
+                'body': '800', 
+                'left': {
+                  'active': true, 
+                  'start':  1, 
+                  'end':    2, 
+                  'width':  200
+                }, 
+                'right': {
+                  'active': false, 
+                  'start':  1, 
+                  'end':    3, 
+                  'width':  175
+                }
+              },
+              'expected_result': '#container { width: 800px }\n'
+                               + '#sidebar-container, #whole-sidebar-container { overflow: hidden }\n'
+                               + '#left-sidebar { float: left; display: inline; width: 200px }\n'
+                               + '#comic { margin-left: 200px }\n'
+                               + '#body { margin-left: 200px }\n'
+                               + '.clear { clear: both }'
+            },
+            {
+              'input': {
+                'body': '800', 
+                'left': {
+                  'active': true, 
+                  'start':  0, 
+                  'end':    1, 
+                  'width':  200
+                }, 
+                'right': {
+                  'active': true, 
+                  'start':  0,
+                  'end':    3, 
+                  'width':  100
+                }
+              },
+              'expected_result': '#container { width: 800px }\n'
+                               + '#sidebar-container, #whole-sidebar-container { overflow: hidden }\n'
                                + '#left-sidebar { float: left; display: inline; width: 200px }\n'
                                + '#right-sidebar { float: right; display: inline; width: 100px }\n'
+                               + '#header { margin-left: 200px; margin-right: 100px }\n'
+                               + '#comic { margin-left: 200px; margin-right: 100px }\n'
+                               + '#body { margin-right: 100px }\n'
+                               + '#footer { margin-right: 100px }\n'
                                + '.clear { clear: both }'
             }
           ].each(function(info) {
