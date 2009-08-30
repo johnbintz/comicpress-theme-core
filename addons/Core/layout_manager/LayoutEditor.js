@@ -190,7 +190,7 @@ var LayoutInfo = Class.create({
       var get_v = function(v) { return v; }
       for (i in myThis.info[which]) {
         var my_which = get_v(which);
-        var f = target.select('#' + which + "-" + i).pop();        
+        var f = target.select('input[name=' + which + "-" + i + "]").pop();        
         if (f) {
           switch (i) {
             case 'active':
@@ -212,7 +212,7 @@ var LayoutInfo = Class.create({
       }
     });
     
-    var body_width = target.select('#body-width').pop();
+    var body_width = target.select('input[name=body-width]').pop();
     if (body_width) {
       body_width.value = myThis.info.body;
       body_width.observe('keyup', function(e) {
