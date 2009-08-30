@@ -133,27 +133,31 @@ var LayoutEditor = Class.create({
     var myThis = this;
     $w('left right').each(function(field) {
       if (myThis.info.info[field].active) {
-        myThis.sidebar_handles[field].show();
-        var fi = myThis.info.info[field];
-        var t = myThis.section_handles[fi.start].viewportOffset()['top'] + document.viewport.getScrollOffsets()['top'];
-        var h = 0;
-        var i;
-        for (i = fi.start; i <= fi.end; ++i) {
-          h += myThis.section_handles[i].getDimensions()['height'];
+        if (myThis.info.info.body > myThis.info.info[field].width) {
+          myThis.sidebar_handles[field].show();
+          var fi = myThis.info.info[field];
+          var t = myThis.section_handles[fi.start].viewportOffset()['top'] + document.viewport.getScrollOffsets()['top'];
+          var h = 0;
+          var i;
+          for (i = fi.start; i <= fi.end; ++i) {
+            h += myThis.section_handles[i].getDimensions()['height'];
+          }
+          var w = Math.floor((fi.width / myThis.info.info.body) * myThis.width);
+          var l;
+          switch (field) {
+            case 'left':
+              l = myThis.container.viewportOffset()['left']; break;
+            case 'right':
+              l = myThis.container.viewportOffset()['left'] + myThis.width - w; break;
+          }
+          var field_map = { 'top': t, 'left': l, 'width': w, 'height': h };
+          for (param in field_map) {
+            myThis.sidebar_handles[field].style[param] = field_map[param];
+          }
+          myThis.sidebar_handles[field].align_bottom();
+        } else {
+          myThis.sidebar_handles[field].hide();
         }
-        var w = Math.floor((fi.width / myThis.info.info.body) * myThis.width);
-        var l;
-        switch (field) {
-          case 'left':
-            l = myThis.container.viewportOffset()['left']; break;
-          case 'right':
-            l = myThis.container.viewportOffset()['left'] + myThis.width - w; break;
-        }
-        var field_map = { 'top': t, 'left': l, 'width': w, 'height': h };
-        for (param in field_map) {
-          myThis.sidebar_handles[field].style[param] = field_map[param];
-        }
-        myThis.sidebar_handles[field].align_bottom();
       } else {
         myThis.sidebar_handles[field].hide();
       }
@@ -207,6 +211,15 @@ var LayoutInfo = Class.create({
         }
       }
     });
+    
+    var body_width = target.select('#body-width').pop();
+    if (body_width) {
+      body_width.value = myThis.info.body;
+      body_width.observe('keyup', function(e) {
+        myThis.info.body = e.currentTarget.value.replace(/[^0-9]/, '');
+        myThis.onChange();
+      }); 
+    }
   },
   'do_sidebar_drag': function() {
     this.onSidebarDrag();
