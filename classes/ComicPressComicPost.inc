@@ -56,19 +56,18 @@ class ComicPressComicPost {
     return $found;
   }
   
-  function display_comics($format) { $this->display_attached_images('comic', null, 'comic', $format); }
+  function _display_type($types, $format, $single = false) {
+    $target_type = reset($types);
+    foreach ($types as $type) {
+      if ($this->display_attached_images($type, ($single ? 1 : null), $target_type, $format)) {
+        return;
+      }
+    }
+  }
   
-  function display_archive($format) {
-    if (!$this->display_attached_images('archive', 1, 'archive', $format)) {
-      $this->display_attached_images('comic', 1, 'archive', $format);
-    }
-  }
-
-  function display_rss($format) {
-    if (!$this->display_attached_images('rss', null, 'rss', $formar)) {
-      $this->display_attached_images('comic', null, 'rss', $format);
-    }
-  }
+  function display_comics($format) { $this->_display_type(array('comic'), $format); }
+  function display_archive($format) { $this->_display_type(array('archive'. 'comic'), $format, true); }
+  function display_rss($format) { $this->_display_type(array('rss'. 'comic'), $format); }
 
   function get_comic_img_tag($url, $type, $additional_parameters = array()) {
     $dimensions = array();
@@ -93,46 +92,15 @@ class ComicPressComicPost {
     
     return $output;
   }
-  
-  function breakdown_comic_ordering_string($string) {
-    $parts = explode(";", $string);
-    
-    $orderings = array();
-    foreach ($parts as $part) {
-      $type_key_value = explode(":", $part);
-      if (count($type_key_value) == 2) {
-        list ($key, $value) = $type_key_value;
-        if (preg_match('#[^a-z0-9\_\-]#', $key) == 0) {
-          $orderings[$key] = array();
-          $values = explode(",", $value);
-          foreach ($values as $value) {
-            $value = trim($value);
-            if (is_numeric($value)) {
-              $orderings[$key][] = $value;
-            } 
-          } 
-        }
-      }
-    }
-    
-    return $orderings;
-  }
-  
-  function build_comic_ordering_string($order) {
-    $result_string_parts = array();
-    
-    foreach ($order as $key => $values) {
-      $result_string_parts[] = "${key}:" . implode(",", $values);
-    }
-    sort($result_string_parts);
-    return implode(";", $result_string_parts);
-  }
-  
+
+  /**
+   * Normalize the ordering of comic images in this post.
+   * If images have beed added or removed, intelligently update the metadata.
+   */
   function normalize_comic_image_ordering() {
     if (is_array($this->get_comic_image_attachments())) {
       $ordering_by_type = array();
       $ordering_types = get_post_meta($this->post->ID, 'comic_ordering', true);
-      if (!empty($ordering_types)) { $ordering_types = $this->breakdown_comic_ordering_string($ordering_types); }
       
       $comic_image_ordering = array();
       $found_post_ids = array();
@@ -178,20 +146,23 @@ class ComicPressComicPost {
         }
       }
 
-      update_post_meta($this->post->ID, 'comic_ordering', $this->build_comic_ordering_string($comic_image_ordering));
+      update_post_meta($this->post->ID, 'comic_ordering', $comic_image_ordering);
       return $comic_image_ordering;
     }
+    return false;
   }
   
   function sort_remaining_comic_images($a, $b) {
     return strtotime($a->post_date) - strtotime($b->post_date); 
   }
-  
+
+  /**
+   * Change the ordering of comic images in the associated post.
+   * @param array $order The new requested order.
+   */
   function change_comic_image_ordering($requested_new_order) {
-    $orderings = array();
-    if (($order_string = get_post_meta($this->post->ID, 'comic_ordering', true)) !== false) {
-      $orderings = $this->breakdown_comic_ordering_string($order_string);
-    }
+    $orderings = get_post_meta($this->post->ID, 'comic_ordering', true);
+    if (!is_array($orderings)) { $orderings = array(); }
     
     $new_order = array();
     
@@ -220,7 +191,7 @@ class ComicPressComicPost {
       }
     }
     
-    update_post_meta($this->post->ID, 'comic_ordering', $this->build_comic_ordering_string($new_order));
+    update_post_meta($this->post->ID, 'comic_ordering', $new_order);
   }
 }
 
