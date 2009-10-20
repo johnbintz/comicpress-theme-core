@@ -110,7 +110,7 @@ class ComicPressStorylineTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($expected_value, $this->css->{$field}($category));
   }
 
-  function providerTestGetValidStorylineNav() {
+  function providerTestGetValidNav() {
     return array(
       array(array(1),   array('upcoming')),
       array(array(1,2), false),
@@ -121,9 +121,9 @@ class ComicPressStorylineTest extends PHPUnit_Framework_TestCase {
   }
   
   /**
-   * @dataProvider providerTestGetValidStorylineNav
+   * @dataProvider providerTestGetValidNav
    */
-  function testGetValidStorylineNav($post_categories, $expected_navigation) {
+  function testGetValidNav($post_categories, $expected_navigation) {
     wp_set_post_categories(1, $post_categories);
   
     $this->css->_structure = array(

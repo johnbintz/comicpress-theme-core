@@ -3,11 +3,9 @@
 class ComicPressComicPost {
   var $post;
   var $attachments = null;
-  var $comicpress;
 
-  function ComicPressComicPost($post = null, $comicpress = null) {
+  function ComicPressComicPost($post = null) {
     if (!is_null($post)) { $this->post = $post; }
-    if (!is_null($comicpress)) { $this->comicpress = $comicpress; }
   }
 
   function get_comic_image_attachments() {
@@ -21,6 +19,9 @@ class ComicPressComicPost {
     return $this->attachments;
   }
   
+  /**
+   * Display all the attached images.
+   */
   function display_attached_images($type = "comic", $limit = null, $size_type = null, $format = "%s") {
     if (is_null($size_type)) { $size_type = $type; }
     $found = false;
@@ -28,7 +29,7 @@ class ComicPressComicPost {
     $output = array();
     if (is_array($ordering[$type])) {
       $i = 1;
-      foreach ($ordering[$type] as $attachment_id) {        
+      foreach ($ordering[$type] as $attachment_id) {
         if (get_post_meta($attachment_id, "comic_image_type", true) == $type) {
           $attachment = get_post($attachment_id);
           $title = (!empty($attachment->post_excerpt) ? $attachment->post_excerpt : $attachment->post_title);
@@ -51,8 +52,10 @@ class ComicPressComicPost {
         }
       }
     }
-    echo apply_filters('comicpress_display_attached_images', implode("\n", $output), $this->post->ID);
-    
+    if (!empty($output)) {
+      echo apply_filters('comicpress_display_attached_images', $output, $this->post->ID, '');
+    }
+
     return $found;
   }
   
@@ -69,6 +72,9 @@ class ComicPressComicPost {
   function display_archive($format) { $this->_display_type(array('archive'. 'comic'), $format, true); }
   function display_rss($format) { $this->_display_type(array('rss'. 'comic'), $format); }
 
+  /**
+   * Build an &lt;img /&gt; tag for a comic.
+   */
   function get_comic_img_tag($url, $type, $additional_parameters = array()) {
     $dimensions = array();
     
@@ -193,6 +199,7 @@ class ComicPressComicPost {
     
     update_post_meta($this->post->ID, 'comic_ordering', $new_order);
   }
+  
 }
 
 ?>

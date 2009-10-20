@@ -96,7 +96,7 @@ class ComicPressStoryline {
     return false;
   }
 
-  function get_valid_storyline_nav($post_id) {
+  function get_valid_nav($post_id) {
     $data = false;
 
     foreach (wp_get_post_categories($post_id) as $category) {

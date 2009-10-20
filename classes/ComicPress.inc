@@ -409,16 +409,6 @@ class ComicPress {
   }
   
   /**
-   * Get the previous comic from the current one.
-   */
-  function get_previous_comic($category = null, $override_post = null) { return $this->get_adjacent_comic($category, false, $override_post); }
-
-  /**
-   * Get the next comic from the current one.
-   */
-  function get_next_comic($category = null, $override_post = null) { return $this->get_adjacent_comic($category, true, $override_post); }
-  
-  /**
    * Get the path to a partial.
    * @param array $partials The partials to search for in each path.
    * @return string|boolean The partial path to use, or false if no matches.
