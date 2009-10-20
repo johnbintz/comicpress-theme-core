@@ -2,8 +2,9 @@
   <head>
     <title>LayoutConstructorsTest</title>
     <script type="text/javascript" src="testcase.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.0.3/prototype.js"></script>
+    <script type="text/javascript" src="prototype.js"></script>
     <script type="text/javascript" src="FloatedDivConstructor.js"></script>
+    <script type="text/javascript" src="TableConstructor.js"></script>
   </head>
   <body>
     <script type="text/javascript">
@@ -239,7 +240,41 @@
         }
       });
 
+      var TableConstructorTest = TestCase.create({
+        name: "Table Constructor Test",
+
+        testGenerateHTML: function() {
+          var myThis = this;
+          [
+            {
+              'input': {
+                'left': {
+                  'active': false,
+                  'start':  0,
+                  'end':    3
+                },
+                'right': {
+                  'active': false,
+                  'start':  0,
+                  'end':    3
+                }
+              },
+              'expected_result': '<table id="container" cellspacing="0">\n' +
+                                 '  <tr><td id="header"><?php echo $header ?></td></tr>\n' +
+                                 '  <tr><td id="comic"><?php echo $comic ?></td></tr>\n' +
+                                 '  <tr><td id="body"><?php echo $body ?></td></tr>\n' +
+                                 '  <tr><td id="footer"><?php echo $footer ?></td></tr>\n' +
+                                 '</table>'
+            }
+          ].each(function(info) {
+            var f = new FloatedDivConstructor();
+            myThis.assertEqual(info.expected_result, f.generate_html(info.input));
+          });
+        }
+      });
+      
       FloatedDivConstructorTest.run();
+      TableConstructorTest.run();
     </script>
   </body>
 </html>

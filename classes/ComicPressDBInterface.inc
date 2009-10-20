@@ -13,17 +13,19 @@ class ComicPressDBInterface {
     }
     return $instance;
   }
-  
+
+  function _get_categories() {
+    return get_categories("hide_empty=0");
+  }
+
   function set_comic_categories($categories) {
     $this->_non_comic_categories = array();
     $this->_all_categories       = array();
-    foreach (get_categories("hide_empty=0") as $category_object) {
+    foreach ($this->_get_categories() as $category_object) {
       $this->_all_categories[] = $category_object->term_id;
-      if (!in_array($category_object->term_id, $categories
-      $this->categories_by_id[$category_object->term_id] = $category_object;
     }
-    
-    $this->_categories = $categories;
+
+    $this->_non_comic_categories = array_values(array_diff($this->_all_categories, $categories));
   }
   
   /**
@@ -91,6 +93,7 @@ class ComicPressDBInterface {
    * Get the next comic from the current one.
    */
   function get_next_comic($category = null, $override_post = null) { return $this->get_adjacent_comic($category, true, $override_post); }
+
   
 }
 

@@ -3,6 +3,8 @@
 
   comicpress_init();
 
+  ob_start();
+
   include_partial('search-results-count');
 
   if (have_posts()) {

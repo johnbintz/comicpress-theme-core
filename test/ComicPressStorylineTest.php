@@ -132,7 +132,7 @@ class ComicPressStorylineTest extends PHPUnit_Framework_TestCase {
       '3' => array('prior' => 2, 'previous' => 2)
     );
 
-    $this->assertEquals($expected_navigation, $this->css->get_valid_storyline_nav(1));
+    $this->assertEquals($expected_navigation, $this->css->get_valid_nav(1));
   }
 }
 
