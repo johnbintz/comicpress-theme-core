@@ -16,14 +16,9 @@ class ComicPressDBInterfaceTest extends PHPUnit_Framework_TestCase {
   }
 
   function testSetComicCategories() {
-    $dbi = $this->getMock('ComicPressDBInterface', array('_get_categories'));
-
-    $dbi->expects($this->once())->method('_get_categories')->will($this->returnValue(array(
-      (object)array('term_id' => 1),
-      (object)array('term_id' => 2),
-      (object)array('term_id' => 3),
-      (object)array('term_id' => 4)
-    )));
+    $dbi = ComicPressDBInterface::get_instance();
+  
+    for ($i = 1; $i <= 4; ++$i) { add_category($i, (object)array()); }
 
     $dbi->set_comic_categories(array(2,3));
 

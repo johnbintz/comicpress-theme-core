@@ -18,12 +18,7 @@ class ComicPressDBInterface {
    * Set the comic categories for the current run of ComicPress.
    */
   function set_comic_categories($categories) {
-    $this->_non_comic_categories = array();
-    $this->_all_categories       = array();
-    foreach ($this->_get_categories() as $category_object) {
-      $this->_all_categories[] = $category_object->term_id;
-    }
-
+    $this->_all_categories       = get_all_category_ids();
     $this->_non_comic_categories = array_values(array_diff($this->_all_categories, $categories));
   }
 
@@ -60,10 +55,11 @@ class ComicPressDBInterface {
 
   /**
    * Get the comic post adjacent to the current comic.
+   * Wrapper around get_adjacent_post(). Don't unit test this method.
    */
   function get_adjacent_comic($category, $next = false, $override_post = null) {
     global $wp_query, $post;
-    $temp = $wp_query->is_single;
+    $temp_single = $wp_query->is_single;
     $wp_query->is_single = true;
     
     if (!is_null($override_post)) {
@@ -71,9 +67,9 @@ class ComicPressDBInterface {
       $post = $override_post; 
     }
     
-    $result = get_adjacent_post(false, implode(" and ", $categories_to_exclude), !$next);
+    $result = get_adjacent_post(false, implode(" and ", $this->_get_categories_to_exclude($category)), !$next);
 
-    $wp_query->is_single = $temp;
+    $wp_query->is_single = $temp_single;
     
     if (!is_null($override_post)) {
       $post = $temp_post; 
