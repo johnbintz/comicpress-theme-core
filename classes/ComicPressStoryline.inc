@@ -1,5 +1,7 @@
 <?php
 
+require_once('ComicPressDBInterface.inc');
+
 class ComicPressStoryline {
   var $_structure;
   
@@ -72,7 +74,7 @@ class ComicPressStoryline {
     }
     return is_array($this->_structure);
   }
-  
+
   function _get_field($field, $id) {
     if (isset($this->_structure)) {
       if (isset($this->_structure[$id])) {
@@ -96,18 +98,31 @@ class ComicPressStoryline {
     return false;
   }
 
+  /**
+   * Get the valid navigation directions for a particular post.
+   */
   function get_valid_nav($post_id) {
-    $data = false;
+    if (($category = $this->get_valid_post_category($post_id)) !== false) {
+      return $this->valid($category);
+    }
+    return false;
+  }
 
+  /**
+   * Get the valid comic category for this post.
+   */
+  function get_valid_post_category($post_id) {
+    $result = false;
+    
     foreach (wp_get_post_categories($post_id) as $category) {
-      if ($result = $this->valid($category)) {
-        if ($data) { return false; }
+      if ($this->valid($category)) {
+        if ($result) { return false; }
 
-        $data = $result;
+        $result = $category;
       }
     }
-    return $data;
-  }  
+    return $result;
+  }
 }
 
 ?>

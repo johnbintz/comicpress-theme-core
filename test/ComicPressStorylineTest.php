@@ -134,6 +134,26 @@ class ComicPressStorylineTest extends PHPUnit_Framework_TestCase {
 
     $this->assertEquals($expected_navigation, $this->css->get_valid_nav(1));
   }
+
+  function providerTestGetValidPostCategory() {
+    return array(
+      array(array(1,2), false),
+      array(array(1,3), false),
+      array(array(1), 1),
+    );
+  }
+
+  /**
+   * @dataProvider providerTestGetValidPostCategory
+   */
+  function testGetValidPostCategory($post_categories, $expected_result) {
+    $css = $this->getMock('ComicPressStoryline', array('valid'));
+    $css->expects($this->any())->method('valid')->will($this->returnValue(true));
+    
+    wp_set_post_categories(1, $post_categories);
+
+    $this->assertEquals($expected_result, $css->get_valid_post_category(1));
+  }
 }
 
 ?>

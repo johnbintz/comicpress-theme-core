@@ -187,9 +187,9 @@ class ComicPressComicPost {
         sort($ids);
         $requested_order = array_merge($requested_order, $ids);
       }
-      
+
       $requested_order = array_merge($requested_order, array_diff($current_order, $requested_order));
-      
+
       foreach ($requested_order as $requested_comic) {
         if (in_array($requested_comic, $current_order)) {
           $new_order[$type][] = $requested_comic;
@@ -199,7 +199,6 @@ class ComicPressComicPost {
     
     update_post_meta($this->post->ID, 'comic_ordering', $new_order);
   }
-  
 }
 
 ?>
