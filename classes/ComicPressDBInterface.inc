@@ -8,16 +8,15 @@ class ComicPressDBInterface {
   function get_instance() {
     static $instance;
     
-    if (!isset($instance)) {
-      $instance = new ComicPressDBInterface();
-    }
+    if (!isset($instance)) { $instance = new ComicPressDBInterface(); }
     return $instance;
   }
 
-  function _get_categories() {
-    return get_categories("hide_empty=0");
-  }
+  function _get_categories() { return get_categories("hide_empty=0"); }
 
+  /**
+   * Set the comic categories for the current run of ComicPress.
+   */
   function set_comic_categories($categories) {
     $this->_non_comic_categories = array();
     $this->_all_categories       = array();
@@ -26,6 +25,10 @@ class ComicPressDBInterface {
     }
 
     $this->_non_comic_categories = array_values(array_diff($this->_all_categories, $categories));
+  }
+
+  function _get_categories_to_exclude($category = null) {
+    return (is_null($category)) ? $this->_non_comic_categories : array_values(array_diff($this->_all_categories, array($category)));
   }
   
   /**
@@ -68,11 +71,6 @@ class ComicPressDBInterface {
       $post = $override_post; 
     }
     
-    $categories_to_exclude = $this->get_leaves_of_tree($this->non_comic_categories);
-    if (!is_null($category)) {
-      $categories_to_exclude = $this->exclude_all_but_provided_categories($category);
-    }
-    
     $result = get_adjacent_post(false, implode(" and ", $categories_to_exclude), !$next);
 
     $wp_query->is_single = $temp;
@@ -93,8 +91,6 @@ class ComicPressDBInterface {
    * Get the next comic from the current one.
    */
   function get_next_comic($category = null, $override_post = null) { return $this->get_adjacent_comic($category, true, $override_post); }
-
-  
 }
 
 ?>

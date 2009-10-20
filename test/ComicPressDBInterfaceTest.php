@@ -30,6 +30,24 @@ class ComicPressDBInterfaceTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(array(1,2,3,4), $dbi->_all_categories);
     $this->assertEquals(array(1,4), $dbi->_non_comic_categories);
   }
+
+  function providerTestGetCategoriesToExclude() {
+    return array(
+      array(null, array(1 ,4)),
+      array(2, array(1, 3, 4)),
+    );
+  }
+
+  /**
+   * @dataProvider providerTestGetCategoriesToExclude
+   */
+  function testGetCategoriesToExclude($category, $expected_results) {
+    $dbi = ComicPressDBInterface::get_instance();
+    $dbi->_all_categories = array(1,2,3,4);
+    $dbi->_non_comic_categories = array(1,4);
+
+    $this->assertEquals($expected_results, $dbi->_get_categories_to_exclude($category));
+  }
 }
 
 ?>
