@@ -119,8 +119,6 @@ function include_partial($partials = '') {
 
 function in_comic_category() {
   global $post, $comicpress;
-  
-  return $comicpress->in_comic_category($post->ID);
 }
 
 /**

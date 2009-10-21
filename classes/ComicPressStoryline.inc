@@ -3,7 +3,7 @@
 require_once('ComicPressDBInterface.inc');
 
 class ComicPressStoryline {
-  var $_structure;
+  var $_structure, $root_category;
   
   /**
    * Create a searchable structure from a node list.
@@ -14,6 +14,7 @@ class ComicPressStoryline {
     $new_structure = array();
     $parent   = null;
     $all_leaves = array();
+    $this->root_category = false;
 
     $adjacents_by_parent = array();
 
@@ -42,6 +43,8 @@ class ComicPressStoryline {
               $adjacents_by_parent[$parent][] = $leaf;
 
               $data['parent'] = $parent;
+            } else {
+              $this->root_category = $leaf;
             }
 
             $new_structure[$leaf] = $data;
@@ -51,18 +54,8 @@ class ComicPressStoryline {
         }
       }
       if ($is_valid) {
-        foreach ($adjacents_by_parent as $parent => $adjacents) {
-          for ($i = 0; $i < count($adjacents); ++$i) {
-            foreach (array('previous' => -1, 'next' => 1) as $type => $dir) {
-              if (isset($adjacents[$i + $dir])) {
-                $new_structure[$adjacents[$i]][$type] = $adjacents[$i + $dir];
-              }
-            }
-          }
-        }
-        
         for ($i = 0; $i < count($all_leaves); ++$i) {
-          foreach (array('prior' => -1, 'upcoming' => 1) as $type => $dir) {
+          foreach (array('previous' => -1, 'next' => 1) as $type => $dir) {
             if (isset($all_leaves[$i + $dir])) {
               $new_structure[$all_leaves[$i]][$type] = $all_leaves[$i + $dir];
             }
@@ -89,8 +82,6 @@ class ComicPressStoryline {
   function parent($id)   { return $this->_get_field('parent', $id); }
   function previous($id) { return $this->_get_field('previous', $id); }
   function next($id)     { return $this->_get_field('next', $id); }
-  function upcoming($id) { return $this->_get_field('upcoming', $id); }
-  function prior($id)    { return $this->_get_field('prior', $id); }
   function valid($id)    {
     if (isset($this->_structure[$id])) {
       return array_keys($this->_structure[$id]);

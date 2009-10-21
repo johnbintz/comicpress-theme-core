@@ -207,7 +207,7 @@ class ComicPressAddonCore extends ComicPressAddon {
    */
   function show_media($override_post, $method, $format) {
     global $post;
-    $post_to_use = (is_null($override_post)) ? $this->comicpress->get_last_comic() : $post;
+    $post_to_use = $post;
     
     switch ($this->comicpress->comicpress_options['comic_space']) {
       case "comic_only":
