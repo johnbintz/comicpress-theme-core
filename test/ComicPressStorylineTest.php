@@ -96,7 +96,7 @@ class ComicPressStorylineTest extends PHPUnit_Framework_TestCase {
       array('parent', 2, 1),
       array('next', 2, 3),
       array('next', 3, 4),
-      array('valid', 1, array('next')),
+      array('valid', 1, array('next', 'current')),
       array('valid', 6, false),
     );
   }
@@ -117,11 +117,11 @@ class ComicPressStorylineTest extends PHPUnit_Framework_TestCase {
 
   function providerTestGetValidNav() {
     return array(
-      array(array(1),   array('next')),
+      array(array(1),   array('next', 'current')),
       array(array(1,2), false),
-      array(array(1,4), array('next')),
-      array(array(2),   array('previous', 'next')),
-      array(array(3),   array('previous')),
+      array(array(1,4), array('next', 'current')),
+      array(array(2),   array('previous', 'next', 'current')),
+      array(array(3),   array('previous', 'current')),
     );
   }
   

@@ -18,9 +18,9 @@ class ComicPressStoryline {
 
     $adjacents_by_parent = array();
 
-    if (is_string($structure)) {
-      $structure = explode(',', $structure);
-    }
+		if (is_string($structure)) {
+			$structure = explode(',', $structure);
+		}
 
     if (is_array($structure)) {
       $is_valid = true;
@@ -65,7 +65,7 @@ class ComicPressStoryline {
             }
           }
         }
-      
+
         $this->_structure = $new_structure;
       }
     }
@@ -83,12 +83,13 @@ class ComicPressStoryline {
     return false;
   }
   
+  function current($id)  { return $id; }
   function parent($id)   { return $this->_get_field('parent', $id); }
   function previous($id) { return $this->_get_field('previous', $id); }
   function next($id)     { return $this->_get_field('next', $id); }
   function valid($id)    {
     if (isset($this->_structure[$id])) {
-      return array_keys($this->_structure[$id]);
+      return array_merge(array_keys($this->_structure[$id]), array('current'));
     }
     return false;
   }
