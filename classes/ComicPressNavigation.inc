@@ -35,10 +35,6 @@ class ComicPressNavigation {
         foreach ($valid as $field) {
           $nav["storyline-chapter-${field}"] = $this->_dbi->get_first_comic($this->_storyline->{$field}($category));
         }
-        
-        if ($post->ID != $nav['storyline-chapter-current']->ID) {
-          $nav['storyline-chapter-previous'] = $nav['storyline-chapter-current'];
-        }
       }
     }
 

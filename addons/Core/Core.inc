@@ -292,6 +292,8 @@ class ComicPressAddonCore extends ComicPressAddon {
   function render_admin() {
     $nonce = wp_create_nonce('comicpress');
     $root_categories = $this->get_root_categories();
+		$storyline = new ComicPressStoryline();
+		$storyline->create_structure(get_option('comicpress-storyline-category-order'));
 
     include(dirname(__FILE__) . '/partials/options-admin.inc'); 
   }
@@ -397,7 +399,7 @@ class ComicPressAddonCore extends ComicPressAddon {
    */
   function get_storyline_move_statuses() {
     $nodes_with_statuses = array();
-    for ($i = 0, $il = count($this->comicpress->category_tree); $i < $il; ++$i) {
+		for ($i = 0, $il = count($this->comicpress->category_tree); $i < $il; ++$i) {
       $node = $this->comicpress->category_tree[$i];
       $nodes_with_statuses[$node] = array();
       $parts_count = count(explode("/", $node));

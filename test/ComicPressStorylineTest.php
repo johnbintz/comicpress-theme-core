@@ -96,7 +96,7 @@ class ComicPressStorylineTest extends PHPUnit_Framework_TestCase {
       array('parent', 2, 1),
       array('next', 2, 3),
       array('next', 3, 4),
-      array('valid', 1, array('next', 'current')),
+      array('valid', 1, array('next')),
       array('valid', 6, false),
     );
   }
@@ -117,11 +117,11 @@ class ComicPressStorylineTest extends PHPUnit_Framework_TestCase {
 
   function providerTestGetValidNav() {
     return array(
-      array(array(1),   array('next', 'current')),
+      array(array(1),   array('next')),
       array(array(1,2), false),
-      array(array(1,4), array('next', 'current')),
-      array(array(2),   array('previous', 'next', 'current')),
-      array(array(3),   array('previous', 'current')),
+      array(array(1,4), array('next')),
+      array(array(2),   array('previous', 'next')),
+      array(array(3),   array('previous')),
     );
   }
   
@@ -159,6 +159,28 @@ class ComicPressStorylineTest extends PHPUnit_Framework_TestCase {
 
     $this->assertEquals($expected_result, $css->get_valid_post_category(1));
   }
+	
+	function testGetSimpleStoryline() {
+		$this->css->_structure = array(
+      '1' => array('next' => 2),
+      '2' => array('parent' => 1, 'previous' => 1, 'next' => 3),
+      '3' => array('parent' => 2, 'next' => 4, 'previous' => 2),
+      '4' => array('parent' => 2, 'previous' => 3)
+		);
+		
+		$expected_result = array(
+		  array(
+			  '1' => array(
+				  '2' => array(
+					  '3' => true,
+						'4' => true
+					)
+				)
+			)
+		);
+		
+		$this->assertEquals($expected_result, $this->css->get_simple_storyline());
+	}
 }
 
 ?>

@@ -1,11 +1,6 @@
 <?php
   global $comicpress, $post, $nav_comics;
 
-  $dbi = ComicPressDBInterface::get_instance();
-  var_dump($dbi->get_terminal_post_in_category(3, true));
-  var_dump($dbi->get_terminal_post_in_category(3, false));
-  exit(0);
-
   comicpress_init();
 
   $nav_comics = array();

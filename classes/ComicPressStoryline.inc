@@ -83,13 +83,12 @@ class ComicPressStoryline {
     return false;
   }
   
-  function current($id)  { return $id; }
   function parent($id)   { return $this->_get_field('parent', $id); }
   function previous($id) { return $this->_get_field('previous', $id); }
   function next($id)     { return $this->_get_field('next', $id); }
   function valid($id)    {
     if (isset($this->_structure[$id])) {
-      return array_merge(array_keys($this->_structure[$id]), array('current'));
+      return array_keys($this->_structure[$id]);
     }
     return false;
   }
@@ -122,6 +121,47 @@ class ComicPressStoryline {
 
 	function get_comic_categories() {
 		return array_keys($this->_structure);
+	}
+	
+	function get_simple_storyline() {
+	  $simple_storyline = array('0' => array());
+		foreach ($this->_structure as $category_id => $adjacents) {
+			$parent = 0;
+			if (isset($adjacents['parent'])) { $parent = $adjacents['parent']; }
+			if (!isset($simple_storyline[$parent])) {
+				$simple_storyline[$parent] = array();
+			}
+			$simple_storyline[$parent][$category_id] = true;
+		}
+		
+		while (count($simple_storyline) > 0) {
+			$merge_found = false;
+			foreach ($simple_storyline as $parent => $children) {
+				$has_no_descendents = true;
+				foreach (array_keys($children) as $child) {
+					if (is_numeric($child)) {
+						if (isset($simple_storyline[$child])) {
+							$has_no_descendents = false;
+							break;
+						}
+					}
+				}
+				if ($has_no_descendents) {
+					$merge_found = $parent; break;
+				}
+			}
+			if ($merge_found !== false) {
+				foreach ($simple_storyline as $parent => $children) {
+					if (isset($children[$merge_found])) {
+					  $simple_storyline[$parent][$merge_found] = $simple_storyline[$merge_found];
+						unset($simple_storyline[$merge_found]);
+						break;
+					}
+				}
+			}
+			if (!$merge_found) { break; }
+		}
+		return $simple_storyline;
 	}
 }
 

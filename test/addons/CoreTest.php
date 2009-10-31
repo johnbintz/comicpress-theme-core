@@ -1,9 +1,9 @@
 <?php
 
 require_once('PHPUnit/Framework.php');
-require_once(dirname(__FILE__) . '/../../../../mockpress/mockpress.php');
-require_once(dirname(__FILE__) . '/../../../classes/ComicPressAddon.inc');
-require_once(dirname(__FILE__) . '/../Core.inc');
+require_once('MockPress/mockpress.php');
+require_once(dirname(__FILE__) . '/../../classes/ComicPressAddon.inc');
+require_once(dirname(__FILE__) . '/../../addons/Core/Core.inc');
 
 class CoreTest extends PHPUnit_Framework_TestCase {
   function setUp() {
