@@ -30,14 +30,14 @@ class ComicPress {
   var $partial_paths = array();
   var $layouts = null;
   
-	function get_instance() {
+	function &get_instance() {
 		static $instance;
 		
-		if (empty($instance)) {
-			$instance = &new ComicPress();
+		if (!$instance) {
+			$instance = array(new ComicPress());
 		}
 		
-		return $instance;
+		return $instance[0];
 	}
 	
   /**

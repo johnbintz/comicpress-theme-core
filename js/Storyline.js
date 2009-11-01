@@ -16,7 +16,7 @@ Storyline.setup = function() {
 		placeholder: 'placeholder',
 		forcePlaceholderSize: true,
 		opacity: 0.4,
-		change: function(e, ui) {
+		stop: function(e, ui) {
 			Storyline.get_order();
 		}
 	});

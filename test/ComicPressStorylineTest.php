@@ -258,6 +258,7 @@ class ComicPressStorylineTest extends PHPUnit_Framework_TestCase {
 			array('0/1,0/1/2,0/1/2/4', '0/1,0/1/2,0/1/2/4,0/1/2/3'),
 			array('0/1,0/1/2,0/1/2/4,0/1/2/3,0/1/5', '0/1,0/1/2,0/1/2/4,0/1/2/3'),
 			array('0/1,0/1/2,0/1/2/3,0/1/5', '0/1,0/1/2,0/1/2/3,0/1/2/4'),
+			array('', '0/1,0/1/2,0/1/2/3,0/1/2/4'),
 		);
 	}
 	
@@ -284,6 +285,18 @@ class ComicPressStorylineTest extends PHPUnit_Framework_TestCase {
 				)
 			)
 		));
+	}
+	
+	function testLengthSort() {
+		$data = array(
+			'0/1', '0/1/3', '0/1/3/6', '0/1/3/7', '0/1/4', '0/1/4/2', '0/1/4/3'
+		);
+		
+		$expected_result = array(
+			'0/1', '0/1/3', '0/1/4', '0/1/3/6', '0/1/3/7', '0/1/4/2', '0/1/4/3'
+		);
+		
+		$this->assertEquals($expected_result, $this->css->_length_sort($data));
 	}
 }
 

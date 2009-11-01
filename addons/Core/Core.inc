@@ -10,7 +10,7 @@ class ComicPressAddonCore extends ComicPressAddon {
    * @param ComicPress $comicpress The master ComicPress object.
    */
   function init() {
-		$this->comicpress = ComicPress::get_instance();
+		$this->comicpress = &ComicPress::get_instance();
 		
 		add_action('admin_menu', array(&$this, 'setup_admin_interface'));
     add_filter('attachment_fields_to_edit', array(&$this, 'setup_comic_metadata_buttons'), 10, 2);
@@ -300,6 +300,7 @@ class ComicPressAddonCore extends ComicPressAddon {
     $nonce = wp_create_nonce('comicpress');
     $root_categories = $this->get_root_categories();
 		$storyline = new ComicPressStoryline();
+		$storyline->normalize();
 		$storyline->read_from_options();
 
     include(dirname(__FILE__) . '/partials/options-admin.inc'); 
@@ -489,7 +490,7 @@ class ComicPressAddonCore extends ComicPressAddon {
             break;
 					case 'storyline_order':
 						$storyline = new ComicPressStoryline();
-						var_dump($storyline->set_flattened_storyline_order($info[$option]));
+						$storyline->normalize($info[$option]);
 						break;
         }
       }

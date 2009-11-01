@@ -7,18 +7,16 @@ class ComicPressStoryline {
   var $_structure, $root_category;
 
 	function read_from_options() {
-		$comicpress = ComicPress::get_instance();
-		var_dump($comicpress);
-		$this->create_structure($comicpress->comicpress_options['storyline_order']);
+		$this->create_structure($this->get_flattened_storyline());
 	}
 	
 	function get_flattened_storyline() {
-		$comicpress = ComicPress::get_instance();
+		$comicpress = &ComicPress::get_instance();
 	  return $comicpress->comicpress_options['storyline_order'];
 	}
 
 	function set_flattened_storyline($storyline) {
-		$comicpress = ComicPress::get_instance();
+		$comicpress = &ComicPress::get_instance();
 		$comicpress->comicpress_options['storyline_order'] = $storyline;
 		$comicpress->save();
 	}
@@ -44,7 +42,7 @@ class ComicPressStoryline {
    * @return boolean True if the structure was valid.
    */
   function create_structure($structure) {
-    $new_structure = array();
+		$new_structure = array();
     $parent   = null;
     $all_leaves = array();
     $this->root_category = false;
@@ -187,6 +185,10 @@ class ComicPressStoryline {
 		}
 		return $structure;
 	}
+	
+	function get_category_flattened($parent) {
+		return $this->flatten_simple_storyline($this->get_category_simple_structure($parent));
+	}
 
 	function _merge_simple_storyline($simple_storyline) {
 		while (count($simple_storyline) > 0) {
@@ -219,6 +221,40 @@ class ComicPressStoryline {
 		return $simple_storyline;
 	}
 
+	/**
+	 * Integrates a bunch of other things.
+	 */
+	function normalize($flattened_storyline = null, $set = true) {
+		$comicpress = ComicPress::get_instance();
+		if (is_null($flattened_storyline)) {
+			$flattened_storyline = $this->get_flattened_storyline();
+		}
+		$all_categories_flattened = $this->get_category_flattened($comicpress->comicpress_options['comic_category_id']);
+		
+		$result = $this->normalize_flattened_storyline($flattened_storyline, $all_categories_flattened);
+		if ($set) {
+			$this->set_flattened_storyline($result);
+		}
+		return $result;
+	}
+
+	function _length_sort($parts) {
+		$new = array();
+		foreach ($parts as $part) {
+		  $p = explode('/', $part);
+			if (!isset($new[count($p)])) {
+				$new[count($p)] = array();
+			}
+			$new[count($p)][] = $part;
+		}
+		ksort($new);
+		$output = array();
+		foreach (array_values($new) as $values) {
+			$output = array_merge($output, $values);
+		}
+		return $output;
+	}
+
 	function normalize_flattened_storyline($storyline, $comic_categories) {
 		$storyline_nodes = explode(",", $storyline);
 		$category_nodes  = explode(",", $comic_categories);
@@ -227,6 +263,7 @@ class ComicPressStoryline {
 		$extra_in_storyline     = array_diff($storyline_nodes, $category_nodes);
 		
 		if (!empty($missing_from_storyline)) {
+			$missing_from_storyline = $this->_length_sort($missing_from_storyline);
 			foreach ($missing_from_storyline as $node) {
 				$parent_pattern = implode('/', array_slice(explode('/', $node), 0, -1));
 				$last = null;
@@ -237,6 +274,8 @@ class ComicPressStoryline {
 				}
 				if (!is_null($last)) {
 					array_splice($storyline_nodes, $last + 1, 0, array($node));
+				} else {
+					$storyline_nodes[] = $node;
 				}
 			}
 		}
