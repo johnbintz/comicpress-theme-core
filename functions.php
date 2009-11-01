@@ -14,7 +14,7 @@ function __comicpress_init() {
     if (is_file($file)) { require_once($file); }
   }
 
-  $comicpress = new ComicPress();
+  $comicpress = ComicPress::get_instance();
   $comicpress->init();
   $addons = array();
   
@@ -34,13 +34,13 @@ function __comicpress_init() {
                 $comicpress->comicpress_options['addons'][$addon->name] ||
                 $addon->is_addon_manager
               ) {
-                $addon->init(&$comicpress);
+                $addon->init();
                 if (current_user_can('edit_posts')) {
                   if (is_array($_REQUEST['cp'])) {
                     if (isset($_REQUEST['cp']['_nonce'])) {
                       if (wp_verify_nonce($_REQUEST['cp']['_nonce'], 'comicpress')) {
                         if (method_exists($addon, 'handle_update')) {
-                          $addon->handle_update();
+                          $addon->handle_update($_REQUEST['cp']);
                           $comicpress->load();
                         }
                       }

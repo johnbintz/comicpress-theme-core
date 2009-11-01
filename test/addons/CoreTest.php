@@ -12,25 +12,6 @@ class CoreTest extends PHPUnit_Framework_TestCase {
     $this->core = new ComicPressAddonCore();
   }
   
-  function testShowOptionsPage() {
-    $nonce = wp_create_nonce('comicpress');
-  
-    $this->core->comicpress = $this->getMock('ComicPress', array('get_layout_choices'));
-    $this->core->comicpress->expects($this->once())->method('get_layout_choices')->will($this->returnValue(array()));
-  
-    ob_start();
-    $this->core->render_admin();    
-    $source = ob_get_clean();
-
-    $this->assertTrue(($xml = _to_xml($source)) !== false);
-    foreach (array(
-      '//input[@name="cp[_nonce]" and @value="' . $nonce . '"]' => true,
-      '//select[@name="cp[comic_category_id]"]' => true
-    ) as $xpath => $value) {
-      $this->assertTrue(_xpath_test($xml, $xpath, $value), $xpath);
-    }
-  }
-  
   function providerTestGetRootComicCategories() {
     return array(
       array(array(), array()),
@@ -169,136 +150,13 @@ class CoreTest extends PHPUnit_Framework_TestCase {
     
     $_POST = $change;
 
-    $this->core->handle_update_comicpress_options();
+    $this->core->handle_update_comicpress_options($_POST['cp']);
     
     foreach ($new as $key => $value) {
       $this->assertEquals($value, $this->core->comicpress->comicpress_options[$key]);
     }
   }
-  
-  function testGetStorylineMoveStatuses() {
-    $this->core->comicpress = (object)array(
-      'category_tree' => array(
-        '0/1',
-        '0/1/2',
-        '0/1/2/3',
-        '0/1/2/4',
-        '0/1/2/5',
-        '0/1/6',
-        '0/1/6/7',
-        '0/1/6/8',
-        '0/1/9',
-        '0/1/9/10',
-        '0/1/11'
-      )
-    );
-    
-    $this->assertEquals(array(
-      '0/1' => array(false, false),
-      '0/1/2' => array(false, true),
-      '0/1/2/3' => array(false, true),
-      '0/1/2/4' => array(true, true),
-      '0/1/2/5' => array(true, false),
-      '0/1/6' => array(true, true),
-      '0/1/6/7' => array(false, true),
-      '0/1/6/8' => array(true, false),
-      '0/1/9' => array(true, true),
-      '0/1/9/10' => array(false, false),
-      '0/1/11' => array(true, false)
-    ), $this->core->get_storyline_move_statuses());
-  }
-  
-  function providerTestMoveStorylineCategoryOrder() {
-    return array(
-      array(
-        array('0/1', '0/1/2', '0/1/3'),
-        3, -1,
-        array('0/1', '0/1/3', '0/1/2')
-      ),
-      array(
-        array('0/1', '0/1/2', '0/1/2/4', '0/1/3'),
-        3, -1,
-        array('0/1', '0/1/3', '0/1/2', '0/1/2/4')
-      ),
-      array(
-        array('0/1', '0/1/2', '0/1/2/4', '0/1/3', '0/1/3/5'),
-        3, -1,
-        array('0/1', '0/1/3', '0/1/3/5', '0/1/2', '0/1/2/4')
-      ),
-      array(
-        array('0/1', '0/1/2', '0/1/3', '0/1/3/5'),
-        3, -1,
-        array('0/1', '0/1/3', '0/1/3/5', '0/1/2')
-      ),
-      array(
-        array('0/1', '0/1/3', '0/1/3/5', '0/1/3/6', '0/1/3/7'),
-        7, -1,
-        array('0/1', '0/1/3', '0/1/3/5', '0/1/3/7', '0/1/3/6')
-      ),
-      array(
-        array('0/1', '0/1/3', '0/1/3/5', '0/1/3/6', '0/1/3/7', '0/1/4'),
-        7, -1,
-        array('0/1', '0/1/3', '0/1/3/5', '0/1/3/7', '0/1/3/6', '0/1/4')
-      ),
-      array(
-        array('0/1', '0/1/3', '0/1/3/5', '0/1/3/6', '0/1/3/7', '0/1/4'),
-        3, 1,
-        array('0/1', '0/1/4', '0/1/3', '0/1/3/5', '0/1/3/6', '0/1/3/7')
-      ),
-      array(
-        array('0/1', '0/1/2', '0/1/2/4', '0/1/3'),
-        2, 1,
-        array('0/1', '0/1/3', '0/1/2', '0/1/2/4')
-      ),
-      array(
-        array('0/1', '0/1/2', '0/1/2/4', '0/1/3', '0/1/3/5'),
-        2, 1,
-        array('0/1', '0/1/3', '0/1/3/5', '0/1/2', '0/1/2/4')
-      ),
-      array(
-        array('0/1', '0/1/2', '0/1/3', '0/1/3/5'),
-        2, 1,
-        array('0/1', '0/1/3', '0/1/3/5', '0/1/2')
-      ),
-      array(
-        array('0/1', '0/1/3', '0/1/3/5', '0/1/3/6', '0/1/3/7'),
-        6, 1,
-        array('0/1', '0/1/3', '0/1/3/5', '0/1/3/7', '0/1/3/6')
-      ),
-      array(
-        array('0/1', '0/1/3', '0/1/3/5', '0/1/3/6', '0/1/3/7', '0/1/4'),
-        6, 1,
-        array('0/1', '0/1/3', '0/1/3/5', '0/1/3/7', '0/1/3/6', '0/1/4')
-      ),
-      array(
-        array('0/1', '0/1/3', '0/1/3/5', '0/1/3/6', '0/1/3/7', '0/1/4'),
-        5, 1,
-        array('0/1', '0/1/3', '0/1/3/6', '0/1/3/5', '0/1/3/7', '0/1/4')
-      ),
-      array(
-        array('0/1', '0/1/3', '0/1/3/5', '0/1/3/6', '0/1/3/7', '0/1/4', '0/1/4/9'),
-        9, 1,
-        array('0/1', '0/1/3', '0/1/3/5', '0/1/3/6', '0/1/3/7', '0/1/4', '0/1/4/9')
-      ),
-    );
-  }
-  
-  /**
-   * @dataProvider providerTestMoveStorylineCategoryOrder
-   */
-  function testMoveStorylineCategoryOrder($original_order, $category, $direction, $new_order) {
-    $this->core->comicpress = (object)array(
-      'category_tree' => $original_order,
-      'comicpress_options' => array(
-        'category_order' => $original_order
-      )
-    );
-    
-    $this->core->move_storyline_category_order($category, $direction);
-    
-    $this->assertEquals($new_order, $this->core->comicpress->comicpress_options['category_order']);
-  }
-  
+	
   function providerTestUpdateAttachments() {
     return array(
       array(

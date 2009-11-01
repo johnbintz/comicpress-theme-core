@@ -181,6 +181,110 @@ class ComicPressStorylineTest extends PHPUnit_Framework_TestCase {
 		
 		$this->assertEquals($expected_result, $this->css->get_simple_storyline());
 	}
+	
+	function providerTestSetFlattenedStorylineOrder() {
+		return array(
+			array('0/1,0/1/2,0/1/2/3,0/1/2/4', '0/1,0/1/2,0/1/2/3,0/1/2/4', true),
+			array('0/1,0/1/2,0/1/2/4,0/1/2/3', '0/1,0/1/2,0/1/2/4,0/1/2/3', true),
+			array('0/1,0/1/2,0/1/2/5,0/1/2/3', '0/1,0/1/2,0/1/2/3,0/1/2/4', false),
+		);
+	}
+	
+	/**
+	 * @dataProvider providerTestSetFlattenedStorylineOrder
+	 */
+	function testSetFlattenedStorylineOrder($input, $expected_result, $expected_return) {
+		$css = $this->getMock('ComicPressStoryline', array(
+			'get_flattened_storyline', 'set_flattened_storyline'
+		));
+		
+		$css->expects($this->once())
+		    ->method('get_flattened_storyline')
+				->will($this->returnValue('0/1,0/1/2,0/1/2/3,0/1/2/4'));
+				
+		if ($expected_return === true) {
+			$css->expects($this->once())
+					->method('set_flattened_storyline')
+					->with($input);
+		} else {
+			$css->expects($this->never())
+					->method('set_flattened_storyline');
+		}
+		
+		$this->assertEquals($expected_return, $css->set_order_via_flattened_storyline($input));
+	}
+	
+	function testMergeSimpleStoryline() {
+		$original = array(
+		  0 => array(1 => true),
+			1 => array(2 => true),
+			2 => array(3 => true, 4 => true)
+		);
+		
+		$expected = array(
+			0 => array(
+			  1 => array(
+				  2 => array(
+						3 => true,
+						4 => true
+					)
+				)
+			)
+		);
+		
+		$this->assertEquals($expected, $this->css->_merge_simple_storyline($original));
+	}
+	
+	function testGetCategorySimpleStructure() {
+		add_category(1, (object)array('parent' => 0));
+		add_category(2, (object)array('parent' => 1));
+		add_category(3, (object)array('parent' => 2));
+		add_category(4, (object)array('parent' => 2));
+		
+		$this->assertEquals(array(
+			'0' => array(
+				'1' => array(
+					'2' => array(
+						'3' => true,
+						'4' => true
+					)
+				)
+			)
+		), $this->css->get_category_simple_structure(1));
+	}
+	
+	function providerTestNormalizeFlattenedStoryline() {
+		return array(
+			array('0/1,0/1/2,0/1/2/4', '0/1,0/1/2,0/1/2/4,0/1/2/3'),
+			array('0/1,0/1/2,0/1/2/4,0/1/2/3,0/1/5', '0/1,0/1/2,0/1/2/4,0/1/2/3'),
+			array('0/1,0/1/2,0/1/2/3,0/1/5', '0/1,0/1/2,0/1/2/3,0/1/2/4'),
+		);
+	}
+	
+	/**
+	 * @dataProvider providerTestNormalizeFlattenedStoryline
+	 */
+	function testNormalizeFlattenedStoryline($original_structure, $expected_structure) {
+		$this->assertEquals(
+			$expected_structure,
+			$this->css->normalize_flattened_storyline($original_structure, '0/1,0/1/2,0/1/2/3,0/1/2/4')
+		);
+	}
+	
+	function testFlattenSimpleStoryline() {
+		$this->assertEquals('0/1,0/1/2,0/1/2/3,0/1/2/4', $this->css->flatten_simple_storyline(
+			array(
+				0 => array(
+					1 => array(
+						2 => array(
+							3 => true,
+							4 => true
+						)
+					)
+				)
+			)
+		));
+	}
 }
 
 ?>

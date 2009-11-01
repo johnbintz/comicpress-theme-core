@@ -17,7 +17,8 @@ class ComicPress {
     'layout'              => 'classic.inc',
     'helpers'             => array(),
     'override_partials'   => array(),
-    'addons'              => array()
+    'addons'              => array(),
+		'storyline_order'     => ''
   );
   
   var $additional_stylesheets = array();
@@ -29,6 +30,16 @@ class ComicPress {
   var $partial_paths = array();
   var $layouts = null;
   
+	function get_instance() {
+		static $instance;
+		
+		if (empty($instance)) {
+			$instance = &new ComicPress();
+		}
+		
+		return $instance;
+	}
+	
   /**
    * Load ComicPress options.
    */

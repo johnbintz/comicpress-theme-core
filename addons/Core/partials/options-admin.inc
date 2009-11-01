@@ -40,36 +40,16 @@
         </td>
       </tr>
       <tr>
-        <th scope="row" valign="top"><?php _e("Set storyline category order", 'comicpress') ?></th>
+        <th scope="row" valign="top"><?php _e("Arrange storyline category order", 'comicpress') ?></th>
         <td>
-          <?php 
-            foreach ($this->get_storyline_move_statuses() as $node => $statuses) {
-              $parts = explode("/", $node);
-              $category = get_category(end($parts));
-              if (!empty($category)) {
-                ?>
-                <div class="storyline" style="padding-left: <?php echo (count($parts) - 2) * 20 ?>px">
-                  <strong><?php echo $category->name ?></strong>
-                  <?php
-                    foreach (array(
-                      "-1" => __("Up", 'comicpress'),
-                      "1" => __("Down", 'comicpress')
-                    ) as $direction => $label) {
-                      $status = array_shift($statuses);
-                      if ($status) {
-                        $query = add_query_arg('cp[_nonce]', $nonce);
-                        $query = add_query_arg('cp[category]', $category->term_id, $query);
-                        $query = add_query_arg('cp[move_direction]', $direction, $query); ?>
-                          | <a href="<?php echo $query ?>"><?php echo $label ?></a>
-                        <?php 
-                      }
-                    }
-                  ?>
-                </div>
-              <?php }
-            }
-          ?>
-          <p><em><?php _e('(categories can be modified on the Posts -> Categories page)', 'comicpress') ?></em></p>
+					<input type="hidden" name="cp[storyline_order]" />
+					<div id="storyline-sorter" class="cp-children">
+	          <?php 
+							$this->_render_admin_storyline_tree(reset($storyline->get_simple_storyline()))
+						?>
+					</div>
+					<script type="text/javascript">Storyline.setup()</script>
+          <p><em><?php _e('(drag and drop desired order. categories can be modified on the Posts -> Categories page)', 'comicpress') ?></em></p>
         </td>
       </tr>
       <tr>

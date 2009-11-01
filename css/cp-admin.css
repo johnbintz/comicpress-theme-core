@@ -1,0 +1,17 @@
+.cp-children {
+  padding-left: 20px
+}
+
+.ui-draggable {
+	border: solid black 1px;
+	background-color: #ddd
+}
+
+.cp-category-info span {
+	cursor: move;
+	color: #004
+}
+
+.placeholder {
+  border: dashed #ddd 2px
+}

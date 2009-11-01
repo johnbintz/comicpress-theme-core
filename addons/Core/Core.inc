@@ -9,8 +9,10 @@ class ComicPressAddonCore extends ComicPressAddon {
    * Initialize the addon.
    * @param ComicPress $comicpress The master ComicPress object.
    */
-  function init(&$comicpress) {
-    add_action('admin_menu', array(&$this, 'setup_admin_interface'));
+  function init() {
+		$this->comicpress = ComicPress::get_instance();
+		
+		add_action('admin_menu', array(&$this, 'setup_admin_interface'));
     add_filter('attachment_fields_to_edit', array(&$this, 'setup_comic_metadata_buttons'), 10, 2);
     add_action('show_comic', array(&$this, 'show_comic'), 1, 1);
     add_action('show_archive', array(&$this, 'show_archive'), 1, 1);
@@ -21,8 +23,6 @@ class ComicPressAddonCore extends ComicPressAddon {
       add_action('template_redirect', array(&$this, 'go_to_random_comic'));
     }
 
-    $this->comicpress = $comicpress;
-    
     if (current_user_can('edit_posts') && isset($comicpress->comicpress_options['helpers']['show_inline_comic_ordering'])) {
       add_filter('comicpress_attached_image', array(&$this, 'comicpress_attached_image'), 10, 3);
       add_filter('comicpress_display_attached_images', array(&$this, 'comicpress_display_attached_images'), 10, 2);
@@ -192,12 +192,19 @@ class ComicPressAddonCore extends ComicPressAddon {
    * Set up the admin interface and meta boxes.
    */
   function setup_admin_interface() {
+		global $plugin_page;
+
     add_theme_page(__("ComicPress Core", 'comicpress'), __('ComicPress Core', 'comicpress'), 'edit_themes', 'comicpress/render_admin', array(&$this, 'render_admin'));
     add_theme_page(__("Edit Partials", 'comicpress'), __('Edit Partials', 'comicpress'), 'edit_themes', 'comicpress/edit_partials', array(&$this, 'render_edit_partials'));
     
     if (isset($_REQUEST['post'])) {
       add_meta_box("comic-image-ordering", __("Comic Image Ordering", 'comicpress'), array(&$this, 'render_comic_image_ordering'), "post", "normal", "low");
     }
+		
+		if ($plugin_page == 'comicpress/render_admin') {
+			wp_enqueue_style('cp-admin', get_stylesheet_directory_uri() . '/css/cp-admin.css');
+			wp_enqueue_script('cp-admin', get_stylesheet_directory_uri() . '/js/Storyline.js', array('jquery', 'jquery-ui-sortable'));
+		}
   }
   
   /**
@@ -293,10 +300,24 @@ class ComicPressAddonCore extends ComicPressAddon {
     $nonce = wp_create_nonce('comicpress');
     $root_categories = $this->get_root_categories();
 		$storyline = new ComicPressStoryline();
-		$storyline->create_structure(get_option('comicpress-storyline-category-order'));
+		$storyline->read_from_options();
 
     include(dirname(__FILE__) . '/partials/options-admin.inc'); 
   }
+	
+	function _render_admin_storyline_tree($node, $parent_id = "0") {
+	  foreach ($node as $category_id => $children) {
+			$category = get_category($category_id);
+			echo '<div class="cp-category-info category-' . $parent_id . '/' . $category_id . '">';
+				echo '<span>' . $category->name . '</span>';
+				if (is_array($children)) {
+					echo '<div class="cp-children">';
+						$this->_render_admin_storyline_tree($children, $parent_id . '/' . $category_id);
+					echo '</div>';
+				}
+			echo '</div>';
+		}
+	}
   
   function render_edit_partials() {
     $nonce = wp_create_nonce('comicpress');
@@ -392,105 +413,8 @@ class ComicPressAddonCore extends ComicPressAddon {
     }
     return implode("\n", $output);
   }
-  
-  /**
-   * Determine whether or not storyline categories can be moved or not.
-   * @return array The storyline nodes with their move statuses.
-   */
-  function get_storyline_move_statuses() {
-    $nodes_with_statuses = array();
-		for ($i = 0, $il = count($this->comicpress->category_tree); $i < $il; ++$i) {
-      $node = $this->comicpress->category_tree[$i];
-      $nodes_with_statuses[$node] = array();
-      $parts_count = count(explode("/", $node));
-      foreach (array(
-        '0' => -1,
-        '1' => 1
-      ) as $position => $direction) {
-        $current_node_index = $i;
-        $status = false;
-        do {
-          $current_node_index += $direction;
-          if (isset($this->comicpress->category_tree[$current_node_index])) {
-            $current_node = $this->comicpress->category_tree[$current_node_index];
-            $current_parts_count = count(explode("/", $current_node));
-            if ($current_parts_count == $parts_count) { $status = true; break; }
-            if ($current_parts_count < $parts_count) { break; }
-          }
-        } while (isset($this->comicpress->category_tree[$current_node_index]));
-        $nodes_with_statuses[$node][$position] = $status;
-      }
-    }
-    return $nodes_with_statuses;
-  }
 
-  /**
-   * Move a category in the hierarchy.
-   * @param array $category The category to move.
-   * @param int $direction The direction to move it in (-1 for up, 1 for down)
-   */
-  function move_storyline_category_order($category, $direction) {
-    for ($i = 0, $il = count($this->comicpress->category_tree); $i < $il; ++$i) {
-      $node = $this->comicpress->category_tree[$i];
-      $parts = explode("/", $node);
-      $parts_count = count($parts);
-      
-      if (end($parts) == $category) {
-        $current_node_index = $i;
-        $target_index = null;
-        do {
-          $current_node_index += $direction;
-          
-          if (isset($this->comicpress->category_tree[$current_node_index])) {
-            $current_parts_count = count(explode("/", $this->comicpress->category_tree[$current_node_index]));
-            if ($current_parts_count == $parts_count) { $target_index = $current_node_index; break; }
-            if ($current_parts_count < $parts_count) { break; }
-          }
-        } while (isset($this->comicpress->category_tree[$current_node_index]));
-        
-        if (!is_null($target_index)) {
-          $end_i_index = $i;
-          do {
-            $end_i_index++;
-            if (isset($this->comicpress->category_tree[$end_i_index])) {
-              if (strpos($this->comicpress->category_tree[$end_i_index], $node) !== 0) {
-                break;
-              }
-            }
-          } while (isset($this->comicpress->category_tree[$end_i_index]));
-        
-          $new_order = $this->comicpress->category_tree;
-          $target_index_node = $new_order[$target_index];
-
-          $move = array_splice($new_order, $i, $end_i_index - $i);
-          $target = array_search($target_index_node, $new_order);
-          $prefix = array_splice($new_order, 0, $target);
-          
-          if ($direction == -1) {
-            $new_order = array_merge($prefix, $move, $new_order);
-          } else {
-            $leftover = array();
-            if (count($new_order) > 1) {
-              $start_parts_count = count(explode("/", $new_order[0]));
-              for ($j = 1, $jl = count($new_order); $j < $jl; ++$j) {
-                if (count(explode("/", $new_order[$i])) < $start_parts_count) {
-                  $leftover = array_splice($new_order, $j); break;
-                }
-              }
-            }
-            
-            $new_order = array_merge($prefix, $new_order, $move, $leftover);
-          }
-
-          $this->comicpress->comicpress_options['category_order'] = $new_order;
-          
-          break;
-        }
-      }
-    }
-  }
-  
-  /**
+	/**
    * Update attachment information.
    */
   function handle_update_attachments() {
@@ -509,18 +433,18 @@ class ComicPressAddonCore extends ComicPressAddon {
   /**
    * Update ComicPress options.
    */
-  function handle_update_comicpress_options() {
+  function handle_update_comicpress_options($info) {
     foreach (array('helpers', 'options') as $type) {
       $this->comicpress->comicpress_options[$type] = array();
     }
     foreach ($this->comicpress->comicpress_options as $option => $value) {
-      if (isset($_POST['cp'][$option])) {
+      if (isset($info[$option])) {
         switch ($option) {
           case 'comic_category_id':
-            if (is_numeric($_POST['cp'][$option])) {
-              $result = get_category($_POST['cp'][$option]);
+            if (is_numeric($info[$option])) {
+              $result = get_category($info[$option]);
               if (!(is_a($result, 'WP_Error') || empty($result))) {
-                $this->comicpress->comicpress_options[$option] = $_POST['cp'][$option]; 
+                $this->comicpress->comicpress_options[$option] = $info[$option]; 
               } 
             }
             break;
@@ -528,11 +452,11 @@ class ComicPressAddonCore extends ComicPressAddon {
           case 'rss_dimensions':
           case 'archive_dimensions':
           case 'mini_dimensions':
-            if (is_array($_POST['cp'][$option])) {
+            if (is_array($info[$option])) {
               $dim_parts = array();
               $is_valid = true;
               foreach (array('width', 'height') as $field) {
-                $requested_dim = trim($_POST['cp'][$option][$field]);
+                $requested_dim = trim($info[$option][$field]);
                 if ($requested_dim == "") {
                   $dim_parts[] = $requested_dim;
                 } else {
@@ -550,19 +474,23 @@ class ComicPressAddonCore extends ComicPressAddon {
             }
             break;
           case 'blogpost_count':
-            $this->comicpress->comicpress_options[$option] = (int)$_POST['cp'][$option];
+            $this->comicpress->comicpress_options[$option] = (int)$info[$option];
             break;
           case 'comic_space':
           case 'category_usage':
           case 'layout';
-            $this->comicpress->comicpress_options[$option] = $_POST['cp'][$option];
+            $this->comicpress->comicpress_options[$option] = $info[$option];
             break;
           case 'helpers':
           case 'addons':
-            foreach ($_POST['cp'][$option] as $type => $set) {
+            foreach ($info[$option] as $type => $set) {
               $this->comicpress->comicpress_options[$option][$type] = true;
             }
             break;
+					case 'storyline_order':
+						$storyline = new ComicPressStoryline();
+						var_dump($storyline->set_flattened_storyline_order($info[$option]));
+						break;
         }
       }
     }
@@ -595,13 +523,14 @@ class ComicPressAddonCore extends ComicPressAddon {
   /**
    * Handle an update.
    */
-  function handle_update() {
+  function handle_update($info) {
     if (isset($_POST['attachments'])) {
       //coming from media editor
       $this->handle_update_attachments();
-    } else if (is_array($_POST['cp']['ordering'])) {
+    } else if (is_array($info['ordering'])) {
       // comic ordering
       
+			/*
       if (isset($_POST['meta'])) {
         $meta_key_to_ignore = false;
         foreach ($_POST['meta'] as $meta_key => $params) {
@@ -617,21 +546,18 @@ class ComicPressAddonCore extends ComicPressAddon {
         }
       }
       
-      $this->handle_update_comic_ordering();
-    } else if (isset($_POST['cp']['partial'])) {
-      $this->handle_update_override_partial($_POST['cp']);
-      $this->info(sprintf(__("Partial %s updated.", 'comicpress'), $_POST['cp']['partial']));
+      $this->handle_update_comic_ordering($info);
+			*/
+    } else if (isset($info['partial'])) {
+      $this->handle_update_override_partial($info);
+      $this->info(sprintf(__("Partial %s updated.", 'comicpress'), $info['partial']));
 
       $this->comicpress->save();
       $this->comicpress->init();
     } else {
       //coming from us
-      $this->handle_update_comicpress_options();
+      $this->handle_update_comicpress_options($info);
       
-      if (isset($_GET['cp']['move_direction']) && isset($_GET['cp']['category'])) {
-        $this->move_storyline_category_order($_GET['cp']['category'], $_GET['cp']['move_direction']);
-      }
-
       $this->comicpress->save();
       
       $this->info(__("ComicPress configuration updated.", 'comicpress'));
