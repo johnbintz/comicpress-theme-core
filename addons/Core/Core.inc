@@ -192,12 +192,13 @@ class ComicPressAddonCore extends ComicPressAddon {
    * Set up the admin interface and meta boxes.
    */
   function setup_admin_interface() {
-		global $plugin_page;
+		global $plugin_page, $pagenow, $post;
 
     add_theme_page(__("ComicPress Core", 'comicpress'), __('ComicPress Core', 'comicpress'), 'edit_themes', 'comicpress/render_admin', array(&$this, 'render_admin'));
     add_theme_page(__("Edit Partials", 'comicpress'), __('Edit Partials', 'comicpress'), 'edit_themes', 'comicpress/edit_partials', array(&$this, 'render_edit_partials'));
     
-    if (isset($_REQUEST['post'])) {
+    if (strpos($page, "edit") === 0) {
+			var_dump($post);
       add_meta_box("comic-image-ordering", __("Comic Image Ordering", 'comicpress'), array(&$this, 'render_comic_image_ordering'), "post", "normal", "low");
     }
 		
@@ -205,7 +206,11 @@ class ComicPressAddonCore extends ComicPressAddon {
 			wp_enqueue_style('cp-admin', get_stylesheet_directory_uri() . '/css/cp-admin.css');
 			wp_enqueue_script('cp-admin', get_stylesheet_directory_uri() . '/js/Storyline.js', array('jquery', 'jquery-ui-sortable'));
 		}
-  }
+
+		if (strpos($pagenow, "media-upload") === 0) {
+			wp_enqueue_script('cp-media', get_stylesheet_directory_uri() . '/js/MediaUpload.js', array('jquery'));
+		}
+	}
   
   /**
    * Show comic media.
@@ -256,9 +261,9 @@ class ComicPressAddonCore extends ComicPressAddon {
    */
   function setup_comic_metadata_buttons($form_fields, $post) {
     global $pagenow;
-  
+
     $current_type = get_post_meta($post->ID, 'comic_image_type', true);
-    
+
     $field_html_lines = array();
     $field_html_lines[] = '<input type="hidden" name="cp[_nonce]" value="' . wp_create_nonce('comicpress')  . '" />';
     foreach ($this->comic_image_types as $field => $label) {
