@@ -263,6 +263,7 @@ class ComicPressAddonCore extends ComicPressAddon {
     global $pagenow;
 
     $current_type = get_post_meta($post->ID, 'comic_image_type', true);
+    if (empty($current_type)) { $current_type = reset(array_keys($this->comic_image_types)); }
 
     $field_html_lines = array();
     $field_html_lines[] = '<input type="hidden" name="cp[_nonce]" value="' . wp_create_nonce('comicpress')  . '" />';
